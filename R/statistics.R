@@ -1,11 +1,23 @@
-# Compute root mean square error (RMSE).
+#' Calculate RMSE
+#'
+#' Compute root mean square error (RMSE).
+#'
+#' @param x Numeric vector of data.
+#' @param y Numeric vector of data to compare to x, same length.
+#' @return RMSE, single numeric value.
 #' @export
-rmse <- function(v1=v1, v2=v2) {
-    return(sqrt(sum((v1 - v2)^2, na.rm=TRUE) / sum(!is.na(v1) & !is.na(v2))))
+rmse <- function(x, y) {
+    return(sqrt(sum((x - y)^2, na.rm=TRUE) / sum(!is.na(x) & !is.na(y))))
 }
 
 
-# Given vectors x and y of the same length, compute various forms of error between the two.
+#' Calculate error vectors
+#'
+#' Given vectors x and y of the same length, compute various forms of error between the two.
+#'
+#' @param x Numeric vector of data.
+#' @param y Numeric vector of data to compare to x, same length.
+#' @return Dataframe with columns representing error for each point. Types of error include: error, magnitude of error, percent error, magnitude of percent error, error of logged values, and magnitude of error of logged values.
 #' @export
 vector_errors <- function(x, y) {
 
@@ -40,10 +52,14 @@ vector_errors <- function(x, y) {
 }
 
 
-# Calculate the statistics on a vector:
-# Number of valid observations, mean, median, standard deviation, and coefficient of variation.
+#' Calculate statistics
+#'
+#' Calculate the statistics on a vector: Number of valid observations, mean, median, standard deviation, and coefficient of variation.
+#'
+#' @param x Numeric vector of data.
+#' @return Named numeric vector of statistics, length 5.
 #' @export
-vector_stats <- function(x=x) {
+vector_stats <- function(x) {
 
     output <- rep(NA,5)
     output[1] <- sum(is.finite(x))

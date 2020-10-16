@@ -1,32 +1,46 @@
-# Given a time vector tv, and parameters of a Gaussian curve, calculate a shifted Gaussian.
+#' Shifted Gaussian Curve
+#'
+#' Given a vector tv, and parameters of a Gaussian curve, calculate a shifted Gaussian.
+#'
+#' @param tv Numeric vector
+#' @param B0
+#' @param beta
+#' @param h
+#' @param sigma
+#' @param tmax
+#' @return Numeric vector containing the points along the Gaussian.
 #' @export
 shifted_gaussian <- function(tv, B0, beta=0, h, sigma, tmax) {
     return(B0 + beta*tv + h/(sqrt(2*pi)*sigma) * exp(-(tv - tmax)^2 / (2*sigma^2)))
 }
 
-# Given a vector v, shift it so that its mean = 0 and scale so range = [-1,1].
-#' @export
-shift_scale <- function(v,i) {
-    v <- v - i # shift vector to centre around 0 instead of the ideal
-    v[v > 0] <- v[v > 0]/max(v[v > 0]) # stretch vector from 0 to 1
-    v[v < 0] <- -v[v < 0]/min(v[v < 0]) # stretch vector from -1 to 0
-    v
-}
 
-
-# Find slope and intercept of a line based on the coordinates of two points.
+#' Compute line parameters
+#'
+#' Find slope and intercept of a line based on the coordinates of two points.
+#'
+#' @param x1
+#' @param y1
+#' @param x2
+#' @param y2
+#' @return Named list containing slope and intercept.
 #' @export
 find_line <- function(x1, y1, x2, y2) {
     m <- (y2-y1)/(x2-x1)
     b <- y1 - m*x1
-    c(m,b)
+    return(list(slope=m, intercept=b))
 }
 
 
-# Given an x vector of at least 2 points, a corresponding y vector of equal
-# length, and a distance to shift the line, shift a SLANTED line "up" or "down",
-# in the direction perpendicular to the line.
-# https://www.math.uh.edu/~jmorgan/Math6397/day13/LinearAlgebraR-Handout.pdf
+#' Shift line
+#'
+#' Given an x vector of at least 2 points, a corresponding y vector of equal length, and a distance to shift the line, shift a SLANTED line "up" or "down", in the direction perpendicular to the line.
+#'
+#' @param x Numeric vector, length >=2.
+#' @param y Numeric vector, same length as x.
+#' @param dist Numeric value, how far to shift the line.
+#' @param dir String, either "up" or "down".
+#' @return Named list containing the new x and y vectors.
 #' @export
 shift_line <- function(x, y, dist=1, dir="up") {
 
@@ -78,6 +92,7 @@ shift_line <- function(x, y, dist=1, dir="up") {
     return(list(x=new_x, y=new_y))
 
 }
+
 # # test lines (pointing toward quadrants 1-4):
 # dist=0.2
 # x=c(-3,-2); y=c(-2,4)    # quad1
@@ -92,18 +107,4 @@ shift_line <- function(x, y, dist=1, dir="up") {
 # x=c(0,2.5); y=c(3,1)     # quad4
 # shift_line(x,y,dist=dist,dir="up")
 # shift_line(x,y,dist=dist,dir="down")
-
-
-
-# ********************CAUTION: MIGHT CONTAIN BUGS*******************************
-# Use shoelace method to find the area inside a closed polygon.
-# This works for polygons with negative coordinates as well.
-shoelace <- function(x, y) {
-    ix <- as.integer(c(2:length(x), 1))
-    iy1 <- as.integer(c(3:length(x), 1, 2))
-    iy2 <- 1:length(x)
-    abs(as.double((x[ix] %*% (y[iy1] - y[iy2])) / 2))
-}
-# ********************CAUTION: MIGHT CONTAIN BUGS*******************************
-
 

@@ -1,15 +1,14 @@
-# Get a list of days of the year for a given year and selected months.
-# This can return every day, or the start of every week, second week, or month.
-# It also can use either the 8-day/week 46 week/year system as used by NASA,
-# or the 4 week/month 48 week/year system as used by DFO (only relevant for
-# weekly or biweekly intervals).
+#' Get start days, given interval
+#'
+#' Get a list of days of the year for a given year and selected months. This can return every day, or the start of every week, second week, or month. It also can use either the 8-day/week 46 week/year system as used by NASA, or the 4 week/month 48 week/year system as used at BIO (only relevant for weekly or biweekly intervals).
+#'
+#' @param year
+#' @param months Numeric vector of month numbers
+#' @param eightday Logical value (use eightday system?)
+#' @param interval String, either "daily", "weekly", "biweekly", or "monthly"
+#' @return Character vector containing days of the year, each zero-padded to length 3.
 #' @export
-get_doys <- function(year, months=1:12, eightday=FALSE, interval="daily") {
-
-    # year		= single numeric value
-    # months	= numeric vector of month numbers
-    # eightday	= logical (TRUE if you want to use NASA's 8-day per week system)
-    # interval	= string (daily, weekly, biweekly, or monthly)
+get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
 
     if (interval=="daily") {
 
@@ -51,7 +50,7 @@ get_doys <- function(year, months=1:12, eightday=FALSE, interval="daily") {
     # Get the day numbers for the selected months
     d <- d[m_ind]
 
-    result <- sapply(d, pad_num, len=3)
+    result <- sapply(d, oceancolouR::pad_num, len=3)
 
     return(result)
 

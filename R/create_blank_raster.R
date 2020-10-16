@@ -1,4 +1,9 @@
-# Create a basic template for a region of interest (ROI, currently only AZMP or extNA).
+#' Blank raster
+#'
+#' Create a basic template for a region of interest (ROI, currently only AZMP or extNA).
+#'
+#' @param ROI String, region of interest (either "AZMP" or "extNA").
+#' @return Blank raster bound to AZMP template.
 #' @export
 create_blank_raster <- function(ROI) {
 

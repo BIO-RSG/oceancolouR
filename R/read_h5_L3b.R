@@ -1,4 +1,10 @@
-# Read h5 level-3 binned file contents
+#' Read h5
+#'
+#' Read h5 level-3 binned file contents.
+#'
+#' @param h5_file String, h5 filename.
+#' @param var_name String, name of variable to extract (example: "chlor_a").
+#' @return List containing the contents of the file, attributes, selected variable, bin list, and bin index.
 #' @export
 read_h5_L3b <- function(h5_file, var_name) {
 

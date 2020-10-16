@@ -2,7 +2,7 @@
 % Please edit documentation in R/formatting.R
 \name{get_dir}
 \alias{get_dir}
-\title{Create folder.}
+\title{Create folder}
 \usage{
 get_dir(path)
 }

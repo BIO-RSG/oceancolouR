@@ -1,4 +1,12 @@
-# Calculate the haversine distance between 2 points in metres, given lat/lon for each (in decimal degrees).
+#' Haversine
+#'
+#' Calculate the haversine distance between 2 points in metres, given lat/lon for each (in decimal degrees).
+#'
+#' @param lon1 Decimal longitude of first point (numeric value).
+#' @param lat1 Decimal latitude of first point (numeric value).
+#' @param lon2 Decimal longitude of second point (numeric value).
+#' @param lat2 Decimal latitude of second point (numeric value).
+#' @return Distance between the points (in metres).
 #' @export
 haversine <- function(lon1, lat1, lon2, lat2) {
 
