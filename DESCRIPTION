@@ -1,13 +1,12 @@
 Package: oceancolouR
-Title: What the Package Does (One Line, Title Case)
+Title: Various Functions for Satellite and Data Analysis
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Stephanie",
+           family = "Clay",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "Stephanie.Clay@dfo-mpo.gc.ca")
+Description: This is a collection of functions to use in data analysis and dealing with rasters and binned Ocean Colour satellite files, particularly on the panCanadian grid.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
