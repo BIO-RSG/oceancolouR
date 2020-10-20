@@ -1,27 +1,20 @@
 #' QAA algorithm, version 6
 #'
-#' This script contains variables and a function to compute chlorophyll-a using QAA (the Quasi-Analytical Algorithm).
+#' Compute phytoplankton absorption coefficients for each wavelength, and a single chlorophyll-a value, using QAA (the Quasi-Analytical Algorithm).
 #'
+#' This code was originally written for SeaWiFS using wavelengths 412, 443, 490, 555, and 670nm. If other sensors/wavelengths are used, the function will choose the wavelengths closest to the wavelengths listed above.
+#'
+#' Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
+#'
+#' Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry 1997 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt), Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
 #' @param rrs Remote sensing reflectances above sea level, numeric vector
 #' @param lambda Wavelengths corresponding to rrs, numeric vector
 #' @param aw_all Named list of water absorption coefficients (names must be same as lambda)
 #' @param bbw_all Named list of water backscattering coefficients (names must be same as lambda)
 #' @param aphstar_all Named list of specific absorption coefficients (i.e. absorption per unit chlorophyll-a, names must be same as lambda)
-#' @description
-#' Note that this code was originally written for SeaWiFS, using these wavelengths: 412, 443, 490, 555, 670 nm.
-#' If other sensors/wavelengths are used, the function will choose the wavelengths closest to the wavelengths listed above.
-#' These are the wavelengths (lambda) typically used for each sensor:
-#'        modis   = c(412,443,469,488,531,547,555,645,667,678)
-#'        seawifs = c(412,443,490,510,555,670)
-#'        viirs   = c(410,443,486,551,671)
-#'
-#' Sources for default aw_all, bbw_all, and aphstar_all, respectively:
-#' aw: Water absorption, Pope and Fry, 1997 https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt
-#' bbw: Water backscattering, Smith and Baker, 1981 https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt
-#' NOTE 5 JULY 2019: Might want to change bbw values based on Zhang 2009, accounting for salinity effects on backscattering
-#' aphstar: Values computed using mean(aph/chl) of all records in excruisedata_21092016.txt.
 #' @references
 #' Original paper:
+#'
 #' Lee, Zhongping & Carder, Kendall & Arnone, Robert. (2002).
 #' Deriving Inherent Optical Properties from Water Color:
 #' a Multiband Quasi-Analytical Algorithm for Optically Deep Waters.
@@ -29,6 +22,7 @@
 #' https://www.researchgate.net/publication/11140186_Deriving_Inherent_Optical_Properties_from_Water_Color_a_Multiband_Quasi-Analytical_Algorithm_for_Optically_Deep_Waters
 #'
 #' Version 6 updates:
+#'
 #' http://www.ioccg.org/groups/Software_OCA/QAA_v6_2014209.pdf
 #' @return Named list containing wavelengths used in the fit (numeric vector), phytoplankton absorption coefficients (numeric vector, one for each wavelength), and chlorophyll-a (single numeric value, mg m^-3, computed as the median of aph/aphstar).
 #' @examples
