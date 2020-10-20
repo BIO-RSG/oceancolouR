@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin_to_raster.R
 \name{var_to_rast}
 \alias{var_to_rast}
-\title{Generate variable grid.}
+\title{Generate variable grid}
 \usage{
 var_to_rast(df, resolution = "4km")
 }

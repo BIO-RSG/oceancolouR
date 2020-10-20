@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin_to_raster.R
 \name{plot_rast_from_bin}
 \alias{plot_rast_from_bin}
-\title{Plot panCanadian L3b.}
+\title{Plot panCanadian L3b}
 \usage{
 plot_rast_from_bin(
   vec,

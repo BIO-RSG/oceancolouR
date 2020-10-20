@@ -43,7 +43,7 @@ gen_bin_grid = function(start_num) {
 
 
 # From George White's primary production scripts.
-#' Generate variable grid.
+#' Generate variable grid
 #'
 #' Create 2d grid of a variable, given a dataframe with 2 columns, one for bin numbers and one for variable values.
 #'
@@ -93,7 +93,7 @@ var_to_rast <- function(df, resolution="4km") {
 }
 
 
-#' Plot panCanadian L3b.
+#' Plot panCanadian L3b
 #'
 #' Given a vector of data from a binned panCanadian NASA ocean colour file, plot it on a raster with coastlines.
 #'
