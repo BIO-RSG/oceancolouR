@@ -56,6 +56,11 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
 
 }
 
-# This function returns the 8-day week number of a given date.
-# Example: week8("2019-01-28")
-week8 <- function(x,..) (lubridate::yday(x) - 1)%/%8 + 1
+#' Get the 8-day week number of a given date or date vector
+#'
+#' This converts dates to an 8-day week number as used by NASA. Use like other lubridate functions like lubridate::week().
+#'
+#' @param dateval String or formatted date, e.g. as.Date("2020-01-04")
+#' @return numeric value of week number
+#' @export
+week8 <- function(dateval,..) (lubridate::yday(dateval) - 1)%/%8 + 1 # Example: week8("2020-03-27"), or week8(your_data_frame$Dates)
