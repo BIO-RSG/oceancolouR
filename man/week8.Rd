@@ -2,20 +2,20 @@
 % Please edit documentation in R/date_funcs.R
 \name{week8}
 \alias{week8}
-\title{Get the 8-day week number of a given date or date vector}
+\title{8-day week number}
 \usage{
-week8(dateval, ..)
+week8(dateval)
 }
 \arguments{
-\item{dateval}{String or formatted date, e.g. as.Date("2020-01-04")}
+\item{dateval}{String or date formatted with as.Date()}
 }
 \value{
 numeric value of week number
 }
 \description{
-This converts dates to an 8-day week number as used by NASA. Use like other lubridate functions like lubridate::week().
+This converts a date or date vector to its corresponding 8-day week number(s). 8 days is the standard number of days in a composite "week" time period as used for ocean colour by NASA. Use similarly to lubridate functions like lubridate::week().
 }
 \examples{
 week8("2020-03-27")
-# or: week8(your_data_frame$Dates)
+week8(your_data_frame$Dates)
 }
