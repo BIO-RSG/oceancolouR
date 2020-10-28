@@ -93,6 +93,18 @@ shift_line <- function(x, y, dist=1, dir="up") {
 
 }
 
+#' Geometric mean
+#'
+#' As opposed to arithmetic mean, this calculates the mean of the log transformed data and converts it back. Use with lognormal distributions like chlorophyll-a
+#'
+#' @param x Numeric vector
+#' @return Geometric mean value of the input data
+#' @export
+geoMean <- function(x, ...){
+    xlog <- log(x)
+    exp(mean(xlog[is.finite(xlog)]))
+}
+
 # # test lines (pointing toward quadrants 1-4):
 # dist=0.2
 # x=c(-3,-2); y=c(-2,4)    # quad1
