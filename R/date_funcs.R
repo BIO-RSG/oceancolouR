@@ -55,3 +55,7 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
     return(result)
 
 }
+
+# This function returns the 8-day week number of a given date.
+# Example: week8("2019-01-28")
+week8 <- function(x,..) (lubridate::yday(x) - 1)%/%8 + 1
