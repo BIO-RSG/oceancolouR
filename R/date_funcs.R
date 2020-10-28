@@ -56,16 +56,16 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
 
 }
 
-#' Get the 8-day week number of a given date or date vector
+#' 8-day week number
 #'
-#' This converts dates to an 8-day week number as used by NASA. Use like other lubridate functions like lubridate::week().
+#' This converts a date or date vector to its corresponding 8-day week number(s). 8 days is the standard number of days in a composite "week" time period as used for ocean colour by NASA. Use similarly to lubridate functions like lubridate::week().
 #'
-#' @param dateval String or formatted date, e.g. as.Date("2020-01-04")
+#' @param dateval String or date formatted with as.Date()
 #' @return numeric value of week number
 #' @examples
 #' week8("2020-03-27")
-#' # or: week8(your_data_frame$Dates)
+#' week8(your_data_frame$Dates)
 #' @export
-week8 <- function(dateval,..) {
+week8 <- function(dateval) {
     (lubridate::yday(dateval) - 1)%/%8 + 1
 }
