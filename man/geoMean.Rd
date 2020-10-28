@@ -13,5 +13,5 @@ geoMean(x, ...)
 Geometric mean value of the input data
 }
 \description{
-As opposed to arithmetic mean, this calculates the mean of the log transformed data and converts it back. Use with lognormal distributions like chlorophyll-a
+This calculates the geometric mean, AKA mean of the log transformed data converted back to given units. Use with lognormal distributions like chlorophyll-a
 }
