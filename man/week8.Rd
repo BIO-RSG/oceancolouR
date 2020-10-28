@@ -15,3 +15,7 @@ numeric value of week number
 \description{
 This converts dates to an 8-day week number as used by NASA. Use like other lubridate functions like lubridate::week().
 }
+\examples{
+week8("2020-03-27")
+# or: week8(your_data_frame$Dates)
+}

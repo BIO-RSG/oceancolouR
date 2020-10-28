@@ -7,6 +7,8 @@
 get_doys(year, months = 1:12, eightday = TRUE, interval = "daily")
 }
 \arguments{
+\item{year}{Numeric value}
+
 \item{months}{Numeric vector of month numbers}
 
 \item{eightday}{Logical value (use eightday system?)}

@@ -2,7 +2,7 @@
 #'
 #' Get a list of days of the year for a given year and selected months. This can return every day, or the start of every week, second week, or month. It also can use either the 8-day/week 46 week/year system as used by NASA, or the 4 week/month 48 week/year system as used at BIO (only relevant for weekly or biweekly intervals).
 #'
-#' @param year
+#' @param year Numeric value
 #' @param months Numeric vector of month numbers
 #' @param eightday Logical value (use eightday system?)
 #' @param interval String, either "daily", "weekly", "biweekly", or "monthly"
@@ -62,5 +62,10 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
 #'
 #' @param dateval String or formatted date, e.g. as.Date("2020-01-04")
 #' @return numeric value of week number
+#' @examples
+#' week8("2020-03-27")
+#' # or: week8(your_data_frame$Dates)
 #' @export
-week8 <- function(dateval,..) (lubridate::yday(dateval) - 1)%/%8 + 1 # Example: week8("2020-03-27"), or week8(your_data_frame$Dates)
+week8 <- function(dateval,..) {
+    (lubridate::yday(dateval) - 1)%/%8 + 1
+}
