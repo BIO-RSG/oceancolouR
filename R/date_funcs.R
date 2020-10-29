@@ -69,3 +69,18 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
 week8 <- function(dateval) {
     (lubridate::yday(dateval) - 1)%/%8 + 1
 }
+
+#' List days of the year within a month
+#'
+#' Get a list of days of the year within a specific month
+#'
+#' @param year Numeric 4-digit value
+#' @param month Numeric value (1-12)
+#' @return Vector of numeric values (days of the year)
+#' @export
+days_vector <- function(year, month) {
+    month <- pad_num(month, 2)
+    first_day <- as.numeric(format(as.Date(paste0(year,"-",month,"-01")), "%j"))
+    last_day <- first_day + as.numeric(lubridate::days_in_month(as.Date(paste0(year,"-",month,"-01")))) - 1
+    first_day:last_day
+}
