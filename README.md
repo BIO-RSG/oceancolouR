@@ -24,3 +24,8 @@ where:
     *region* is either *pancan*, *nwa*, or *nep*  
     *variable* is either *bins*, *lats*, or *lons*  
     *resolution* is either *4km* or *9km*  
+
+## Wishlist
+
+* Bathymetry aligned with Pan-Canadian grid resolutions
+* Commonly used matchup extraction methods (with Q/C options from standard papers?)
