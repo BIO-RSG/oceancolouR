@@ -27,5 +27,4 @@ where:
 
 ## Wishlist
 
-* Bathymetry aligned with Pan-Canadian grid resolutions
 * Commonly used matchup extraction methods (with Q/C options from standard papers?)
