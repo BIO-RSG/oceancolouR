@@ -67,8 +67,8 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
     data.rl <- raster::raster(nrows=nrows, ncols=(2*nrows))
 
     # crop bin raster and blank raster to user-selected extent
-    binGrid <- raster::crop(binGrid, extent(ext))
-    data.rl <- raster::crop(data.rl, extent(ext))
+    binGrid <- raster::crop(binGrid, raster::extent(ext))
+    data.rl <- raster::crop(data.rl, raster::extent(ext))
 
     # create blank vector of appropriate length (starting bin number of last row + 3 for the 3 bins in the last row)
     data.vc <- rep(NA, times=start_num[nrows]+3)
