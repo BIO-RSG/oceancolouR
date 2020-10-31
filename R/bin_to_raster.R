@@ -96,10 +96,10 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
 plot_rast_from_bin <- function(vec, ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=c(-Inf, Inf)) {
     data("wrld_simpl", package = "maptools")
     if (resolution=="4km") {
-        data("pancan_bins_4km")
+        data("pancan_bins_4km", package = "oceancolouR")
         bins <- pancan_bins_4km
     } else if (resolution=="9km") {
-        data("pancan_bins_9km")
+        data("pancan_bins_9km", package = "oceancolouR")
         bins <- pancan_bins_9km
     }
     rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
