@@ -54,6 +54,7 @@ get_gs <- function(lambda) {
 # Algorithm for GSM model. This function is called by the "gsm" function below.
 # A = c(Chl,  adg(ref_value),  bbp(ref_value))
 # ref_value is usually 443nm, so these are often written adg443, bbp443
+#' @export
 gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar) {
 
     abs <- aw + (A[1] ^ chl_exp) * aphstar + A[2] * adgstar
@@ -83,9 +84,6 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
     return (res)
 
 }
-
-
-
 
 
 #' GSM algorithm
