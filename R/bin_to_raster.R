@@ -97,10 +97,10 @@ plot_rast_from_bin <- function(vec, ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), re
     data("wrld_simpl", package = "maptools")
     if (resolution=="4km") {
         data("panCanadian_bins_4km")
-        bins <- bins_4km
+        bins <- pancan_bins_4km
     } else if (resolution=="9km") {
         data("panCanadian_bins_9km")
-        bins <- bins_9km
+        bins <- pancan_bins_9km
     }
     rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
     return(raster::spplot(raster::crop(rast, raster::extent(ext)), zlim=limits) + latticeExtra::layer(sp::sp.polygons(wrld_simpl)))
