@@ -49,6 +49,7 @@ gen_bin_grid = function(start_num) {
 #'
 #' @param df Dataframe with 2 columns: bin numbers, and variable values.
 #' @param resolution String, either "4km" or "9km".
+#' @param ext Named vector containing the boundaries of the resulting grid.
 #' @return Global raster containing variable values.
 #' @export
 var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {

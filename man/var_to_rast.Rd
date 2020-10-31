@@ -14,6 +14,8 @@ var_to_rast(
 \item{df}{Dataframe with 2 columns: bin numbers, and variable values.}
 
 \item{resolution}{String, either "4km" or "9km".}
+
+\item{ext}{Named vector containing the boundaries of the resulting grid.}
 }
 \value{
 Global raster containing variable values.
