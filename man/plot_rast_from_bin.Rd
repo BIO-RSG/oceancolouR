@@ -2,11 +2,11 @@
 % Please edit documentation in R/bin_to_raster.R
 \name{plot_rast_from_bin}
 \alias{plot_rast_from_bin}
-\title{Plot panCanadian L3b}
+\title{Plot panCanadian L3b file}
 \usage{
 plot_rast_from_bin(
   vec,
-  ext = c(xmn = -140, xmx = -40, ymn = 38, ymx = 70),
+  ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86),
   resolution = "4km",
   limits = c(-Inf, Inf)
 )
@@ -24,5 +24,5 @@ plot_rast_from_bin(
 Raster containing variable values with coastlines.
 }
 \description{
-Given a vector of data from a binned panCanadian NASA ocean colour file, plot it on a raster with coastlines.
+Given a vector of data from a binned panCanadian ocean colour file, plot it on a raster with coastlines.
 }

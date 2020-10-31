@@ -43,7 +43,7 @@ gen_bin_grid = function(start_num) {
 
 
 # From George White's primary production scripts.
-#' Generate variable grid
+#' Generate raster of L3b data
 #'
 #' Create 2d grid of a variable, given a dataframe with 2 columns, one for bin numbers and one for variable values.
 #'
@@ -51,9 +51,7 @@ gen_bin_grid = function(start_num) {
 #' @param resolution String, either "4km" or "9km".
 #' @return Global raster containing variable values.
 #' @export
-var_to_rast <- function(df, resolution="4km") {
-
-    # df is a dataframe with column 1 = bin numbers, column 2 = variable data
+var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {
 
     # create global grid of bin numbers at selected resolution
     if (resolution=="4km") {
@@ -63,39 +61,30 @@ var_to_rast <- function(df, resolution="4km") {
     }
     binGrid <- gen_bin_grid(start_num)
 
-    # get number of rows and columns, and create blank raster layer
+    # create blank global raster at selected resolution
     nrows <- length(start_num)
-    ncols <- 2*nrows
-    data.rl <- raster::raster(nrows=nrows, ncols=ncols)
+    data.rl <- raster::raster(nrows=nrows, ncols=(2*nrows))
 
-    # get bins from the df
-    bin.dt <- df[,1]
+    # crop bin raster and blank raster to user-selected extent
+    binGrid <- raster::crop(binGrid, extent(ext))
+    data.rl <- raster::crop(data.rl, extent(ext))
 
-    # get data from the df
-    variable <- colnames(df)[2]
-    data.dt <- as.numeric(df[,2])
-
-    # create blank vector of appropriate length, and populate the
-    # chosen bin indices with data
-    # length: take the value of the first bin number in the last row,
-    # then add 3 to it since the last row has 3 values
+    # create blank vector of appropriate length (starting bin number of last row + 3 for the 3 bins in the last row)
     data.vc <- rep(NA, times=start_num[nrows]+3)
-    data.vc[bin.dt] <- data.dt
-
+    # populate the chosen bin indices with data
+    data.vc[df[,1]] <- as.numeric(df[,2])
     # populate the blank raster layer
-    # take the values from the data vector at the indices specified in
-    # the binGrid, many of which are repeated to stretch it out to a square grid
     raster::values(data.rl) <- data.vc[raster::getValues(binGrid)]
-    names(data.rl) <- variable
+    names(data.rl) <- colnames(df)[2]
 
     return(data.rl)
 
 }
 
 
-#' Plot panCanadian L3b
+#' Plot panCanadian L3b file
 #'
-#' Given a vector of data from a binned panCanadian NASA ocean colour file, plot it on a raster with coastlines.
+#' Given a vector of data from a binned panCanadian ocean colour file, plot it on a raster with coastlines.
 #'
 #' @param vec Numeric vector of data.
 #' @param ext Named vector containing the boundaries of the resulting grid.
@@ -103,7 +92,7 @@ var_to_rast <- function(df, resolution="4km") {
 #' @param limits Limits of the colour scale (numeric vector, length 2).
 #' @return Raster containing variable values with coastlines.
 #' @export
-plot_rast_from_bin <- function(vec, ext=c(xmn=-140, xmx=-40, ymn=38, ymx=70), resolution="4km", limits=c(-Inf, Inf)) {
+plot_rast_from_bin <- function(vec, ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=c(-Inf, Inf)) {
     data("wrld_simpl", package = "maptools")
     if (resolution=="4km") {
         data("panCanadian_bins_4km")
@@ -112,6 +101,6 @@ plot_rast_from_bin <- function(vec, ext=c(xmn=-140, xmx=-40, ymn=38, ymx=70), re
         data("panCanadian_bins_9km")
         bins <- bins_9km
     }
-    rast <- var_to_rast(data.frame(bin=bins, var=vec))
+    rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
     return(raster::spplot(raster::crop(rast, raster::extent(ext)), zlim=limits) + latticeExtra::layer(sp::sp.polygons(wrld_simpl)))
 }

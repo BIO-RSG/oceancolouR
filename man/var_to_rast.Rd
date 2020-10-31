@@ -2,9 +2,13 @@
 % Please edit documentation in R/bin_to_raster.R
 \name{var_to_rast}
 \alias{var_to_rast}
-\title{Generate variable grid}
+\title{Generate raster of L3b data}
 \usage{
-var_to_rast(df, resolution = "4km")
+var_to_rast(
+  df,
+  resolution = "4km",
+  ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86)
+)
 }
 \arguments{
 \item{df}{Dataframe with 2 columns: bin numbers, and variable values.}
