@@ -64,10 +64,7 @@ Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry
 
 Options for g coefficients include "gs" (spectrally-dependent) or "gc" (constant). For gc, the model is quadratic and uses the coefficients in eq. 2 in Gordon et al 1988 (g1=0.0949, g2=0.0794). For gs, the coefficients vary spectrally, and the exponent is also allowed to vary spectrally so the model is no longer perfectly quadratic.
 
-Acceptable range of IOPs defined as:
-0 <= chla <= 64
-0.0001 <= adg443 <= 2
-0.0001 <= bbp443 <= 0.1
+Acceptable range of IOPs defined as: 0 <= chla <= 64, 0.0001 <= adg443 <= 2, 0.0001 <= bbp443 <= 0.1
 }
 \examples{
 # create a matrix of MODIS-Aqua rrs values for testing
