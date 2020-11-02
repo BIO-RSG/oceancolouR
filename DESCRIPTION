@@ -19,7 +19,8 @@ Imports:
     hdf5r,
     latticeExtra,
     sp,
-    maptools
+    maptools,
+    scales
 Suggests: 
     knitr,
     rmarkdown

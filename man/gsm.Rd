@@ -104,6 +104,7 @@ Maritorena, Stéphane & Siegel, David & Peterson, Alan. (2002). Optimization of 
 https://www.researchgate.net/publication/11345370_Optimization_of_a_semianalytical_ocean_color_model_for_global-scale_application
 
 Reference for regional GSM algorithms tuned to Atlantic and Pacific Canadian coasts:
+
 Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 https://www.mdpi.com/2072-4292/11/22/2609
 
