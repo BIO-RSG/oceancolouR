@@ -18,6 +18,6 @@ date value formatted with as.Date()
 This converts a week number (8 days per week) to its corresponding date. Year is required as this will vary for leap years. 8 days is the standard number of days in a composite "week" time period as used for ocean colour by NASA.
 }
 \examples{
-week8_2md(2010, 8)
-week8_2md(yearnum = c(2010,2010), weeknum = c(8,9))
+week8_date(2010, 8)
+week8_date(yearnum = c(2010,2010), weeknum = c(8,9))
 }

@@ -78,8 +78,8 @@ week8 <- function(dateval) {
 #' @param weeknum Numeric week number or vector
 #' @return date value formatted with as.Date()
 #' @examples
-#' week8_2md(2010, 8)
-#' week8_2md(yearnum = c(2010,2010), weeknum = c(8,9))
+#' week8_date(2010, 8)
+#' week8_date(yearnum = c(2010,2010), weeknum = c(8,9))
 #' @export
 week8_date <- function(yearnum, weeknum) {
     x <- weeknum*8-7
