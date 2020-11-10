@@ -70,6 +70,23 @@ week8 <- function(dateval) {
     (lubridate::yday(dateval) - 1)%/%8 + 1
 }
 
+#' Date from 8-day week number
+#'
+#' This converts a week number (8 days per week) to its corresponding date. Year is required as this will vary for leap years. 8 days is the standard number of days in a composite "week" time period as used for ocean colour by NASA.
+#'
+#' @param yearnum Numeric year number or vector
+#' @param weeknum Numeric week number or vector
+#' @return date value formatted with as.Date()
+#' @examples
+#' week8_2md(2010, 8)
+#' week8_2md(yearnum = c(2010,2010), weeknum = c(8,9))
+#' @export
+week8_date <- function(yearnum, weeknum) {
+    x <- weeknum*8-7
+    x <- as.Date(paste(yearnum,x), "%Y %j")
+    return(x)
+}
+
 #' List days of the year within a month
 #'
 #' Get a list of days of the year within a specific month
