@@ -105,3 +105,52 @@ plot_rast_from_bin <- function(vec, ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), re
     rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
     return(raster::spplot(raster::crop(rast, raster::extent(ext)), zlim=limits) + latticeExtra::layer(sp::sp.polygons(wrld_simpl)))
 }
+
+
+#' Group daily bin matrix as 8day or monthly
+#'
+#' Input a matrix where rows = binned pixels and columns = days of the year, and use rowMeans to condense the columns to 8day or monthly composites, resulting in a matrix of (binned pixels) x (months), for example. Note that a day that has no valid data should be a column of all NA, but if consecutive days are missing from the end of the year (for example, if the data hasn't been made available yet), those columns could be excluded. Example: If the dataset for 2020 ends at day 321 (Nov. 16th), and you're using the panCanadian grid which has 529797 pixels, the matrix should have dimensions 529797 x 321.
+#'
+#' @param mat Numeric matrix where rows=binned pixels and columns=days of the year (in order, with no gaps - if a day has no data, it should be a column of all NA)
+#' @param year Year of the input data
+#' @param composite Length of output composite, 8day or monthly
+#' @return Numeric matrix where rows = binned pixels, columns = weeks (8day) or months
+#' @export
+convert_daily_grid <- function(mat, year, composite="8day") {
+
+    available_days <- ncol(mat)
+
+    if (composite == "8day") {
+
+        # variables for using weekly data rather than daily
+        doy_week_start <- as.integer(8*(0:45)+1) # note: this is the same for leap years, using NASA's system
+        doy_week_end <- c(doy_week_start[2:length(doy_week_start)] - 1, 365)
+        doys_per_week <- lapply(1:length(doy_week_start), function(i) {doy_week_start[i]:doy_week_end[i]})
+
+        # Subset the day list variables
+        week_ind <- which(sapply(1:length(doys_per_week), function(i) {available_days %in% doys_per_week[[i]]}))
+        doys_per_week_sub <- doys_per_week[1:week_ind]
+        last_week <- tail(doys_per_week_sub,1)[[1]]
+        doys_per_week_sub[length(doys_per_week_sub)][[1]] <- last_week[last_week <= available_days]
+
+        # Convert daily data to weekly data.
+        mat <- sapply(1:length(doys_per_week_sub), function(i) rowMeans(mat[,doys_per_week_sub[[i]]],na.rm=TRUE))
+
+    } else if (composite == "monthly") {
+
+        doys_per_month <- lapply(1:12, days_vector, year=year)
+
+        # Subset the day list variables
+        month_ind <- which(sapply(1:length(doys_per_month), function(i) {available_days %in% doys_per_month[[i]]}))
+        doys_per_month_sub <- doys_per_month[1:month_ind]
+        last_month <- tail(doys_per_month_sub,1)[[1]]
+        doys_per_month_sub[length(doys_per_month_sub)][[1]] <- last_month[last_month <= available_days]
+
+        # Convert daily data to monthly data.
+        mat <- sapply(1:length(doys_per_month_sub), function(i) rowMeans(mat[,doys_per_month_sub[[i]]],na.rm=TRUE))
+
+    }
+
+    return(mat)
+
+}
