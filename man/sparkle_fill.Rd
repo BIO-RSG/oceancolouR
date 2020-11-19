@@ -9,7 +9,7 @@ sparkle_fill(x, min_sides, fun, ...)
 \arguments{
 \item{x}{RasterLayer to fill gaps for}
 
-\item{min_sides}{Number of non NA sides required (e.g. 5 out of a possible 8 side pixels in box around "sparkle")}
+\item{min_sides}{Number of non NA sides required (e.g. 5 out of a possible 8 pixels directly adjacent to "sparkle")}
 
 \item{fun}{String of function to fill gap. Current options are "mean" and "median"}
 }
@@ -17,5 +17,5 @@ sparkle_fill(x, min_sides, fun, ...)
 Filled RasterLayer
 }
 \description{
-Given a RasterLayer with small gaps (sparkles), fill using specs defined in "min_sides" and "fun"  Gaussian.
+Given a RasterLayer with small gaps (sparkles), fill using specs defined in "min_sides" and "fun"
 }

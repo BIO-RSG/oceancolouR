@@ -1,9 +1,9 @@
 #' Sparkle fill: fill small holes in raster
 #'
-#' Given a RasterLayer with small gaps (sparkles), fill using specs defined in "min_sides" and "fun"  Gaussian.
+#' Given a RasterLayer with small gaps (sparkles), fill using specs defined in "min_sides" and "fun"
 #'
 #' @param x RasterLayer to fill gaps for
-#' @param min_sides Number of non NA sides required (e.g. 5 out of a possible 8 side pixels in box around "sparkle")
+#' @param min_sides Number of non NA sides required (e.g. 5 out of a possible 8 pixels directly adjacent to "sparkle")
 #' @param fun String of function to fill gap. Current options are "mean" and "median"
 #' @return Filled RasterLayer
 #' @export
