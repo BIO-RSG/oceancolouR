@@ -8,6 +8,7 @@
 #' @return Filled RasterLayer
 #' @export
 sparkle_fill <- function(x, min_sides, fun, ...) {
+    require(dplyr)
     idx_na <- which(as.vector(is.na(x)) == TRUE)
     adj <- adjacent(x, idx_na, directions= 8, include = F, id=T)
     adj <- as.data.frame(adj)
@@ -20,6 +21,9 @@ sparkle_fill <- function(x, min_sides, fun, ...) {
     } else if (fun == "median") {
         adj <- adj %>% group_by(id) %>% summarise(fillval = median(val, na.rm = T)) %>% ungroup()
         x[idx_na[adj$id]] <- adj$fillval
+    } else if (fun == "bilinear") {
+        x2 <- raster::resample(x, x, "bilinear")
+        x[idx_na[adj$id]] <- x2[idx_na[adj$id]]
     }
     return(x)
 }
