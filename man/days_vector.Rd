@@ -4,16 +4,18 @@
 \alias{days_vector}
 \title{List days of the year within a month}
 \usage{
-days_vector(year, month)
+days_vector(year, month = NULL, week = NULL)
 }
 \arguments{
 \item{year}{Numeric 4-digit value}
 
 \item{month}{Numeric value (1-12)}
+
+\item{week}{Numeric value (1-46)}
 }
 \value{
 Vector of numeric values (days of the year)
 }
 \description{
-Get a list of days of the year within a specific month
+Get a list of days of the year within a specific month or week (following the 8day-per-week system)
 }

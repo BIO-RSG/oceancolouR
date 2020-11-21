@@ -89,15 +89,33 @@ week8_date <- function(yearnum, weeknum) {
 
 #' List days of the year within a month
 #'
-#' Get a list of days of the year within a specific month
+#' Get a list of days of the year within a specific month or week (following the 8day-per-week system)
 #'
 #' @param year Numeric 4-digit value
 #' @param month Numeric value (1-12)
+#' @param week Numeric value (1-46)
 #' @return Vector of numeric values (days of the year)
 #' @export
-days_vector <- function(year, month) {
-    month <- pad_num(month, 2)
-    first_day <- as.numeric(format(as.Date(paste0(year,"-",month,"-01")), "%j"))
-    last_day <- first_day + as.numeric(lubridate::days_in_month(as.Date(paste0(year,"-",month,"-01")))) - 1
-    first_day:last_day
+days_vector <- function(year, month=NULL, week=NULL) {
+    if (!is.null(month) & !is.null(week)) {
+        return("Error: Enter only a month number OR week number")
+    } else if (!is.null(month)) {
+        month <- pad_num(month, 2)
+        first_day <- as.numeric(format(as.Date(paste0(year,"-",month,"-01")), "%j"))
+        last_day <- first_day + as.numeric(lubridate::days_in_month(as.Date(paste0(year,"-",month,"-01")))) - 1
+    } else if (!is.null(week)) {
+        if (lubridate::leap_year(year)) {
+            year_end <- 366
+        } else {
+            year_end <- 365
+        }
+        jvec <- 8*(0:45)+1
+        first_day <- jvec[week]
+        if (first_day==361) {
+            last_day <- year_end
+        } else {
+            last_day <- first_day + 7
+        }
+    }
+    return(first_day:last_day)
 }
