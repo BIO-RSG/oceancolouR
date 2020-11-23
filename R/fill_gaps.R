@@ -7,7 +7,7 @@
 #' @param fun String of function to fill gap. Current options are "mean" and "median"
 #' @return Filled RasterLayer
 #' @export
-sparkle_fill <- function(x, min_sides, fun, ...) {
+sparkle_fill <- function(x, min_sides, fun, matlon, matlat, ...) {
     if (class(x)[1] == "RasterLayer") {
         require(dplyr)
         idx_na <- which(as.vector(is.na(x)) == TRUE)
@@ -28,13 +28,13 @@ sparkle_fill <- function(x, min_sides, fun, ...) {
         }
         return(x)
     } else if (is.matrix(x) == TRUE) {
-        if (missing(xlon) | missing(xlat)) {
-            print("Please enter xlat and xlon matrices")
+        if (missing(matlon) | missing(matlat)) {
+            print("Please enter matlat and matlon matrices")
         } else {
             print("exist")
             require(dplyr)
-            x <- raster::raster(x, xmn = min(xlon), xmx = max(xlon),
-                                 ymn = min(xlat), ymx = max(xlat))
+            x <- raster::raster(x, xmn = min(matlon), xmx = max(matlon),
+                                 ymn = min(matlat), ymx = max(matlat))
             idx_na <- which(as.vector(is.na(x)) == TRUE)
             adj <- raster::adjacent(x, idx_na, directions= 8, include = F, id=T)
             adj <- as.data.frame(adj)
