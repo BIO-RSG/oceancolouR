@@ -1,11 +1,13 @@
-#' Sparkle fill: fill small holes in raster
+#' Sparkle fill: fill small holes in raster or matrix
 #'
-#' Given a RasterLayer with small gaps (sparkles), fill using specs defined in "min_sides" and "fun"
+#' Fill RasterLayer or matrix with small gaps (sparkles) using specs defined in "min_sides" and "fun"
 #'
-#' @param x RasterLayer to fill gaps for
-#' @param min_sides Number of non NA sides required (e.g. 5 out of a possible 8 pixels directly adjacent to "sparkle")
-#' @param fun String of function to fill gap. Current options are "mean" and "median"
-#' @return Filled RasterLayer
+#' @param x RasterLayer or matrix to fill gaps for
+#' @param min_sides Number of non NA sides required (e.g. min_sides = 5 means 5 out of a possible 8 pixels directly adjacent to "sparkle" must be non NA)
+#' @param fun String of function to fill gap. Current options are "mean", "median" and "bilinear"
+#' @param matlon If x is a matrix, it needs a matrix of latitudes with dim(matlon) == dim(x)
+#' @param matlat If x is a matrix, it needs a matrix of longitudes with dim(matlat) == dim(x)
+#' @return Filled RasterLayer or matrix
 #' @export
 sparkle_fill <- function(x, min_sides, fun, matlon, matlat, ...) {
     if (class(x)[1] == "RasterLayer") {

@@ -2,20 +2,24 @@
 % Please edit documentation in R/fill_gaps.R
 \name{sparkle_fill}
 \alias{sparkle_fill}
-\title{Sparkle fill: fill small holes in raster}
+\title{Sparkle fill: fill small holes in raster or matrix}
 \usage{
-sparkle_fill(x, min_sides, fun, ...)
+sparkle_fill(x, min_sides, fun, matlon, matlat, ...)
 }
 \arguments{
-\item{x}{RasterLayer to fill gaps for}
+\item{x}{RasterLayer or matrix to fill gaps for}
 
-\item{min_sides}{Number of non NA sides required (e.g. 5 out of a possible 8 pixels directly adjacent to "sparkle")}
+\item{min_sides}{Number of non NA sides required (e.g. min_sides = 5 means 5 out of a possible 8 pixels directly adjacent to "sparkle" must be non NA)}
 
-\item{fun}{String of function to fill gap. Current options are "mean" and "median"}
+\item{fun}{String of function to fill gap. Current options are "mean", "median" and "bilinear"}
+
+\item{matlon}{If x is a matrix, it needs a matrix of latitudes with dim(matlon) == dim(x)}
+
+\item{matlat}{If x is a matrix, it needs a matrix of longitudes with dim(matlat) == dim(x)}
 }
 \value{
-Filled RasterLayer
+Filled RasterLayer or matrix
 }
 \description{
-Given a RasterLayer with small gaps (sparkles), fill using specs defined in "min_sides" and "fun"
+Fill RasterLayer or matrix with small gaps (sparkles) using specs defined in "min_sides" and "fun"
 }
