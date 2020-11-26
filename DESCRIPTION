@@ -20,7 +20,8 @@ Imports:
     latticeExtra,
     sp,
     maptools,
-    scales
+    scales,
+    lmodel2
 Suggests: 
     knitr,
     rmarkdown
