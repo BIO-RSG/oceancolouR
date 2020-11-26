@@ -4,12 +4,14 @@
 \alias{ocx}
 \title{OCX algorithm}
 \usage{
-ocx(rrs, sensor, coefs, use_443nm)
+ocx(rrs, blues, green, coefs, use_443nm)
 }
 \arguments{
 \item{rrs}{Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)}
 
-\item{sensor}{String, sensor name (either modis, seawifs, or viirs)}
+\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options}
+
+\item{green}{String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs}
 
 \item{coefs}{Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)}
 

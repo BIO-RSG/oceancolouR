@@ -9,9 +9,9 @@ get_br(rrs, blues, green, use_443nm = FALSE)
 \arguments{
 \item{rrs}{Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)}
 
-\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs}
+\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options}
 
-\item{green}{Character vector of Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs}
+\item{green}{String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs}
 
 \item{use_443nm}{Logical value, TRUE to make the 443nm band an option in the band ratio}
 }

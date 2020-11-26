@@ -116,8 +116,8 @@ get_lambda <- function(sensor, use_443nm) {
 #' Given a matrix of Rrs (remote sensing reflectances) with column names, and the blue and green wavebands to use, calculate the band ratios.
 #'
 #' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)
-#' @param blues Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs
-#' @param green Character vector of Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options
+#' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
 #' @return Named list of three vectors: rrs_ocx (the band ratio values), ind (the index of valid rrs values), and ratio_used (strings indicating which "blue" waveband was used for each band ratio)
 #' @export
@@ -175,7 +175,8 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #' Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm.
 #'
 #' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)
-#' @param sensor String, sensor name (either modis, seawifs, or viirs)
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options
+#' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
 #' @references
@@ -189,12 +190,11 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #' https://www.mdpi.com/2072-4292/11/22/2609
 #' @return Numeric value (or vector), chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients.
 #' @export
-ocx <- function(rrs, sensor, coefs, use_443nm) {
+ocx <- function(rrs, blues, green, coefs, use_443nm) {
     coefs <- as.numeric(coefs)
     # If polynomial is < degree 4, pad coefs vector with 0s
     if (length(coefs) < 5) {coefs <- c(coefs,rep(0,(5-length(coefs))))}
-    lambda <- get_lambda(sensor, use_443nm)
-    br <- log10(get_br(rrs=rrs, blues=lambda$blues, green=lambda$green, use_443nm=use_443nm)$rrs_ocx)
+    br <- log10(get_br(rrs=rrs, blues=blues, green=green, use_443nm=use_443nm)$rrs_ocx)
     return(10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4)))
 }
 
