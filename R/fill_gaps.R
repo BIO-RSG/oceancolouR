@@ -8,10 +8,14 @@
 #' @param matlon If x is a matrix, it needs a matrix of latitudes with dim(matlon) == dim(x)
 #' @param matlat If x is a matrix, it needs a matrix of longitudes with dim(matlat) == dim(x)
 #' @return Filled RasterLayer or matrix
+#' @importFrom magrittr "%>%"
 #' @export
 sparkle_fill <- function(x, min_sides, fun, matlon, matlat, ...) {
     if (class(x)[1] == "RasterLayer") {
-        require(dplyr)
+        # If pipe operator not working try:
+            ##' @importFrom magrittr %>%
+            ##' @export
+            #magrittr::`%>%`
         idx_na <- which(as.vector(is.na(x)) == TRUE)
         adj <- raster::adjacent(x, idx_na, directions= 8, include = F, id=T)
         adj <- as.data.frame(adj)
