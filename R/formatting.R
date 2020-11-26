@@ -11,23 +11,6 @@ get_dir <- function(path) {
 }
 
 
-#' Number padding
-#'
-#' Pad a number with leading zeroes to make it length "len".
-#'
-#' @param num The number.
-#' @param len The length, single numeric value.
-#' @return The number as a string with leading zeroes.
-#' @export
-pad_num <- function(num, len) {
-    num <- as.numeric(num)
-    len <- as.numeric(len)
-    num_len <- nchar(as.character(floor(num)))
-    if (num_len > len) {len <- num_len}
-    paste0(paste(replicate(len - num_len, '0'), collapse=''), num)
-}
-
-
 # Source: https://stackoverflow.com/questions/24956546/capitalizing-letters-r-equivalent-of-excel-proper-function
 #' Capitalization
 #'

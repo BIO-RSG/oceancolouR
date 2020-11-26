@@ -21,7 +21,8 @@ Imports:
     sp,
     maptools,
     scales,
-    lmodel2
+    lmodel2,
+    stringr
 Suggests: 
     knitr,
     rmarkdown

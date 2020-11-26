@@ -44,13 +44,13 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
     }
 
     # Get the month from each day
-    m <- as.numeric(sapply(1:length(d), function(i) lubridate::month(lubridate::parse_date_time(paste0(year,pad_num(d[i],3)),"%Y%j"))))
+    m <- as.numeric(sapply(1:length(d), function(i) lubridate::month(lubridate::parse_date_time(paste0(year,stringr::str_pad(d[i],width=3,side="left",pad="0")),"%Y%j"))))
     m_ind <- m %in% months
 
     # Get the day numbers for the selected months
     d <- d[m_ind]
 
-    result <- sapply(d, oceancolouR::pad_num, len=3)
+    result <- sapply(d, stringr::str_pad, width=3, side="left", pad="0")
 
     return(result)
 
@@ -100,7 +100,7 @@ days_vector <- function(year, month=NULL, week=NULL) {
     if (!is.null(month) & !is.null(week)) {
         return("Error: Enter only a month number OR week number")
     } else if (!is.null(month)) {
-        month <- pad_num(month, 2)
+        month <- stringr::str_pad(month,width=2,side="left",pad="0")
         first_day <- as.numeric(format(as.Date(paste0(year,"-",month,"-01")), "%j"))
         last_day <- first_day + as.numeric(lubridate::days_in_month(as.Date(paste0(year,"-",month,"-01")))) - 1
     } else if (!is.null(week)) {
