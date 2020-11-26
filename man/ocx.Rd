@@ -21,7 +21,7 @@ ocx(rrs, blues, green, coefs, use_443nm)
 Numeric value (or vector), chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients.
 }
 \description{
-Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm.
+Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
 }
 \references{
 Original paper:

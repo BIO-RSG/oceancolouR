@@ -39,7 +39,7 @@ chl <- input[,1]
 
 lambdas <- get_lambda("modis", use_443nm = FALSE)
 use_443nm <- FALSE
-br <- get_br(rrs=rrs,blues=lambdas$blues,green=lambdas$green,use_443nm=use_443nm)$rrs_ocx
+br <- get_br(rrs=rrs, blues=lambdas$blues, green=lambdas$green, use_443nm=use_443nm)$rrs_ocx
 alg_degree <- 4
 df <- data.frame(x=log10(chl), y=log10(br), stringsAsFactors = FALSE)
 
@@ -51,7 +51,7 @@ df <- data.frame(x=log10(chl), y=log10(br), stringsAsFactors = FALSE)
 best_alg_coefs <- optimize_ocx_coefs(data = df, alg_degree = alg_degree)
 
 # calculate ocx chl for each data point using those coefficients
-sat_ocx_chl <- ocx(rrs=rrs, sensor="modis", coefs=best_alg_coefs)
+sat_ocx_chl <- ocx(rrs=rrs, blues=lambdas$blues, green=lambdas$green, coefs=best_alg_coefs)
 
 # plot in situ against satellite chl
 library(ggplot2)

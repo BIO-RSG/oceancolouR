@@ -172,7 +172,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 
 #' OCX algorithm
 #'
-#' Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm.
+#' Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
 #'
 #' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)
 #' @param blues Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options
@@ -254,7 +254,7 @@ ocx_sse <- function(params, insitu_chl, bandratio, alg_degree=4, reg_method=3) {
 #'
 #' lambdas <- get_lambda("modis", use_443nm = FALSE)
 #' use_443nm <- FALSE
-#' br <- get_br(rrs=rrs,blues=lambdas$blues,green=lambdas$green,use_443nm=use_443nm)$rrs_ocx
+#' br <- get_br(rrs=rrs, blues=lambdas$blues, green=lambdas$green, use_443nm=use_443nm)$rrs_ocx
 #' alg_degree <- 4
 #' df <- data.frame(x=log10(chl), y=log10(br), stringsAsFactors = FALSE)
 #'
@@ -266,7 +266,7 @@ ocx_sse <- function(params, insitu_chl, bandratio, alg_degree=4, reg_method=3) {
 #' best_alg_coefs <- optimize_ocx_coefs(data = df, alg_degree = alg_degree)
 #'
 #' # calculate ocx chl for each data point using those coefficients
-#' sat_ocx_chl <- ocx(rrs=rrs, sensor="modis", coefs=best_alg_coefs)
+#' sat_ocx_chl <- ocx(rrs=rrs, blues=lambdas$blues, green=lambdas$green, coefs=best_alg_coefs)
 #'
 #' # plot in situ against satellite chl
 #' library(ggplot2)
