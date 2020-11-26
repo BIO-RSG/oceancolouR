@@ -9,14 +9,14 @@ get_br(rrs, blues, green, use_443nm = FALSE)
 \arguments{
 \item{rrs}{Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)}
 
-\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options}
+\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.}
 
 \item{green}{String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs}
 
 \item{use_443nm}{Logical value, TRUE to make the 443nm band an option in the band ratio}
 }
 \value{
-Named list of three vectors: rrs_ocx (the band ratio values), ind (the index of valid rrs values), and ratio_used (strings indicating which "blue" waveband was used for each band ratio)
+Named list of two vectors: rrs_ocx (the band ratio values), and ratio_used (strings indicating which "blue" waveband was used for each band ratio)
 }
 \description{
 Given a matrix of Rrs (remote sensing reflectances) with column names, and the blue and green wavebands to use, calculate the band ratios.

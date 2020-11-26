@@ -116,12 +116,15 @@ get_lambda <- function(sensor, use_443nm) {
 #' Given a matrix of Rrs (remote sensing reflectances) with column names, and the blue and green wavebands to use, calculate the band ratios.
 #'
 #' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)
-#' @param blues Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
-#' @return Named list of three vectors: rrs_ocx (the band ratio values), ind (the index of valid rrs values), and ratio_used (strings indicating which "blue" waveband was used for each band ratio)
+#' @return Named list of two vectors: rrs_ocx (the band ratio values), and ratio_used (strings indicating which "blue" waveband was used for each band ratio)
 #' @export
 get_br <- function(rrs, blues, green, use_443nm=FALSE) {
+
+    full_rrs_ocx <- rep(NA, nrow(rrs))
+    full_ratio_used <- rep(NA, nrow(rrs))
 
     # Get green Rrs.
     rrsg <- rrs[,colnames(rrs)==green]
@@ -165,7 +168,10 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
         ratio_used[r3 > r1 & r3 > r2] <- blues[3]
     }
 
-    return(list(rrs_ocx=rrs_ocx, ind=ind, ratio_used=ratio_used))
+    full_rrs_ocx[ind] <- rrs_ocx
+    full_ratio_used[ind] <- ratio_used
+
+    return(list(rrs_ocx = full_rrs_ocx, ratio_used = full_ratio_used))
 
 }
 
@@ -174,8 +180,8 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
 #'
-#' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)
-#' @param blues Character vector of Rrs wavebands in the blue range (e.g. "Rrs_488"), matching column name(s) in rrs, maximum 3 options
+#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention.
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
@@ -188,14 +194,45 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 #' https://www.mdpi.com/2072-4292/11/22/2609
-#' @return Numeric value (or vector), chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients.
+#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack rrs: equivalent raster with OCx chlorophyll-a.
 #' @export
 ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
-    coefs <- as.numeric(coefs)
-    # If polynomial is < degree 4, pad coefs vector with 0s
-    if (length(coefs) < 5) {coefs <- c(coefs,rep(0,(5-length(coefs))))}
-    br <- log10(get_br(rrs=rrs, blues=blues, green=green, use_443nm=use_443nm)$rrs_ocx)
-    return(10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4)))
+
+    if (is.matrix(rrs)) {
+
+        coefs <- as.numeric(coefs)
+        if (length(coefs) < 5) {
+            coefs <- c(coefs, rep(0, (5 - length(coefs))))
+        }
+        br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
+        return(10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4)))
+
+    } else if (class(rrs)[1] == "RasterStack") {
+
+        # reformat raster input
+        rstack <- subset(rrs, c(blues, green))
+        rrs <- lapply(1:length(c(blues, green)), function(i) getValues(rstack[[i]]))
+        rrs <- do.call(cbind, rrs)
+        colnames(rrs) <- c(blues, green)
+
+        coefs <- as.numeric(coefs)
+        if (length(coefs) < 5) {
+            coefs <- c(coefs, rep(0, (5 - length(coefs))))
+        }
+        br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
+        chl <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4))
+
+        # reformat to raster
+        chl_rast <- raster::raster(crs=crs(rstack[[1]]), ext=extent(rstack[[1]]), resolution=res(rstack[[1]]), vals=chl)
+
+        return(chl_rast)
+
+    } else {
+
+        stop("rrs must be a matrix or RasterStack with names matching 'blues' and 'green'")
+
+    }
+
 }
 
 
