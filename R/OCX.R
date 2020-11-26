@@ -210,8 +210,8 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
     } else if (class(rrs)[1] == "RasterStack") {
 
         # reformat raster input
-        rstack <- subset(rrs, c(blues, green))
-        rrs <- lapply(1:length(c(blues, green)), function(i) getValues(rstack[[i]]))
+        rstack <- raster::subset(rrs, c(blues, green))
+        rrs <- lapply(1:length(c(blues, green)), function(i) raster::getValues(rstack[[i]]))
         rrs <- do.call(cbind, rrs)
         colnames(rrs) <- c(blues, green)
 
@@ -223,7 +223,7 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
         chl <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4))
 
         # reformat to raster
-        chl_rast <- raster::raster(crs=crs(rstack[[1]]), ext=extent(rstack[[1]]), resolution=res(rstack[[1]]), vals=chl)
+        chl_rast <- raster::raster(crs=raster::crs(rstack[[1]]), ext=raster::extent(rstack[[1]]), resolution=raster::res(rstack[[1]]), vals=chl)
 
         return(chl_rast)
 
