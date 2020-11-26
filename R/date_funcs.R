@@ -44,13 +44,14 @@ get_doys <- function(year, months=1:12, eightday=TRUE, interval="daily") {
     }
 
     # Get the month from each day
-    m <- as.numeric(sapply(1:length(d), function(i) lubridate::month(lubridate::parse_date_time(paste0(year,stringr::str_pad(d[i],width=3,side="left",pad="0")),"%Y%j"))))
+    tmp_datestrs <- paste0(year,stringr::str_pad(d,width=3,side="left",pad="0"))
+    m <- as.numeric(sapply(1:length(d), function(i) lubridate::month(lubridate::parse_date_time(tmp_datestrs[i],"%Y%j"))))
     m_ind <- m %in% months
 
     # Get the day numbers for the selected months
     d <- d[m_ind]
 
-    result <- sapply(d, stringr::str_pad, width=3, side="left", pad="0")
+    result <- stringr::str_pad(d, width=3, side="left", pad="0")
 
     return(result)
 
