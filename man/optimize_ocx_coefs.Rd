@@ -29,3 +29,79 @@ Given a dataframe with log10(in_situ_chla) values in the first column and corres
 \details{
 Note that this uses the full dataset for optimization (it's NOT separated into training/test/validation sets). See the example below for a method to use bootstrapping to get confidence intervals for the retrieved coefficients.
 }
+\examples{
+# Some in situ chl / MODIS Rrs data used in Clay et al (2019)
+input <- matrix(c(0.118, 0.0072, 0.0064, 0.0035, 0.122, 0.0048, 0.005, 0.0017, 0.128, 0.0076, 0.007, 0.0032, 0.198, 0.0072, 0.007, 0.0035, 0.199, 0.0137, 0.0099, 0.005, 0.206, 0.0049, 0.005, 0.0027, 0.208, 0.0083, 0.0074, 0.0035, 0.213, 0.0035, 0.0036, 0.0023, 0.215, 0.0053, 0.0057, 0.0032, 0.217, 0.0031, 0.0041, 0.0026, 0.22, 0.0067, 0.0066, 0.0034, 0.223, 0.0032, 0.0035, 0.0023, 0.223, 0.0042, 0.0045, 0.0024, 0.249, 0.0185, 0.0125, 0.0062, 0.249, 0.0027, 0.0056, 0.005, 0.254, 0.0048, 0.0055, 0.0035, 0.403, 0.0052, 0.0055, 0.0026, 0.404, 0.0054, 0.0054, 0.0043, 0.404, 0.0026, 0.003, 0.0023, 0.418, 0.004, 0.0042, 0.0028, 0.438, 0.0053, 0.0054, 0.0032, 0.438, 0.0047, 0.0048, 0.0034, 0.5, 0.0045, 0.0048, 0.0038, 0.501, 0.0047, 0.0074, 0.0069, 0.508, 0.0138, 0.0114, 0.0075, 0.511, 0.0047, 0.0053, 0.0037, 0.958, 0.0023, 0.0034, 0.003, 0.971, 0.0072, 0.0054, 0.0038, 1.253, 0.0019, 0.003, 0.0028, 1.253, 0.0108, 0.0058, 0.0034, 1.259, 0.0017, 0.0026, 0.0026, 1.261, 0.0057, 0.0073, 0.0074, 1.264, 0.0031, 0.0032, 0.0027, 1.269, 0.0033, 0.0044, 0.0044, 1.273, 0.0047, 0.0045, 0.0036, 1.311, 0.0043, 0.0046, 0.0031, 1.975, 0.0066, 0.0051, 0.0038, 1.975, 0.0067, 0.0065, 0.0043, 1.994, 0.0016, 0.0026, 0.0029, 1.999, 0.0022, 0.0037, 0.0033, 2.019, 0.0024, 0.0032, 0.0035, 2.551, 0.0059, 0.0043, 0.0024, 3.01, 0.0037, 0.0044, 0.0036, 3.035, 8e-04, 0.0026, 0.0031, 3.064, 0.0043, 0.0042, 0.0034, 3.086, 0.0077, 0.0081, 0.0072, 3.148, 0.0061, 0.0045, 0.0034, 3.216, 0.0027, 0.0034, 0.0035, 3.222, 0.0059, 0.0046, 0.0035, 4.47, 0.0033, 0.0042, 0.0033, 4.558, 0.0052, 0.0053, 0.0037, 4.575, 0.0051, 0.0042, 0.004, 4.613, 0.0031, 0.0034, 0.0034, 4.653, 0.0014, 0.0023, 0.0033, 4.749, 6e-04, 0.0019, 0.0034, 6.644, 0.0046, 0.0039, 0.0037, 6.825, 0.0015, 0.0023, 0.0026, 6.832, 0.0042, 0.0047, 0.0045, 6.954, 0.0053, 0.0045, 0.0034, 7.049, 0.0036, 0.0034, 0.0039, 7.099, 3e-04, 0.0013, 0.0026, 7.162, 0.0027, 0.0027, 0.003, 7.407, 0.0025, 0.003, 0.0035, 7.462, 0.0056, 0.0052, 0.0049, 7.79, 0.0012, 0.0019, 0.0028, 7.89, 0.0013, 0.0022, 0.0028, 8.142, 0.0044, 0.0044, 0.0047, 8.162, 5e-04, 0.0014, 0.0024, 8.869, 0.0011, 0.0022, 0.0029, 9.274, 0.0018, 0.0022, 0.0026, 9.533, 0.0015, 0.0022, 0.003), ncol=4, byrow=TRUE)
+colnames(input) <- c("in_situ_chl", "Rrs_443", "Rrs_488", "Rrs_547")
+
+rrs <- input[,2:4]
+chl <- input[,1]
+
+lambdas <- get_lambda("modis", use_443nm = FALSE)
+use_443nm <- FALSE
+br <- get_br(rrs=rrs,blues=lambdas$blues,green=lambdas$green,use_443nm=use_443nm)$rrs_ocx
+alg_degree <- 4
+df <- data.frame(x=log10(chl), y=log10(br), stringsAsFactors = FALSE)
+
+# get the optimal coefficients
+# Note that x = LOGGED in situ chla and y = LOGGED satellite Rrs band ratio.
+# Also - this gets the best coefficients after fitting the in situ data to satellite data,
+# but this does not bootstrap or split it into training/test sets so the coefficients
+# derived from this function are not robust.
+best_alg_coefs <- optimize_ocx_coefs(data = df, alg_degree = alg_degree)
+
+# calculate ocx chl for each data point using those coefficients
+sat_ocx_chl <- ocx(rrs=rrs, sensor="modis", coefs=best_alg_coefs)
+
+# plot in situ against satellite chl
+library(ggplot2)
+ggplot(data.frame(in_situ_chl=chl, sat_ocx_chl=sat_ocx_chl, stringsAsFactors=FALSE), aes(x=in_situ_chl, y=sat_ocx_chl)) +
+    geom_point() +
+    geom_abline(slope=1, intercept=0) +
+    scale_x_continuous(trans="log10") +
+    scale_y_continuous(trans="log10") +
+    theme_bw()
+
+
+# use bootstrapping to get confidence intervals for optimized coefficients
+library(boot)
+
+# help understanding bootstrap results:
+# https://www.datacamp.com/community/tutorials/bootstrap-r
+
+# write a function that takes the data and randomly subsets the records (rows) of the input data for each bootstrap iteration
+boot_ocx <- function(data,inds,alg_degree) optimize_ocx_coefs(data=data[inds,], alg_degree=alg_degree)
+
+# bootstrap coefficients
+boot_results <- boot(data=df, statistic=boot_ocx, R=100, alg_degree=alg_degree)
+
+# get coefficients from the whole dataset:
+
+# # use the coefficients retrieved from the entire dataset
+# # (same as simply calling optimize_ocx_coefs(data=df, alg_degree=alg_degree))
+# boot_coefs <- boot_results$t0
+# use the mean value of coefficients retrieved from each bootstrap subset
+boot_coefs <- colMeans(boot_results$t, na.rm=TRUE)
+
+# get the confidence intervals of the coefficients
+boot_coefs_CI <- lapply(1:length(boot_coefs), function(i) {boot.ci(boot_results, index=i)})
+# extract the BCA (bias-corrected, accelerated) confidence interval values
+boot_coefs_BCA_CI1 <- sapply(1:length(boot_coefs_CI), function(i) {boot_coefs_CI[[i]]$bca[4]})
+boot_coefs_BCA_CI2 <- sapply(1:length(boot_coefs_CI), function(i) {boot_coefs_CI[[i]]$bca[5]})
+
+# print results
+coef_df <- data.frame("coefficients" = boot_coefs,
+                      #"coefficients" = boot_results$t0,
+                      "lower" = boot_coefs_BCA_CI1,
+                      "upper" = boot_coefs_BCA_CI2,
+                      stringsAsFactors = FALSE)
+print(coef_df)
+
+# plot results
+ggplot(data=coef_df, aes(x=1:nrow(coef_df), y=coefficients)) +
+    geom_point() +
+    geom_line() +
+    labs(x="coefficient", y="value") +
+    geom_ribbon(aes(ymin=lower, ymax=upper), linetype=2, alpha=0.1, color="red") +
+    theme_bw()
+}
