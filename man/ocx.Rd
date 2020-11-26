@@ -4,7 +4,7 @@
 \alias{ocx}
 \title{OCX algorithm}
 \usage{
-ocx(rrs, blues, green, coefs, use_443nm)
+ocx(rrs, blues, green, coefs, use_443nm = FALSE)
 }
 \arguments{
 \item{rrs}{Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)}

@@ -190,7 +190,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #' https://www.mdpi.com/2072-4292/11/22/2609
 #' @return Numeric value (or vector), chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients.
 #' @export
-ocx <- function(rrs, blues, green, coefs, use_443nm) {
+ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
     coefs <- as.numeric(coefs)
     # If polynomial is < degree 4, pad coefs vector with 0s
     if (length(coefs) < 5) {coefs <- c(coefs,rep(0,(5-length(coefs))))}
