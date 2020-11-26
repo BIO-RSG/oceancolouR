@@ -284,7 +284,7 @@ ocx_sse <- function(params, insitu_chl, bandratio, alg_degree=4, reg_method=3) {
 #' # help understanding bootstrap results:
 #' # https://www.datacamp.com/community/tutorials/bootstrap-r
 #'
-#' # write a function that takes the data and random subsets the records (rows) of the input data for each bootstrap iteration
+#' # write a function that takes the data and randomly subsets the records (rows) of the input data for each bootstrap iteration
 #' boot_ocx <- function(data,inds,alg_degree) optimize_ocx_coefs(data=data[inds,], alg_degree=alg_degree)
 #'
 #' # bootstrap coefficients
@@ -319,7 +319,6 @@ ocx_sse <- function(params, insitu_chl, bandratio, alg_degree=4, reg_method=3) {
 #'     labs(x="coefficient", y="value") +
 #'     geom_ribbon(aes(ymin=lower, ymax=upper), linetype=2, alpha=0.1, color="red") +
 #'     theme_bw()
-#'
 #' @export
 optimize_ocx_coefs <- function(data, alg_degree, params_guessed=c(a0 = 0.3, a1 = -3.8, a2 = -1, a3 = 1, a4 = 1), reg_method=3) {
     params_fitted <- optim(par=params_guessed,
