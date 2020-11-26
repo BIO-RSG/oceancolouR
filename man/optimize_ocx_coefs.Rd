@@ -58,8 +58,8 @@ library(ggplot2)
 ggplot(data.frame(in_situ_chl=chl, sat_ocx_chl=sat_ocx_chl, stringsAsFactors=FALSE), aes(x=in_situ_chl, y=sat_ocx_chl)) +
     geom_point() +
     geom_abline(slope=1, intercept=0) +
-    scale_x_continuous(trans="log10") +
-    scale_y_continuous(trans="log10") +
+    scale_x_continuous(limits=c(0.1, 15), trans="log10") +
+    scale_y_continuous(limits=c(0.1, 15), trans="log10") +
     theme_bw()
 
 
