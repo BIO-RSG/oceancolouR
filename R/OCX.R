@@ -115,8 +115,8 @@ get_lambda <- function(sensor, use_443nm) {
 #'
 #' Given a matrix of Rrs (remote sensing reflectances) with column names, and the blue and green wavebands to use, calculate the band ratios.
 #'
-#' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)
-#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
+#' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres). Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
 #' @return Named list of two vectors: rrs_ocx (the band ratio values), and ratio_used (strings indicating which "blue" waveband was used for each band ratio)
@@ -180,8 +180,8 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' Given a set of coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
 #'
-#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention.
-#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
+#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio

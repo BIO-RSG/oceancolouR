@@ -7,9 +7,9 @@
 get_br(rrs, blues, green, use_443nm = FALSE)
 }
 \arguments{
-\item{rrs}{Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres)}
+\item{rrs}{Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres). Names must match c(blues, green), i.e. same names, from shortest waveband to longest.}
 
-\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.}
+\item{blues}{Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.}
 
 \item{green}{String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs}
 
