@@ -24,7 +24,4 @@ where:
     *region* is either *pancan*, *nwa*, or *nep*  
     *variable* is either *bins*, *lats*, *lons*, or *bath*  
     *resolution* is either *4km* or *9km*  
-
-## Wishlist
-
-* Commonly used matchup extraction methods (with Q/C options from standard papers?)
+    
