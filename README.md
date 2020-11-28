@@ -1,6 +1,6 @@
 # oceancolouR
 
-This is a collection of frequently used functions for Ocean Colour Remote Sensing data processing and analysis.
+This is a collection of frequently used functions for Ocean Colour Remote Sensing data processing and analysis using R.
 This package is in continuing development, but the following list is some (not all) of the functions included.
 
 **Chlorophyll-a algorithms:**
