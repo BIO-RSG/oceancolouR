@@ -1,6 +1,22 @@
 # oceancolouR
 
-This is a collection of frequently used functions for remote sensing data analysis.
+This is a collection of frequently used functions for Ocean Colour Remote Sensing data processing and analysis.
+This package is in continuing development, but the following list is some (not all) of the functions included.
+
+**Chlorophyll-a algorithms:**
+
+* `gsm()`: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
+* `oci()`, `ocx()` : OCI and OCX algorithms for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`
+* `qaa()`: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
+
+**Other:** 
+
+* `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
+* `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
+* `haversine()`: calculate haversine distance between two points
+* `geoMean()`: calculate geometric mean
+* `week8()`, `week8_date`: convert to/from standard 8-day week number and date
+* `days_vector()`: list julian days for a given year/month
 
 
 ## How to install
@@ -24,4 +40,3 @@ where:
     *region* is either *pancan*, *nwa*, or *nep*  
     *variable* is either *bins*, *lats*, *lons*, or *bath*  
     *resolution* is either *4km* or *9km*  
-    
