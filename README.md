@@ -40,3 +40,26 @@ where:
     *region* is either *pancan*, *nwa*, or *nep*  
     *variable* is either *bins*, *lats*, *lons*, or *bath*  
     *resolution* is either *4km* or *9km*  
+
+## References and links
+
+**OCx:**  
+O'Reilly, John & Maritorena, S. & Mitchell, B.G. & Siegel, David & Carder, Kendall & Garver, S.A. & Kahru, Mati & Mcclain, Charles. (1998). Ocean color chlorophyll algorithms for SeaWiFS. Journal of Geophysical Research. 103. 937-953.  
+
+**GSM:**  
+Maritorena, Stephane & Siegel, David & Peterson, Alan. (2002). Optimization of a semianalytical ocean color model for global-scale application. Applied optics. 41. 2705-14. 10.1364/AO.41.002705.  
+
+**QAA:**  
+Lee, Zhongping & Carder, Kendall & Arnone, Robert. (2002). Deriving Inherent Optical Properties from Water Color: a Multiband Quasi-Analytical Algorithm for Optically Deep Waters. Applied optics. 41. 5755-72. 10.1364/AO.41.005755.  
+
+**OCI:**  
+Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). Chlorophyll a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference. Journal of Geophysical Research. 117. C01011. 10.1029/2011JC007395.  
+
+**Regional tuning for OCx, GSM:**  
+Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
+
+**Integerized Sinusoidal Binning Scheme:**  
+https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/  
+
+
+

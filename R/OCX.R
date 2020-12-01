@@ -198,14 +198,17 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #' @export
 ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
 
+    coefs <- as.numeric(coefs)
+    if (length(coefs) < 5) {
+        coefs <- c(coefs, rep(0, (5 - length(coefs))))
+    }
+
     if (is.matrix(rrs)) {
 
-        coefs <- as.numeric(coefs)
-        if (length(coefs) < 5) {
-            coefs <- c(coefs, rep(0, (5 - length(coefs))))
-        }
         br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
-        return(10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4)))
+        chl_vec <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4))
+
+        return(chl_vec)
 
     } else if (class(rrs)[1] == "RasterStack") {
 
@@ -215,15 +218,11 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
         rrs <- do.call(cbind, rrs)
         colnames(rrs) <- c(blues, green)
 
-        coefs <- as.numeric(coefs)
-        if (length(coefs) < 5) {
-            coefs <- c(coefs, rep(0, (5 - length(coefs))))
-        }
         br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
-        chl <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4))
+        chl_vec <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4))
 
         # reformat to raster
-        chl_rast <- raster::raster(crs=raster::crs(rstack[[1]]), ext=raster::extent(rstack[[1]]), resolution=raster::res(rstack[[1]]), vals=chl)
+        chl_rast <- raster::raster(crs=raster::crs(rstack[[1]]), ext=raster::extent(rstack[[1]]), resolution=raster::res(rstack[[1]]), vals=chl_vec)
 
         return(chl_rast)
 
