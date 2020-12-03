@@ -92,19 +92,6 @@ shift_line <- function(x, y, dist=1, dir="up") {
     return(list(x=new_x, y=new_y))
 
 }
-
-#' Geometric mean
-#'
-#' This calculates the geometric mean, AKA mean of the log transformed data converted back to given units. Use with lognormal distributions like chlorophyll-a
-#'
-#' @param x Numeric vector
-#' @return Geometric mean value of the input data
-#' @export
-geoMean <- function(x, ...){
-    xlog <- log(x)
-    exp(mean(xlog[is.finite(xlog)]))
-}
-
 # # test lines (pointing toward quadrants 1-4):
 # dist=0.2
 # x=c(-3,-2); y=c(-2,4)    # quad1
@@ -120,3 +107,31 @@ geoMean <- function(x, ...){
 # shift_line(x,y,dist=dist,dir="up")
 # shift_line(x,y,dist=dist,dir="down")
 
+
+#' Geometric mean
+#'
+#' This calculates the geometric mean, AKA mean of the log transformed data converted back to given units. Use with lognormal distributions like chlorophyll-a
+#'
+#' @param x Numeric vector
+#' @return Geometric mean value of the input data
+#' @export
+geoMean <- function(x, ...){
+    xlog <- log(x)
+    exp(mean(xlog[is.finite(xlog)]))
+}
+
+
+#' Matrix addition
+#'
+#' Add matrices together, specifying na.rm=TRUE or FALSE for each corresponding cell.
+#'
+#' @param ... Numeric matrices to add together (they must be the same size)
+#' @return The numeric matrix that is the sum of the input matrices (same shape)
+#' @export
+add_matrices <- function(..., na.rm=TRUE) {
+    mats <- list(...)
+    vecs <- lapply(mats, as.numeric)
+    mat <- do.call(cbind, vecs)
+    mat_sum <- rowSums(mat, na.rm=na.rm)
+    return(matrix(mat_sum, ncol=ncol(mats[[1]])))
+}
