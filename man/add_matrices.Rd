@@ -4,16 +4,24 @@
 \alias{add_matrices}
 \title{Matrix addition}
 \usage{
-add_matrices(..., na.rm = TRUE)
+add_matrices(..., na.rm = TRUE, empty_val = NaN)
 }
 \arguments{
 \item{...}{Numeric matrices to add together (they must be the same size)}
 
 \item{na.rm}{Logical value, remove NA before calculating?}
+
+\item{empty_val}{Numeric value to use in cells that have no finite data across corresponding cells in all matrices}
 }
 \value{
 The numeric matrix that is the sum of the input matrices (same shape)
 }
 \description{
-Add matrices together, specifying na.rm=TRUE or FALSE for each corresponding cell.
+Add matrices together, specifying na.rm=TRUE or FALSE for each cell that has at least one finite value across corresponding cells in all matrices. Cells that have no finite values for any matrix will be set to empty_val (default NaN).
+}
+\examples{
+A <- matrix(c(1:11, NA), nrow=4)
+B <- matrix(c(1:4, NA, 6:11, NA), nrow=4)
+C <- matrix(c(NA, NA, 3:11, NA), nrow=4)
+add_matrices(A, B, C)
 }

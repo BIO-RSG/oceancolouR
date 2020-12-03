@@ -123,16 +123,24 @@ geoMean <- function(x, ...){
 
 #' Matrix addition
 #'
-#' Add matrices together, specifying na.rm=TRUE or FALSE for each corresponding cell.
+#' Add matrices together, specifying na.rm=TRUE or FALSE for each cell that has at least one finite value across corresponding cells in all matrices. Cells that have no finite values for any matrix will be set to empty_val (default NaN).
 #'
 #' @param ... Numeric matrices to add together (they must be the same size)
 #' @param na.rm Logical value, remove NA before calculating?
+#' @param empty_val Numeric value to use in cells that have no finite data across corresponding cells in all matrices
 #' @return The numeric matrix that is the sum of the input matrices (same shape)
+#' @examples
+#' A <- matrix(c(1:11, NA), nrow=4)
+#' B <- matrix(c(1:4, NA, 6:11, NA), nrow=4)
+#' C <- matrix(c(NA, NA, 3:11, NA), nrow=4)
+#' add_matrices(A, B, C)
 #' @export
-add_matrices <- function(..., na.rm=TRUE) {
+add_matrices <- function(..., na.rm=TRUE, empty_val=NaN) {
     mats <- list(...)
     vecs <- lapply(mats, as.numeric)
     mat <- do.call(cbind, vecs)
-    mat_sum <- rowSums(mat, na.rm=na.rm)
+    finite_ind <- rowSums(is.finite(mat)) > 0
+    mat_sum <- rep(empty_val, length(mats[[1]]))
+    mat_sum[finite_ind] <- rowSums(mat[finite_ind,], na.rm=na.rm)
     return(matrix(mat_sum, ncol=ncol(mats[[1]])))
 }
