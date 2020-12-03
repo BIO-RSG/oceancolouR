@@ -126,6 +126,7 @@ geoMean <- function(x, ...){
 #' Add matrices together, specifying na.rm=TRUE or FALSE for each corresponding cell.
 #'
 #' @param ... Numeric matrices to add together (they must be the same size)
+#' @param na.rm Logical value, remove NA before calculating?
 #' @return The numeric matrix that is the sum of the input matrices (same shape)
 #' @export
 add_matrices <- function(..., na.rm=TRUE) {

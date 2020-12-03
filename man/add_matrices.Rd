@@ -8,6 +8,8 @@ add_matrices(..., na.rm = TRUE)
 }
 \arguments{
 \item{...}{Numeric matrices to add together (they must be the same size)}
+
+\item{na.rm}{Logical value, remove NA before calculating?}
 }
 \value{
 The numeric matrix that is the sum of the input matrices (same shape)
