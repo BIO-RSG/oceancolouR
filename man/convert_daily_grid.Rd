@@ -4,14 +4,12 @@
 \alias{convert_daily_grid}
 \title{Group daily bin matrix as 8day or monthly}
 \usage{
-convert_daily_grid(mat, year, composite = "8day")
+convert_daily_grid(mat, composite = "8day")
 }
 \arguments{
 \item{mat}{Numeric matrix where rows=binned pixels and columns=days of the year (in order, with no gaps - if a day has no data, it should be a column of all NA)}
 
-\item{year}{Year of the input data}
-
-\item{composite}{Length of output composite, 8day or monthly}
+\item{composite}{String, length of output composite, 8day or monthly}
 }
 \value{
 Numeric matrix where rows = binned pixels, columns = weeks (8day) or months
