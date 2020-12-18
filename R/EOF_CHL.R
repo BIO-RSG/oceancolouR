@@ -10,7 +10,9 @@
 #' Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis. Remote Sensing. 10. 10.3390/rs10020265.
 #'
 #' Function written by Julien Laliberté, July 2020. Source here:
+#'
 #' https://catalogue.ogsl.ca/data/mpo/dcb7ed2e-bce9-40c5-a197-71ac6b46bd5c/algorithme_predict_chl-a.pdf
+#'
 #' Modified 18 Dec 2020 by Stephanie Clay for use in the oceancolouR package.
 #'
 #' @return Numeric vector of chla values (for dataframe input) or raster of chla values (for RasterStack input)
