@@ -9,7 +9,7 @@ eof_chl(rrs, training_set)
 \arguments{
 \item{rrs}{Either a dataframe containing numeric columns of Rrs data with the naming format "Rrs_XXX", where XXX is the wavelength in nanometres, or a RasterStack where each raster contains the Rrs data and follows the same naming format.}
 
-\item{training_set}{Dataframe with numeric columns of Rrs data with the same naming format as in rrs, and a column of corresponding in situ chla.}
+\item{training_set}{Dataframe with numeric columns of Rrs data with the same naming format as in rrs, and a column named "chla" containing the corresponding in situ chlorophyll-a.}
 }
 \value{
 Numeric vector of chla values (for dataframe input) or raster of chla values (for RasterStack input)

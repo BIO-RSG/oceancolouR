@@ -5,7 +5,7 @@
 #' The training set should be created using in situ chlorophyll-a values matched to satellite Rrs. Use caution if you try to predict chlorophyll-a from Rrs where the region / water type / time period is very different from those used in the training set.
 #'
 #' @param rrs Either a dataframe containing numeric columns of Rrs data with the naming format "Rrs_XXX", where XXX is the wavelength in nanometres, or a RasterStack where each raster contains the Rrs data and follows the same naming format.
-#' @param training_set Dataframe with numeric columns of Rrs data with the same naming format as in rrs, and a column of corresponding in situ chla.
+#' @param training_set Dataframe with numeric columns of Rrs data with the same naming format as in rrs, and a column named "chla" containing the corresponding in situ chlorophyll-a.
 #' @references
 #' Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis. Remote Sensing. 10. 10.3390/rs10020265.
 #'
