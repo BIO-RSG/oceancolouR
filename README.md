@@ -29,16 +29,17 @@ remotes::install_github("BIO-RSG/oceancolouR")
 
 ## Datasets
 
-There are numeric vectors included in the package, which give the bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA binned images, for the Pan-Canadian grid, the Northwest Atlantic region, and the Northeast Pacific region (approximate boundaries defined below), at both 4km and 9km resolution.  
+There are numeric vectors included in the package, which give the bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA binned images, for the Pan-Canadian grid, Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence (approximate boundaries defined below in decimal degrees), at both 4km and 9km resolution.  
 
-    * Pan-Canadian grid:  -147 to -41 W, 39 to 86 N  
-    * Northwest Atlantic: -95 to -42 W, 39 to 82 N  
-    * Northeast Pacific:  -140 to -122 W, 46 to 60 N  
+    * Pan-Canadian grid:        -147 to -41, 39 to 86  
+    * Northwest Atlantic:       -95 to -42, 39 to 82  
+    * Northeast Pacific:        -140 to -122, 46 to 60  
+    * Gulf of Saint Lawrence:   -75 to -49, 41 to 53  
 
 Datasets can be loaded using the following command:  
 __data("*region_variable_resolution*")__  
 where:  
-    *region* is either *pancan*, *nwa*, or *nep*  
+    *region* is either *pancan*, *nwa*, *nep*, or *gosl*  
     *variable* is either *bins*, *lats*, *lons*, or *bath*  
     *resolution* is either *4km* or *9km*  
 
