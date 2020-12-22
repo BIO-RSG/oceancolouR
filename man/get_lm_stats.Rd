@@ -14,5 +14,5 @@ Dataframe of statistics
 }
 \description{
 Given a linear model object created with lm(), retrieve a dataframe with the
-coefficients, Rsquared, p-value, and number of observations.
+coefficients, Rsquared, p-value, number of observations, and RMSE.
 }

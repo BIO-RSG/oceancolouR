@@ -96,7 +96,7 @@ lmp <- function (modelobject) {
 #' Create a dataframe of statistics for a model object
 #'
 #' Given a linear model object created with lm(), retrieve a dataframe with the
-#' coefficients, Rsquared, p-value, and number of observations.
+#' coefficients, Rsquared, p-value, number of observations, and RMSE.
 #'
 #' @param modelobject Object of class lm
 #' @return Dataframe of statistics
@@ -106,5 +106,6 @@ get_lm_stats <- function(lm_obj) {
                       Slope = coef(lm_obj)[2],
                       Rsquared = summary(lm_obj)$r.squared,
                       pvalue = lmp(lm_obj),
-                      num_obs = nobs(lm_obj)))
+                      num_obs = nobs(lm_obj),
+                      RMSE = rmse(lm_obj$model[,1], lm_obj$model[,2])))
 }
