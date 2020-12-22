@@ -4,7 +4,7 @@
 \alias{get_lm_stats}
 \title{Create a dataframe of statistics for a model object}
 \usage{
-get_lm_stats(lm_obj)
+get_lm_stats(modelobject)
 }
 \arguments{
 \item{modelobject}{Object of class lm}
