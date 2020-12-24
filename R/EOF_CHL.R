@@ -102,6 +102,10 @@ eof_chl <- function(rrs, training_set) {
 
     }
 
+    full_eof_chl <- rep(NA, nrow(rrs))
+    valid_ind <- which(apply(rrs, 1, function(i) {all(is.finite(i) & i >= 0)}))
+    rrs <- rrs[valid_ind,]
+
     training_rrs <- dplyr::select(.data=training_set, -chla)
     training_chla <- as.numeric(training_set$chla)
 
@@ -134,12 +138,14 @@ eof_chl <- function(rrs, training_set) {
     eof_chl[which(eof_chl > 100)] <- 100
     eof_chl[which(eof_chl < 0.001)] <- 0.001
 
+    full_eof_chl[valid_ind] <- eof_chl
+
     # reformat to raster if necessary
     if (input_class == "RasterStack") {
-        eof_chl <- raster::raster(crs=raster::crs(rstack[[1]]), ext=raster::extent(rstack[[1]]), resolution=raster::res(rstack[[1]]), vals=eof_chl)
+        full_eof_chl <- raster::raster(crs=raster::crs(rstack[[1]]), ext=raster::extent(rstack[[1]]), resolution=raster::res(rstack[[1]]), vals=full_eof_chl)
     }
 
     # return predicted chlorophyll for the input rrs
-    return(eof_chl)
+    return(full_eof_chl)
 
 }
