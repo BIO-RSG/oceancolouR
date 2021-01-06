@@ -7,7 +7,7 @@
 #' @return RMSE, single numeric value.
 #' @export
 rmse <- function(x, y) {
-    return(sqrt(sum((x - y)^2, na.rm=TRUE) / sum(!is.na(x) & !is.na(y))))
+    return(sqrt(mean((x - y)^2, na.rm=TRUE)))
 }
 
 
