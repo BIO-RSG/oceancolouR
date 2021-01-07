@@ -81,12 +81,12 @@ eof_chl <- function(rrs, training_set) {
     tset_rrsnames <- sort(colnames(training_set)[grepl("Rrs_[0-9]{3}$", colnames(training_set))])
 
     # make sure rrs are in order in the training set
-    training_set <- training_set[,c(match(tset_rrsnames, colnames(training_set)), which(colnames(training_set)=="chla"))]
+    training_set <- dplyr::select(training_set, all_of(c(tset_rrsnames, "chla")))
 
     # format input rrs
     if (input_class=="data.frame") {
 
-        rrs <- rrs[,match(tset_rrsnames, colnames(rrs))]
+        rrs <- dplyr::select(rrs, all_of(tset_rrsnames))
 
     } else if (input_class == "RasterStack") {
 
@@ -103,24 +103,27 @@ eof_chl <- function(rrs, training_set) {
     }
 
     full_eof_chl <- rep(NA, nrow(rrs))
-    valid_ind <- which(apply(rrs, 1, function(i) {all(is.finite(i) & i >= 0)}))
-    rrs <- rrs[valid_ind,]
 
-    training_rrs <- dplyr::select(.data=training_set, -chla)
-    training_chla <- as.numeric(training_set$chla)
+    # get valid indices for rrs and training set
+    tmp_mat <- as.matrix(rrs)
+    valid_ind <- apply(is.finite(tmp_mat) & tmp_mat >= 0 & is.finite(log10(tmp_mat)), 1, FUN=sum)==ncol(tmp_mat)
+    rrs <- dplyr::filter(rrs, valid_ind)
 
-    # combine rrs and training sets
-    all <- dplyr::bind_rows(rrs, training_rrs)
+    # combine rrs and training sets, and reduce to valid indices
+    all <- log10(dplyr::bind_rows(rrs, dplyr::select(training_set, -chla)))
+    tmp_mat <- as.matrix(all)
+    valid_ind_all <- apply(is.finite(tmp_mat), 1, FUN=sum)==ncol(tmp_mat)
+    all <- dplyr::filter(all, valid_ind_all)
 
     # get the row indices of the training set
     i <- (nrow(rrs)+1):nrow(all)
 
     # perform PCA on the logged rrs columns and retrieve the scores
-    my_pca <- princomp(log10(all))
+    my_pca <- princomp(all)
     sc <- data.frame(my_pca$scores)
 
     # create a dataframe with the training set in situ chla and pca scores of the corresponding rrs
-    df_chl <- data.frame(chl = training_chla, sc = sc[i,])
+    df_chl <- data.frame(chl = as.numeric(training_set$chla), sc = sc[i,])
 
     # create a dataframe of pca scores from rrs in the testing set
     df_rrs <- data.frame(sc = sc[-i,])
