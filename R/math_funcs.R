@@ -120,6 +120,23 @@ geoMean <- function(x, ...){
     exp(mean(xlog[is.finite(xlog)]))
 }
 
+#' Geometric standard deviation
+#'
+#' This calculates the geometric SD
+#'
+#' @param x Numeric vector
+#' @return Geometric mean value of the input data
+#' @export
+geoSD <- function(x, ...){
+    # WRONG WAY:
+    #exp(sd(log(x)))
+
+    # Right way:
+    mu_g <- oceancolouR::geoMean(x, na.rm = T)
+    sigma_g <- exp(sqrt(sum(log(x / mu_g) ^ 2, na.rm = T) / length(x[is.finite(x)])))
+    return(sigma_g)
+}
+
 
 #' Matrix addition
 #'
