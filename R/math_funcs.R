@@ -132,6 +132,8 @@ geoSD <- function(x, ...){
     #exp(sd(log(x)))
 
     # Right way:
+    # Can also write as:
+    #exp(sqrt((length(x) - 1) / length(x)) * sd(log(x)))
     mu_g <- oceancolouR::geoMean(x, na.rm = T)
     sigma_g <- exp(sqrt(sum(log(x / mu_g) ^ 2, na.rm = T) / length(x[is.finite(x)])))
     return(sigma_g)
