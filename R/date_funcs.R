@@ -128,7 +128,7 @@ days_vector <- function(year, month=NULL, week=NULL) {
 #' Feb-Apr = Spring,
 #' May-Jul = Summer,
 #' Aug-Oct = Fall,
-#' Nov-Feb = Winter,
+#' Nov-Feb = Winter
 #'
 #' @param date
 #' @return String (either Spring, Summer, Fall, or Winter)

@@ -16,5 +16,5 @@ Given a date object, get the name of the season.
 Feb-Apr = Spring,
 May-Jul = Summer,
 Aug-Oct = Fall,
-Nov-Feb = Winter,
+Nov-Feb = Winter
 }
