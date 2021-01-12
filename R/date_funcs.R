@@ -120,3 +120,28 @@ days_vector <- function(year, month=NULL, week=NULL) {
     }
     return(first_day:last_day)
 }
+
+#' Get season name
+#'
+#' Given a date object, get the name of the season.
+#' Feb-Apr = Spring
+#' May-Jul = Summer
+#' Aug-Oct = Fall
+#' Nov-Feb = Winter
+#'
+#' @param date
+#' @return String (either Spring, Summer, Fall, or Winter)
+#' @export
+get_season <- function(date) {
+    stopifnot(class(date)=="Date")
+    month <- lubridate::month(date)
+    if (month %in% 2:4) {
+        return("Spring")
+    } else if (month %in% 5:7) {
+        return("Summer")
+    } else if (month %in% 8:10) {
+        return("Fall")
+    } else if (month %in% c(1,11,12)) {
+        return("Winter")
+    }
+}
