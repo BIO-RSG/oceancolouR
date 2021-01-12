@@ -11,8 +11,10 @@ String (either Spring, Summer, Fall, or Winter)
 }
 \description{
 Given a date object, get the name of the season.
-Feb-Apr = Spring
-May-Jul = Summer
-Aug-Oct = Fall
-Nov-Feb = Winter
+}
+\details{
+Feb-Apr = Spring,
+May-Jul = Summer,
+Aug-Oct = Fall,
+Nov-Feb = Winter,
 }

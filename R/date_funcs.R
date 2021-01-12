@@ -124,10 +124,11 @@ days_vector <- function(year, month=NULL, week=NULL) {
 #' Get season name
 #'
 #' Given a date object, get the name of the season.
-#' Feb-Apr = Spring
-#' May-Jul = Summer
-#' Aug-Oct = Fall
-#' Nov-Feb = Winter
+#'
+#' Feb-Apr = Spring,
+#' May-Jul = Summer,
+#' Aug-Oct = Fall,
+#' Nov-Feb = Winter,
 #'
 #' @param date
 #' @return String (either Spring, Summer, Fall, or Winter)
