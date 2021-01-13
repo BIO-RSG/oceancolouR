@@ -107,5 +107,5 @@ get_lm_stats <- function(modelobject) {
                       Rsquared = summary(modelobject)$r.squared,
                       pvalue = lmp(modelobject),
                       num_obs = nobs(modelobject),
-                      RMSE = rmse(modelobject$model[,1], modelobject$model[,2])))
+                      RMSE = sqrt(mean(modelobject$residuals^2))))
 }
