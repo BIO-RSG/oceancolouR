@@ -102,10 +102,11 @@ lmp <- function (modelobject) {
 #' @return Dataframe of statistics
 #' @export
 get_lm_stats <- function(modelobject) {
-    return(data.frame(Intercept = coef(modelobject)[1],
-                      Slope = coef(modelobject)[2],
-                      Rsquared = summary(modelobject)$r.squared,
-                      pvalue = lmp(modelobject),
-                      num_obs = nobs(modelobject),
-                      RMSE = sqrt(mean(modelobject$residuals^2))))
+    coefs <- summary(modelobject)$coefficients
+    stats <- data.frame(Rsquared = summary(modelobject)$r.squared,
+                        pvalue = lmp(modelobject),
+                        num_obs = nobs(modelobject),
+                        RMSE = sqrt(mean(modelobject$residuals^2)),
+                        stringsAsFactors = FALSE)
+    return(list(coefs=coefs, stats=stats))
 }
