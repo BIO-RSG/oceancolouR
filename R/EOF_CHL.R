@@ -137,9 +137,8 @@ eof_chl <- function(rrs, training_set) {
     # Predict chla with selected PC
     eof_chl <- as.numeric(10^predict(step.lm, newdata = df_rrs))
 
-    # Adjust Chl EOF limits
-    eof_chl[which(eof_chl > 100)] <- 100
-    eof_chl[which(eof_chl < 0.001)] <- 0.001
+    # Remove extreme values
+    eof_chl[which(eof_chl > 100 | eof_chl < 0.001)] <- NA
 
     full_eof_chl[valid_ind] <- eof_chl
 
