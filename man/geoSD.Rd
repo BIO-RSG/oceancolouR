@@ -10,8 +10,22 @@ geoSD(x, ...)
 \item{x}{Numeric vector}
 }
 \value{
-Geometric mean value of the input data
+Geometric SD factor of the input data
 }
 \description{
-This calculates the geometric SD
+This calculates the geometric tandard deviation, a dimensionless multiplicative factor to use with the geometric mean.
+When used with the geometric mean, the range is described as from the (geometric mean / geometric SD) to (geometric mean * geometric SD)
+}
+\examples{
+x <- rlnorm(100)
+gm <- geoMean(x)
+gsd <- geoSD(x)
+
+print(paste("Geometric mean:",gm))
+print(paste("Lower bound:", gm/gsd))
+print(paste("Upper bound:", gm*gsd))
+
+}
+\references{
+Kirkwood, T.B.L. (1979). "Geometric means and measures of dispersion". Biometrics. 35: 908-9. JSTOR 2530139.
 }
