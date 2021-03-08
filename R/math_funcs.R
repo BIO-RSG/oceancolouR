@@ -163,3 +163,18 @@ add_matrices <- function(..., na.rm=TRUE, empty_val=NaN) {
     mat_sum[finite_ind] <- rowSums(mat[finite_ind,], na.rm=na.rm)
     return(matrix(mat_sum, ncol=ncol(mats[[1]])))
 }
+
+
+#' Get vector surrounding number
+#'
+#' Get a numeric vector of numbers from (x-n) to (x+n).
+#'
+#' @param x Integer, the number at the center of the vector
+#' @param n Integer, the number of places to expand the vector on either side of x
+#' @return Numeric vector
+#' @examples
+#' plus_minus(4, 2)
+#' @export
+plus_minus <- function(x, n) {
+    return((x-n):(x+n))
+}
