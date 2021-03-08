@@ -122,10 +122,24 @@ geoMean <- function(x, ...){
 
 #' Geometric standard deviation
 #'
-#' This calculates the geometric SD
+#' @description
+#' This calculates the geometric tandard deviation, a dimensionless multiplicative factor to use with the geometric mean.
+#' When used with the geometric mean, the range is described as from the (geometric mean / geometric SD) to (geometric mean * geometric SD)
+#'
+#' @examples
+#' x <- rlnorm(100)
+#' gm <- geoMean(x)
+#' gsd <- geoSD(x)
+#'
+#' print(paste("Geometric mean:",gm))
+#' print(paste("Lower bound:", gm/gsd))
+#' print(paste("Upper bound:", gm*gsd))
+#'
+#' @references
+#' Kirkwood, T.B.L. (1979). "Geometric means and measures of dispersion". Biometrics. 35: 908-9. JSTOR 2530139.
 #'
 #' @param x Numeric vector
-#' @return Geometric mean value of the input data
+#' @return Geometric SD factor of the input data
 #' @export
 geoSD <- function(x, ...){
     # WRONG WAY:
@@ -134,8 +148,15 @@ geoSD <- function(x, ...){
     # Right way:
     # Can also write as:
     #exp(sqrt((length(x) - 1) / length(x)) * sd(log(x)))
-    mu_g <- oceancolouR::geoMean(x, na.rm = T)
-    sigma_g <- exp(sqrt(sum(log(x / mu_g) ^ 2, na.rm = T) / length(x[is.finite(x)])))
+    idx_z <- which(x<=0)
+    if(length(idx_z)>0) {
+        x <- x[-idx_z]
+        message("x <= 0 removed")
+    }
+    x <- x[is.finite(x)]
+    xlog <- log(x)
+    mu_g <- exp(mean(xlog))
+    sigma_g <- exp(sqrt(sum((log(x / mu_g) ^ 2)) / length(x)))
     return(sigma_g)
 }
 
