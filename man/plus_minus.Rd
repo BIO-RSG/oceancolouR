@@ -15,7 +15,7 @@ plus_minus(x, n)
 Numeric vector
 }
 \description{
-Get a numeric vector of numbers from (x-n) to (x+n).
+Get a vector of numbers from (x-n) to (x+n).
 }
 \examples{
 plus_minus(4, 2)

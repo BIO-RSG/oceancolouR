@@ -188,7 +188,7 @@ add_matrices <- function(..., na.rm=TRUE, empty_val=NaN) {
 
 #' Get vector surrounding number
 #'
-#' Get a numeric vector of numbers from (x-n) to (x+n).
+#' Get a vector of numbers from (x-n) to (x+n).
 #'
 #' @param x Integer, the number at the center of the vector
 #' @param n Integer, the number of places to expand the vector on either side of x
