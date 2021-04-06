@@ -82,7 +82,7 @@ conv_rrs_to_555 <- function(rrs, wave) {
             stop()
         }
         rrs = a2 * rrs - b2
-        rrs[rrs < sw] = 10.0^ (a1 * log10(rrs[rrs < sw]) - b1)
+        rrs[rrs < sw] = 10.0^(a1 * log10(rrs[rrs < sw]) - b1)
 
     }
     return (rrs)
@@ -198,7 +198,7 @@ hu <- function(rrs, wave, coefs) {
 
     stopifnot(input_class %in% c("matrix", "RasterStack"))
 
-    if (!all(colnames(rrs)==paste0("Rrs_", wave))) {
+    if (!all(paste0("Rrs_", wave) %in% colnames(rrs))) {
         stop("rrs column names must be in the form Rrs_XXX, where XXX is the waveband (nm) matching those in the wave variable, in the same order, from blue to green to red")
     }
 
