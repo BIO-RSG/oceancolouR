@@ -52,7 +52,7 @@ lambdas <- get_ocx_lambda("modis", use_443nm = TRUE)
 ocx_coefs <- get_ocx_coefs("modis", "nwa", "ocx")
 chl_oci <- oci(rrs, lambdas$blues, lambdas$green, ocx_coefs, use_443nm=TRUE, sensor="modis")
 library(ggplot2)
-ggplot(data.frame(x=in_situ_chl, y=chl_oci$oci_chl,
+p <- ggplot(data.frame(x=in_situ_chl, y=chl_oci$oci_chl,
                   algorithm=ifelse(chl_oci$hu_ind, "hu", ifelse(chl_oci$blend_ind, "blend", "ocx")))) +
     geom_point(aes(x=x, y=y, color=algorithm)) +
     geom_abline(slope=1, intercept=0) +
@@ -60,6 +60,7 @@ ggplot(data.frame(x=in_situ_chl, y=chl_oci$oci_chl,
     scale_y_log10(limits=c(0.05, 20)) +
     theme_minimal() +
     labs(x="in situ chl", y="satellite chl")
+print(p)
 
 # transform rrs matrix into RasterStack, and test it
 library(raster)

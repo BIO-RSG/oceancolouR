@@ -93,55 +93,30 @@ get_ocx_lambda <- function(sensor, use_443nm) {
 #' @export
 get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 
-    full_rrs_ocx <- rep(NA, nrow(rrs))
-    full_ratio_used <- rep(NA, nrow(rrs))
+    # Set negative or nonfinite Rrs to NA
+    rrs[rrs < 0 | !is.finite(rrs)] <- NA
 
-    # Get green Rrs.
+    # Get green Rrs
     rrsg <- rrs[,colnames(rrs)==green]
 
     if (!use_443nm) {
         # Remove 443nm from the list of "blue" wavelength options
         blues <- blues[blues != "Rrs_443"]
     }
-    # Get dataframe of blue Rrs.
+
+    # Get dataframe of blue Rrs
     rrsb <- data.frame(rrs[,colnames(rrs) %in% blues],stringsAsFactors=F)
     colnames(rrsb) <- blues
 
-    # Get first "blue" vector and start building valid index.
-    ind <- is.finite(rrsb[,1]) & is.finite(rrsg)
+    # Calculate blue/green ratios
+    all_ratios <- rrsb/rrsg
 
-    # # Exclude values with missing (negative) Rrs (bad atmospheric correction)
-    # ind <- is.finite(rrs[,1])
-    # for (j in 2:ncol(rrs)) {
-    #     ind <- ind & is.finite(rrs[,j])
-    # }
+    # Pick the max ratio and note which column it's in (i.e. which "blue" band it uses),
+    # and if one is NA, ignore it and choose the other
+    rrs_ocx <- apply(all_ratios, MARGIN=1, max, na.rm=TRUE)
+    ratio_used <- blues[apply(all_ratios, MARGIN=1, which.max)]
 
-    # Update valid index
-    if (length(blues) >= 2) {ind <- ind & is.finite(rrsb[,2])}
-    if (length(blues) == 3) {ind <- ind & is.finite(rrsb[,3])}
-
-    # Get band ratio
-    r1 <- rrsb[ind,1]/rrsg[ind]
-    rrs_ocx <- r1
-
-    ratio_used <- rep(blues[1],length(r1))
-
-    if (length(blues) >= 2) {
-        r2 <- rrsb[ind,2]/rrsg[ind]
-        rrs_ocx[r2 > r1] <- r2[r2 > r1]
-        ratio_used[r2 > r1] <- blues[2]
-    }
-
-    if (length(blues) == 3) {
-        r3 <- rrsb[ind,3]/rrsg[ind]
-        rrs_ocx[r3 > r1 & r3 > r2] <- r3[r3 > r1 & r3 > r2]
-        ratio_used[r3 > r1 & r3 > r2] <- blues[3]
-    }
-
-    full_rrs_ocx[ind] <- rrs_ocx
-    full_ratio_used[ind] <- ratio_used
-
-    return(list(rrs_ocx = full_rrs_ocx, ratio_used = full_ratio_used))
+    return(list(rrs_ocx = rrs_ocx, ratio_used = ratio_used))
 
 }
 
