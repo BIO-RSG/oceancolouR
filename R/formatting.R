@@ -40,3 +40,20 @@ select_groups <- function(data, groups, ...) {
     inds <- inds[(length(groups)+1):length(inds)]
     return(data[inds, ])
 }
+
+
+#' Convert raster stack to matrix
+#'
+#' Given a raster stack with layer names, and a vector of names to extract from that raster stack, use the raster::getValues() function to extract the values from each layer and put each flattened layer in the column of a matrix.
+#'
+#' @param r Raster stack with layer names
+#' @param rnames Vector of names from the raster stack
+#' @return Numeric matrix with column names matching rnames
+#' @export
+raster_to_matrix <- function(r, rnames) {
+    rstack <- raster::subset(r, rnames)
+    mat <- lapply(1:length(rnames), function(i) raster::getValues(rstack[[i]]))
+    mat <- do.call(cbind, mat)
+    colnames(mat) <- rnames
+    return(mat)
+}

@@ -4,18 +4,7 @@
 \alias{ocx}
 \title{OCX algorithm}
 \usage{
-ocx(
-  rrs,
-  blues,
-  green,
-  coefs,
-  use_443nm = FALSE,
-  use_CI = FALSE,
-  sensor = "seawifs",
-  CI_coef_version = 2,
-  CI_bound1 = 0.15,
-  CI_bound2 = 0.2
-)
+ocx(rrs, blues, green, coefs, use_443nm = FALSE)
 }
 \arguments{
 \item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.}
@@ -27,25 +16,12 @@ ocx(
 \item{coefs}{Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)}
 
 \item{use_443nm}{Logical value, TRUE to make the 443nm band an option in the band ratio}
-
-\item{use_CI}{Logical value, use the color index algorithm from Hu et al (2012) and the blending boundaries used in the NASA OCx algorithm? (see details)}
-
-\item{sensor}{String, either modis, seawifs, or viirs (only necessary if using CI so the wavebands can be determined, also note that "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)}
-
-\item{CI_coef_version}{Numeric value, 1 or 2 only. Version of coefficients to use for the Hu algorithm (version 1 = 2012 paper, version 2 = 2019 paper). See ?ocx or ?hu for details.}
-
-\item{CI_bound1}{Numeric value, the lower value where blending between OCI and OCX should begin}
-
-\item{CI_bound2}{Numeric value, the higher value where blending between OCI and OCX should end}
 }
 \value{
 For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack rrs: equivalent raster with OCx chlorophyll-a.
 }
 \description{
 Given a set of Rrs and coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
-}
-\details{
-This is the algorithm used by NASA (as of Nov 2020). It is replaced with the Hu algorithm (see ?hu) for Hu chla concentrations < 0.15 mg /m^3, and a blend of Hu and OCx for Hu concentrations between 0.15 and 0.2.
 }
 \references{
 Original paper:
@@ -56,12 +32,6 @@ Reference for regional OCX algorithms tuned to Atlantic and Pacific Canadian coa
 
 Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 https://www.mdpi.com/2072-4292/11/22/2609
-
-References for Hu algorithm and updates:
-
-Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). Chlorophyll a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference. Journal of Geophysical Research. 117. C01011. 10.1029/2011JC007395.
-
-Hu, C., Feng, L., Lee, Z., Franz, B. A., Bailey, S. W., Werdell, P. J., & Proctor, C. W. (2019). Improving satellite global chlorophyll a data products through algorithm refinement and data recovery. Journal of Geophysical Research: Oceans, 124, 1524– 1543. https://doi.org/10.1029/2019JC014941
 
 Link to NASA chlorophyll-a description:
 
