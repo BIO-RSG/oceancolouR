@@ -199,3 +199,32 @@ add_matrices <- function(..., na.rm=TRUE, empty_val=NaN) {
 plus_minus <- function(x, n) {
     return((x-n):(x+n))
 }
+
+
+#' Convert an angle to its equivalent value in the range 0 to 2*pi
+#'
+#' Given an angle in radians, shift it to a value between 0 and 2*pi.
+#'
+#' This function was originally included in the code for the ULaval primary production model.
+#'
+#' @param x Angle (IN RADIANS)
+#' @return Corresponding angle between 0 and 2*pi (IN RADIANS)
+#' @examples
+#' angle_rad <- -4.3*pi
+#' pos_angle(angle_rad)
+#'
+#' # starting with an angle in degrees: convert to radians, calculate positive angle, convert back
+#' angle_deg <- -365
+#' pos_angle(angle_deg*pi/180) * 180/pi
+#'
+#' # multiple angles
+#' pos_angle(c(-3, -2*pi, 4*pi, 0, 5*pi, pi/2))
+#'
+#' @export
+pos_angle <- function(x) {
+    x <- as.numeric(x)
+    b <- x / (2*pi)
+    a <- (2*pi) * (b - as.integer(b))
+    a[a < 0] <- (2*pi) + a[a < 0]
+    return (a)
+}
