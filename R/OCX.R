@@ -112,6 +112,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
         } else if (length(blues)==2) {
             valid_ind <- rrsg > 0 & rrsb[,2] > 0 & rrsb[,1] > 0
         }
+        valid_ind <- valid_ind & is.finite(valid_ind)
         rrsb[!valid_ind,] <- NA
     } else {
         # Get dataframe of blue Rrs
@@ -122,6 +123,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
         } else if (length(blues)==3) {
             valid_ind <- rrsg > 0 & rrsb[,3] > 0 & (rrsb[,2] > 0 | rrsb[,1]*rrsb[,2] > 0) & apply(rrsb[,1:2],MARGIN=1,FUN=min) > -0.001
         }
+        valid_ind <- valid_ind & is.finite(valid_ind)
         rrsb[!valid_ind,] <- NA
     }
 
