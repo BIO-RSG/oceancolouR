@@ -202,6 +202,8 @@ hu <- function(rrs, wave, coefs) {
         stop("rrs column names must be in the form Rrs_XXX, where XXX is the waveband (nm) matching those in the wave variable, in the same order, from blue to green to red")
     }
 
+    wave <- sort(wave)
+
     if (input_class == "RasterStack") {
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = paste0("Rrs_", wave))
