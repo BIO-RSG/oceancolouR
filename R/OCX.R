@@ -93,20 +93,39 @@ get_ocx_lambda <- function(sensor, use_443nm) {
 #' @export
 get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 
-    # Set negative or nonfinite Rrs to NA
-    rrs[rrs < 0 | !is.finite(rrs)] <- NA
+    # some boundaries defined here:
+    # https://oceancolor.sci.gsfc.nasa.gov/docs/ocssw/get__chl_8c_source.html#l00140
+
+    blues <- sort(blues)
+
+    rrs[!is.finite(rrs)] <- NA
 
     # Get green Rrs
     rrsg <- rrs[,colnames(rrs)==green]
 
     if (!use_443nm) {
-        # Remove 443nm from the list of "blue" wavelength options
         blues <- blues[blues != "Rrs_443"]
+        rrsb <- data.frame(rrs[,colnames(rrs) %in% blues],stringsAsFactors=F)
+        colnames(rrsb) <- blues
+        if (length(blues)==1) {
+            valid_ind <- rrsg > 0 & rrsb[,1] > 0
+        } else if (length(blues)==2) {
+            valid_ind <- rrsg > 0 & rrsb[,2] > 0 & rrsb[,1] > 0
+        }
+        rrsb[!valid_ind,] <- NA
+    } else {
+        # Get dataframe of blue Rrs
+        rrsb <- data.frame(rrs[,colnames(rrs) %in% blues],stringsAsFactors=F)
+        colnames(rrsb) <- blues
+        if (length(blues)==2) {
+            valid_ind <- rrsg > 0 & rrsb[,2] > 0 & rrsb[,1] > -0.001
+        } else if (length(blues)==3) {
+            valid_ind <- rrsg > 0 & rrsb[,3] > 0 & (rrsb[,2] > 0 | rrsb[,1]*rrsb[,2] > 0) & apply(rrsb[,1:2],MARGIN=1,FUN=min) > -0.001
+        }
+        rrsb[!valid_ind,] <- NA
     }
 
-    # Get dataframe of blue Rrs
-    rrsb <- data.frame(rrs[,colnames(rrs) %in% blues],stringsAsFactors=F)
-    colnames(rrsb) <- blues
+    rrsg[!valid_ind] <- NA
 
     # Calculate blue/green ratios
     all_ratios <- rrsb/rrsg
@@ -115,6 +134,8 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
     # and if one is NA, ignore it and choose the other
     rrs_ocx <- apply(all_ratios, MARGIN=1, max, na.rm=TRUE)
     ratio_used <- blues[apply(all_ratios, MARGIN=1, which.max)]
+
+    rrs_ocx[rrs_ocx <= 0.21 | rrs_ocx >= 30] <- NA
 
     return(list(rrs_ocx = rrs_ocx, ratio_used = ratio_used))
 

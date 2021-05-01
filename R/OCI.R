@@ -64,6 +64,8 @@ oci <- function(rrs, blues, green, ocx_coefs, use_443nm, sensor="seawifs", CI_co
     chl_ocx <- ocx(rrs=ocx_rrs, blues=blues, green=green, coefs=ocx_coefs, use_443nm=use_443nm)
     chl_hu <- hu(rrs=ci_rrs, wave=hu_bands, coefs=get_ci_coefs(CI_coef_version))
 
+    chl_ocx[chl_ocx <= 0] <- NA
+
     oci_chl <- chl_ocx
 
     # get indices to use OCI, and indices to blend OCI and OCX
