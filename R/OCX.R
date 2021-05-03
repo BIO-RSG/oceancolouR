@@ -134,9 +134,11 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 
     # Pick the max ratio and note which column it's in (i.e. which "blue" band it uses),
     # and if one is NA, ignore it and choose the other
-    rrs_ocx <- apply(all_ratios, MARGIN=1, max, na.rm=TRUE)
+    good_ind <- apply(is.na(all_ratios), MARGIN=1, sum) < ncol(all_ratios)
+    rrs_ocx <- ratio_used <- rep(NA, nrow(all_ratios))
+    rrs_ocx[good_ind] <- apply(all_ratios[good_ind,], MARGIN=1, max, na.rm = TRUE)
     rrs_ocx[!is.finite(rrs_ocx) | rrs_ocx <= 0.21 | rrs_ocx >= 30] <- NA
-    ratio_used <- blues[as.numeric(unlist(apply(all_ratios, MARGIN=1, which.max)))]
+    ratio_used[good_ind] <- blues[as.numeric(unlist(apply(all_ratios[good_ind,], MARGIN=1, which.max)))]
 
     return(list(rrs_ocx = rrs_ocx, ratio_used = ratio_used))
 
