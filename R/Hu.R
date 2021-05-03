@@ -208,7 +208,7 @@ hu <- function(rrs, wave, coefs) {
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = paste0("Rrs_", wave))
     } else if (input_class == "matrix") {
-        rrs <- rrs[,sort(paste0("Rrs_", wave))]
+        rrs <- rrs[,paste0("Rrs_", wave)]
     }
 
     wblue <- wave[1]
