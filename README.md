@@ -15,7 +15,7 @@ This package is in continuing development, but the following list is some (not a
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
 * `haversine()`: calculate haversine distance between two points
-* `geoMean()`: calculate geometric mean
+* `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
 * `week8()`, `week8_date`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
 
