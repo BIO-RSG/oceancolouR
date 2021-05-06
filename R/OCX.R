@@ -176,8 +176,8 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
 
     stopifnot(input_class %in% c("matrix", "RasterStack"))
 
-    chlmin <- 0.001
-    chlmax <- 1000
+    chl_min <- 0.001
+    chl_max <- 1000
 
     coefs <- as.numeric(coefs)
     if (length(coefs) < 5) {

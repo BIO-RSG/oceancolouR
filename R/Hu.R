@@ -202,8 +202,8 @@ hu <- function(rrs, wave, coefs) {
         stop("rrs column names must be in the form Rrs_XXX, where XXX is the waveband (nm) matching those in the wave variable, in the same order, from blue to green to red")
     }
 
-    chlmin <- 0.001
-    chlmax <- 1000
+    chl_min <- 0.001
+    chl_max <- 1000
 
     wave <- sort(wave)
 
