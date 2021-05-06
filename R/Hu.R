@@ -202,6 +202,9 @@ hu <- function(rrs, wave, coefs) {
         stop("rrs column names must be in the form Rrs_XXX, where XXX is the waveband (nm) matching those in the wave variable, in the same order, from blue to green to red")
     }
 
+    chlmin <- 0.001
+    chlmax <- 1000
+
     wave <- sort(wave)
 
     if (input_class == "RasterStack") {
@@ -238,6 +241,9 @@ hu <- function(rrs, wave, coefs) {
     ci_res[ci_res > 0] <- 0
 
     chl_final <- 10^(coefs[1] + coefs[2] * ci_res)
+
+    chl_final[chl_final < chl_min] <- chl_min
+    chl_final[chl_final > chl_max] <- chl_max
 
     if (input_class == "RasterStack") {
         chl_final <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=chl_final)

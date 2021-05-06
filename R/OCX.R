@@ -176,6 +176,9 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
 
     stopifnot(input_class %in% c("matrix", "RasterStack"))
 
+    chlmin <- 0.001
+    chlmax <- 1000
+
     coefs <- as.numeric(coefs)
     if (length(coefs) < 5) {
         coefs <- c(coefs, rep(0, (5 - length(coefs))))
@@ -191,6 +194,9 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
     # calculate band ratio and chlorophyll
     br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
     chl_final <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4))
+
+    chl_final[chl_final < chl_min] <- chl_min
+    chl_final[chl_final > chl_max] <- chl_max
 
     if (input_class == "RasterStack") {
         chl_final <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=chl_final)
