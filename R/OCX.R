@@ -110,7 +110,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
         if (length(blues)==1) {
             valid_ind <- rrsg > 0 & rrsb[,1] > 0
         } else if (length(blues)==2) {
-            valid_ind <- rrsg > 0 & rrsb[,2] > 0 & rrsb[,1] > 0
+            valid_ind <- rrsg > 0 & rrsb[,2] > 0 & rrsb[,1] > -0.001
         }
         valid_ind <- valid_ind & is.finite(valid_ind)
         rrsb[!valid_ind,] <- NA
@@ -137,8 +137,10 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
     good_ind <- apply(is.na(all_ratios), MARGIN=1, sum) < ncol(all_ratios)
     rrs_ocx <- ratio_used <- rep(NA, nrow(all_ratios))
     rrs_ocx[good_ind] <- apply(all_ratios[good_ind,], MARGIN=1, max, na.rm = TRUE)
-    rrs_ocx[!is.finite(rrs_ocx) | rrs_ocx <= 0.21 | rrs_ocx >= 30] <- NA
     ratio_used[good_ind] <- blues[as.numeric(unlist(apply(all_ratios[good_ind,], MARGIN=1, which.max)))]
+    bad_rrs_ocx <- !is.finite(rrs_ocx) | rrs_ocx <= 0.21 | rrs_ocx >= 30
+    rrs_ocx[bad_rrs_ocx] <- NA
+    ratio_used[bad_rrs_ocx] <- NA
 
     return(list(rrs_ocx = rrs_ocx, ratio_used = ratio_used))
 

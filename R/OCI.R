@@ -64,13 +64,12 @@ oci <- function(rrs, blues, green, ocx_coefs, use_443nm, sensor="seawifs", CI_co
     chl_ocx <- ocx(rrs=ocx_rrs, blues=blues, green=green, coefs=ocx_coefs, use_443nm=use_443nm)
     chl_hu <- hu(rrs=ci_rrs, wave=hu_bands, coefs=get_ci_coefs(CI_coef_version))
 
-    chl_ocx[chl_ocx <= 0] <- NA
-
-    oci_chl <- chl_ocx
+    oci_chl <- rep(NA, length(chl_hu))
 
     # get indices to use OCI, and indices to blend OCI and OCX
-    hu_ind <- chl_hu <= CI_bound1 & is.finite(chl_hu)
-    blend_ind <- chl_hu > CI_bound1 & chl_hu < CI_bound2 & is.finite(chl_hu)
+    hu_ind <- chl_hu <= CI_bound1 | !is.finite(chl_hu)
+    ocx_ind <- chl_hu >= CI_bound2 & is.finite(chl_hu) & is.finite(chl_ocx) & chl_ocx > 0
+    blend_ind <- chl_hu > CI_bound1 & chl_hu < CI_bound2 & is.finite(chl_hu) & is.finite(chl_ocx) & chl_ocx > 0
 
     # calculate coefficients for blending
     a <- (chl_hu[blend_ind] - CI_bound1)/(CI_bound2 - CI_bound1)
@@ -79,6 +78,7 @@ oci <- function(rrs, blues, green, ocx_coefs, use_443nm, sensor="seawifs", CI_co
     # change values to hu or a blend of hu/ocx at appropriate indices
     oci_chl[hu_ind] <- chl_hu[hu_ind]
     oci_chl[blend_ind] <- a*chl_ocx[blend_ind] + b*chl_hu[blend_ind]
+    oci_chl[ocx_ind] <- chl_ocx[ocx_ind]
 
     if (input_class == "RasterStack") {
         oci_chl <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=oci_chl)

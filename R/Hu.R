@@ -233,13 +233,19 @@ hu <- function(rrs, wave, coefs) {
         stop(paste0("Data missing for Rrs_", wred))
     }
 
+    # if all rrs valid, set ci = 0
+    ci_res <- rep(NA, length(rrs_blue))
+    ci_res[is.finite(rrs_blue) & is.finite(rrs_green) & is.finite(rrs_red)] <- 0
+
+    valid_ind <- is.finite(rrs_red) & rrs_green > 0 & rrs_blue > 0
+
     if (wgreen != 555) {
         # for modis and viirs, shift green band to 555nm
         rrs_green <- conv_rrs_to_555(rrs_green, wgreen)
     }
 
-    ci_res <- ci(rrs_blue, rrs_green, rrs_red)
-    ci_res[ci_res > 0] <- 0
+    ci_res[valid_ind] <- ci(rrs_blue[valid_ind], rrs_green[valid_ind], rrs_red[valid_ind])
+    ci_res[ci_res > 0 & is.finite(ci_res)] <- 0
 
     chl_final <- 10^(coefs[1] + coefs[2] * ci_res)
 
