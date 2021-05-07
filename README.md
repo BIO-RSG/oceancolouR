@@ -6,9 +6,12 @@ This package is in continuing development, but the following list is some (not a
 **Chlorophyll-a algorithms:**
 
 * `gsm()`: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
-* `oci()`, `ocx()` : OCI and OCX algorithms for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`
+* `ocx()` : OCX algorithm for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`
 * `qaa()`: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
 * `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a  
+* `hu()` : Hu algorithm for MODIS-Aqua, SNPP-VIIRS and SeaWiFS  
+* `oci()` : OCI algorithm for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. R implementation of NASA OBPG's chlor_a variable in OC (ocean colour) satellite images.  
+
 
 **Other:** 
 
