@@ -81,9 +81,10 @@ conv_rrs_to_555 <- function(rrs, wave) {
             print(paste0("Unable to convert Rrs at ", wave, "nm to 555nm for use in OCI algorithm."))
             stop()
         }
-        rrs = a2 * rrs - b2
-        rrs[rrs < sw] = 10.0^(a1 * log10(rrs[rrs < sw]) - b1)
-
+        LT_sw <- rrs < sw
+        GE_sw <- rrs >= sw
+        rrs[LT_sw] <- 10.0^(a1 * log10(rrs[LT_sw]) - b1)
+        rrs[GE_sw] <- a2 * rrs[GE_sw] - b2
     }
     return (rrs)
 }
