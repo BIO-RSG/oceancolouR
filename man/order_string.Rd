@@ -7,7 +7,7 @@
 order_string(x)
 }
 \arguments{
-\item{r}{String}
+\item{x}{String}
 }
 \value{
 String with individual characters in order

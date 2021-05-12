@@ -61,7 +61,7 @@ raster_to_matrix <- function(r, rnames) {
 
 #' Order the characters in a single string
 #'
-#' @param r String
+#' @param x String
 #' @return String with individual characters in order
 #' @examples
 #' x = "023521"
