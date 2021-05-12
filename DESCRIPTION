@@ -23,7 +23,8 @@ Imports:
     scales,
     lmodel2,
     stringr,
-    boot
+    boot,
+    magrittr
 Suggests: 
     knitr,
     rmarkdown

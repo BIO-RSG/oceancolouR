@@ -57,3 +57,16 @@ raster_to_matrix <- function(r, rnames) {
     colnames(mat) <- rnames
     return(mat)
 }
+
+
+#' Order the characters in a single string
+#'
+#' @param r String
+#' @return String with individual characters in order
+#' @examples
+#' x = "023521"
+#' order_string(x)
+#' @export
+order_string <- function(x) {
+    paste0(stringr::str_sort(unlist(strsplit(x, split = ""))), collapse="")
+}
