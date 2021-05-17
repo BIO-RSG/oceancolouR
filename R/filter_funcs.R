@@ -8,22 +8,20 @@
 #'    - L2 satellite passes
 #'    - flags used: land, cloud or ice, stray light, sun glint, high TOA radiance, low Lwn(555) for identifying cloud-shadowed pixels, or atmospheric correction failure
 #'    - some in situ records excluded based on in situ radiances (see paper for details)
-#'    - * use only the single closest satellite match to the in situ sample location
-#'    - * extract 5x5 pixel box around center (matching) pixel
-#'    - * maximum allowed time difference between satellite pass and in situ sampling: +/- 3 hours
-#'    - * >= 50% of the pixels in the 5x5 pixel box must be valid
-#'    - ** median CV of 5x5 box of Lwn (not Rrs) must be <= 0.15
-#'          - CV = filtered_SD/filtered_mean
-#'          - filtered_mean = sum(mean +/- 1.5sd)/N
-#'          - N = number of pixels within +/-1.5sd of the mean
-#'    - * sensor zenith angle < 60 degrees
-#'    - * solar zenith angle < 75 degrees
-#'    - * for 1 in situ record and >1 satellite passes: keep only the record closest in TIME
-#'    - ** for >1 in situ records for 1 satellite pass, and in situ records overlap: keep only the record closest in TIME
+#'    - ** use only the single closest satellite match to the in situ sample location
+#'    - ** extract 5x5 pixel box around center (matching) pixel
+#'    - ** maximum allowed time difference between satellite pass and in situ sampling: +/- 3 hours
+#'    - ** at least 50% of the pixels in the 5x5 pixel box must be valid
+#'    - *** median CV (coefficient of variation) of 5x5 box of Lwn (not Rrs) must be <= 0.15
+#'    - ** sensor zenith angle < 60 degrees
+#'    - ** solar zenith angle < 75 degrees
+#'    - ** for 1 in situ record and >1 satellite passes: keep only the record closest in TIME
+#'    - *** for >1 in situ records for 1 satellite pass, and in situ records overlap: keep only the record closest in TIME
 #'
 #' Details:
-#'    - * applied in filter_matchups using defaults
-#'    - ** applied in filter_matchups, but details are slightly different:
+#'    - ** applied in filter_matchups using defaults
+#'    - *** applied in filter_matchups, but details are slightly different:
+#'
 #'          - if selected, Rrs is filtered by CV instead of filtering Lwn by CV
 #'          - some satellite passes might have >2 in situ matchups where all of them overlap; in this case, only the closest match in time is used (Bailey/Werdell compares 2 overlapping matches but it's unclear how to filter >2 matchups in this case)
 #'
