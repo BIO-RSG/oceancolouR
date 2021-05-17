@@ -88,22 +88,50 @@ Bailey/Werdell 2006 criteria:
 \item L2 satellite passes
 \item flags used: land, cloud or ice, stray light, sun glint, high TOA radiance, low Lwn(555) for identifying cloud-shadowed pixels, or atmospheric correction failure
 \item some in situ records excluded based on in situ radiances (see paper for details)
-}
+\item 
 \itemize{
 \item use only the single closest satellite match to the in situ sample location
-\item extract 5x5 pixel box around center (matching) pixel
-\item maximum allowed time difference between satellite pass and in situ sampling: +/- 3 hours
-\item = 50\% of the pixels in the 5x5 pixel box must be valid** median CV of 5x5 box of Lwn (not Rrs) must be <= 0.15CV = filtered_SD/filtered_meanfiltered_mean = sum(mean +/- 1.5sd)/NN = number of pixels within +/-1.5sd of the mean
-\item sensor zenith angle < 60 degrees
-\item solar zenith angle < 75 degrees
-\item for 1 in situ record and >1 satellite passes: keep only the record closest in TIME
-** for >1 in situ records for 1 satellite pass, and in situ records overlap: keep only the record closest in TIME
-\item = applied in filter_matchups using defaults
-** = applied in filter_matchups, but details are slightly different:
-\itemize{
-\item if selected, Rrs is filtered by CV instead of filtering Lwn by CV
-\item some satellite passes might have >2 in situ matchups where all of them overlap; in this case, only the closest match in time is used (Bailey/Werdell compares 2 overlapping matches but it's unclear how to filter >2 matchups in this case)
 }
+\item 
+\itemize{
+\item extract 5x5 pixel box around center (matching) pixel
+}
+\item 
+\itemize{
+\item maximum allowed time difference between satellite pass and in situ sampling: +/- 3 hours
+}
+\item 
+\itemize{
+\item = 50\% of the pixels in the 5x5 pixel box must be valid
+}
+\item ** median CV of 5x5 box of Lwn (not Rrs) must be <= 0.15
+- CV = filtered_SD/filtered_mean
+- filtered_mean = sum(mean +/- 1.5sd)/N
+- N = number of pixels within +/-1.5sd of the mean
+\item 
+\itemize{
+\item sensor zenith angle < 60 degrees
+}
+\item 
+\itemize{
+\item solar zenith angle < 75 degrees
+}
+\item 
+\itemize{
+\item for 1 in situ record and >1 satellite passes: keep only the record closest in TIME
+}
+\item ** for >1 in situ records for 1 satellite pass, and in situ records overlap: keep only the record closest in TIME
+}
+
+Details:
+\itemize{
+\item 
+\itemize{
+\item applied in filter_matchups using defaults
+}
+\item ** applied in filter_matchups, but details are slightly different:
+- if selected, Rrs is filtered by CV instead of filtering Lwn by CV
+- some satellite passes might have >2 in situ matchups where all of them overlap; in this case, only the closest match in time is used (Bailey/Werdell compares 2 overlapping matches but it's unclear how to filter >2 matchups in this case)
 }
 
 Some filters are automatically applied (not optional):
@@ -117,16 +145,16 @@ Some filters are automatically applied (not optional):
 }
 
 df formatting requirements:
-Required columns: is_chla, is_lon, is_lat, is_datetime, sat_time
-In situ data columns must start with "is_", and satellite columns must start with "sat_".
-Datetime column should be "is_datetime" and be in the format "YYYY-MM-DD HH:MM:SS", in UTC (or same as satellite pass timezone).
-Satellite pass time column should be "sat_time" and be a numeric value representing seconds since 1970-01-01 UTC.
-If in situ data records have IDs, they should be in column "is_id".
-If in situ data has depth information, it should be in column "is_depth".
+\itemize{
+\item Required columns: is_chla, is_lon, is_lat, is_datetime, sat_time
+\item In situ data columns must start with "is_", and satellite columns must start with "sat_".
+\item Datetime column should be "is_datetime" and be in the format "YYYY-MM-DD HH:MM:SS", in UTC (or same as satellite pass timezone).
+\item Satellite pass time column should be "sat_time" and be a numeric value representing seconds since 1970-01-01 UTC.
+\item If in situ data records have IDs, they should be in column "is_id".
+\item If in situ data has depth information, it should be in column "is_depth".
+}
 }
 \references{
 Bailey, Sean & Werdell, Jeremy. (2006). A multi-sensor approach for the on-orbit validation of ocean color satellite data products. Remote Sensing of Environment. 102. 12-23. 10.1016/j.rse.2006.01.015.
 (See Fig.1)
-
-Werdell, Jeremy & Bailey, Sean. (2005). An improved bio-optical data set for ocean color algorithm development and satellite data product variation. Remote Sensing of Environment. 98. 122-140. 10.1016/j.rse.2005.07.001.
 }
