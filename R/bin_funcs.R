@@ -107,24 +107,34 @@ plot_rast_from_bin <- function(vec, ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), re
 }
 
 
-#' Group daily bin matrix as 8day or monthly
+#' Condense a matrix by averaging selected columns
 #'
-#' Input a matrix where rows = binned pixels and columns = days of the year, and use rowMeans to condense the columns to 8day or monthly composites, resulting in a matrix of (binned pixels) x (months), for example. Note that a day that has no valid data should be a column of all NA, but if consecutive days are missing from the end of the year (for example, if the data hasn't been made available yet), those columns could be excluded. Example: If the dataset for 2020 ends at day 321 (Nov. 16th), and you're using the panCanadian grid which has 529797 pixels, the matrix should have dimensions 529797 x 321.
+#' Given a matrix and a list where each element contains a numeric vector of the column indices to average, calculate a condensed matrix.
 #'
-#' @param mat Numeric matrix where rows=binned pixels and columns=days of the year (in order, with no gaps - if a day has no data, it should be a column of all NA)
-#' @param composite String, length of output composite, 8day or monthly
-#' @return Numeric matrix where rows = binned pixels, columns = weeks (8day) or months
+#' This can be used to take a matrix where rows = pixels and columns = days of the year, and average columns over 8day or month intervals to return, for example, a corresponding matrix of row=pixels and columns=weeks (where a "week" is 8days).
+#'
+#' @param mat Numeric matrix
+#' @param dlist List of numeric vectors, where each vector contains the column indices that should be merged (see example). If left blank, mat must be in order and have no gaps (i.e. a day with no data should be a column of all NA), and a year and "composite" are also required so that dlist can be automatically calculated using the 8day or monthly system.
+#' @param year Integer, only needed if dlist is NULL
+#' @param composite String, length of output composite, 8day or monthly (only needed if dlist is NULL)
+#' @return Numeric matrix with the same number of rows, and the number of columns equal to the length of dlist
+#' @examples
+#' mat <- matrix(runif(30), nrow=3)
+#' avg_columns(mat, dlist=list(1:5, 6:8))
+#'
 #' @export
-convert_daily_grid <- function(mat, composite="8day") {
+avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 
-    last_day <- ncol(mat)
-
-    if (composite=="8day") {
-        dlist <- lapply(1:46, function(x) {tmp <- days_vector(year=year, week=x); tmp[tmp <= last_day]})
-        dlist <- dlist[sapply(dlist, length) > 0]
-    } else if (composite=="monthly") {
-        dlist <- lapply(1:12, function(x) {tmp <- days_vector(year=year, month=x); tmp[tmp <= last_day]})
-        dlist <- dlist[sapply(dlist, length) > 0]
+    if (is.null(dlist)) {
+        stopifnot(!is.null(year) & composite %in% c("8day", "monthly"))
+        last_day <- ncol(mat)
+        if (composite=="8day") {
+            dlist <- lapply(1:46, function(x) {tmp <- days_vector(year=year, week=x); tmp[tmp <= last_day]})
+            dlist <- dlist[sapply(dlist, length) > 0]
+        } else if (composite=="monthly") {
+            dlist <- lapply(1:12, function(x) {tmp <- days_vector(year=year, month=x); tmp[tmp <= last_day]})
+            dlist <- dlist[sapply(dlist, length) > 0]
+        }
     }
 
     new_mat <- lapply(1:length(dlist), function(x) {rowMeans(mat[,dlist[[x]]], na.rm=TRUE)})

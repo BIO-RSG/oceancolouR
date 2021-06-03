@@ -2,10 +2,10 @@
 
 export(add_matrices)
 export(asinh_trans)
+export(avg_columns)
 export(ci)
 export(collapse_window)
 export(conv_rrs_to_555)
-export(convert_daily_grid)
 export(create_blank_raster)
 export(days_vector)
 export(eof_chl)
