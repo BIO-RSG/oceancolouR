@@ -106,7 +106,7 @@ eof_chl <- function(rrs, training_set) {
 
     # get valid indices for rrs and training set
     tmp_mat <- as.matrix(rrs)
-    valid_ind <- apply(is.finite(tmp_mat) & tmp_mat >= 0 & is.finite(log10(tmp_mat)), 1, FUN=sum)==ncol(tmp_mat)
+    valid_ind <- apply(is.finite(tmp_mat) & tmp_mat > 0, 1, FUN=sum)==ncol(tmp_mat)
     rrs <- dplyr::filter(rrs, valid_ind)
 
     # combine rrs and training sets, and reduce to valid indices
