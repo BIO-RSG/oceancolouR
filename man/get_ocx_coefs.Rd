@@ -4,12 +4,12 @@
 \alias{get_ocx_coefs}
 \title{Get predefined coefficients for OCx}
 \usage{
-get_ocx_coefs(sensor, region, alg)
+get_ocx_coefs(sensor, region = "global", alg = "ocx")
 }
 \arguments{
 \item{sensor}{String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)}
 
-\item{region}{String, either "nwa" or "nep"}
+\item{region}{String, either "global" (for ocx), or "nwa" or "nep" (for ocx or poly1 to poly4)}
 
 \item{alg}{String, either "poly1", "poly2", "poly3", "poly4", or "ocx"}
 }
