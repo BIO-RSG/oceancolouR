@@ -51,6 +51,54 @@ get_gs <- function(lambda) {
 }
 
 
+
+#' Get predefined exponents for GSM
+#'
+#' Library of existing optimized exponents for the Garver-Siegel-Maritorena algorithm, used on the IOPs.
+#'
+#' region="global" for the standard exponents, "nwa" (Northwest Atlantic) or "nep" (Northeast Pacific) for the regionally-tuned exponents used in Clay et al 2019.
+#'
+#' gtype="gc" uses the g coefficients that are constant across wavebands, "gs" uses the spectrally-dependent g coefficients described in Clay et al 2019.
+#'
+#' @param sensor String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)
+#' @param region String, either "global", "nwa", or "nep"
+#' @param gtype String, either "gc" or "gs" (see description below)
+#' @references
+#' Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
+#' https://www.mdpi.com/2072-4292/11/22/2609
+#' @return Numeric vector of exponents used on the IOPs in the algorithm, in this order: chl, adg, bbp
+#' @export
+get_gsm_exps <- function(sensor, region, gtype) {
+
+    stopifnot(sensor %in% c("modis", "seawifs", "viirs"),
+              region %in% c("global", "nwa", "nep"),
+              gtype %in% c("gc", "gs"))
+
+    exps <- list("global"=list("modis"=list("gc"=c(1,0.02061,1.03373),
+                                            "gs"=c(1,0.02061,1.03373)),
+                               "seawifs"=list("gc"=c(1,0.02061,1.03373),
+                                              "gs"=c(1,0.02061,1.03373)),
+                               "viirs"=list("gc"=c(1,0.02061,1.03373),
+                                            "gs"=c(1,0.02061,1.03373))),
+                 "nwa"=list("modis"=list("gc"=c(0.5,0.038,0.8),
+                                         "gs"=c(0.5,0.036,0.75)),
+                            "seawifs"=list("gc"=c(0.5,0.035,0.6),
+                                           "gs"=c(0.5,0.034,0.525)),
+                            "viirs"=list("gc"=c(0.6,0.026,1.4),
+                                         "gs"=c(0.5,0.026,1.75))),
+                 "nep"=list("modis"=list("gc"=c(0.6,0.038,0.9),
+                                         "gs"=c(0.6,0.036,0.75)),
+                            "seawifs"=list("gc"=c(0.7,0.028,0.75),
+                                           "gs"=c(0.65,0.026,0.65)),
+                            "viirs"=list("gc"=c(0.6,0.034,0.8),
+                                         "gs"=c(0.6,0.03,0.75))))
+
+    return(as.numeric(exps[[region]][[sensor]][[gtype]]))
+
+}
+
+
+
 # Algorithm for GSM model. This function is called by the "gsm" function below.
 # A = c(Chl,  adg(ref_value),  bbp(ref_value))
 # ref_value is usually 443nm, so these are often written adg443, bbp443
@@ -140,9 +188,10 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' lambda <- c(412, 443, 469, 488, 531, 547, 555, 645, 667, 678)
 #'
 #' # tuned exponents for atlantic region, modis, GSM_GS (see Clay et al 2019 reference)
-#' chl_exp <- 0.5
-#' adg_exp <- 0.036
-#' bbp_exp <- 0.75
+#' tuned_exps <- get_gsm_exps("modis", "nwa", "gs")
+#' chl_exp <- tuned_exps[1]
+#' adg_exp <- tuned_exps[2]
+#' bbp_exp <- tuned_exps[3]
 #'
 #' # run gsm to process one Rrs record
 #' test_gsm <- gsm(rrs=rrs[1,], lambda=lambda, adg_exp=adg_exp, bbp_exp=bbp_exp, chl_exp=chl_exp)

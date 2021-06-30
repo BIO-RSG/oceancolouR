@@ -84,9 +84,10 @@ rrs <- matrix(c(0.001974, 0.002002, 0.002044, 0.001932, 0.002296, 0.001708, 0.00
 lambda <- c(412, 443, 469, 488, 531, 547, 555, 645, 667, 678)
 
 # tuned exponents for atlantic region, modis, GSM_GS (see Clay et al 2019 reference)
-chl_exp <- 0.5
-adg_exp <- 0.036
-bbp_exp <- 0.75
+tuned_exps <- get_gsm_exps("modis", "nwa", "gs")
+chl_exp <- tuned_exps[1]
+adg_exp <- tuned_exps[2]
+bbp_exp <- tuned_exps[3]
 
 # run gsm to process one Rrs record
 test_gsm <- gsm(rrs=rrs[1,], lambda=lambda, adg_exp=adg_exp, bbp_exp=bbp_exp, chl_exp=chl_exp)
