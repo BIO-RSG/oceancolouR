@@ -47,7 +47,7 @@ gen_bin_grid = function(start_num) {
 #'
 #' Create 2d grid of a variable, given a dataframe with 2 columns, one for bin numbers and one for variable values.
 #'
-#' @param df Dataframe with 2 columns: bin numbers, and variable values.
+#' @param df Dataframe with 2 columns: bin numbers, and variable values (note: the dataframe does not have to be in order of bin number).
 #' @param resolution String, either "4km" or "9km".
 #' @param ext Named vector containing the boundaries of the resulting grid.
 #' @return Global raster containing variable values.
@@ -85,23 +85,27 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
 
 #' Plot panCanadian L3b file
 #'
-#' Given a vector of data from a binned panCanadian ocean colour file, plot it on a raster with coastlines.
+#' Given a vector of data from a binned ocean colour file, plot it on a raster with coastlines.
 #'
-#' @param vec Numeric vector of data.
+#' This is used to get a quick look at a file from the panCanadian dataset, before manipulating the data. When the data is loaded, it's in vector format and in the same order as the bin vectors pancan_bins_4km, nwa_bins_4km, etc...
+#'
+#' @param vec Numeric vector of data (must be in the same order as the the bins vector of the same resolution, whether pancan, nwa, nep, or gosl - see details).
+#' @param region String, either "pancan", "nwa", "nep", or "gosl"
 #' @param ext Named vector containing the boundaries of the resulting grid.
 #' @param resolution String, either "4km" or "9km".
 #' @param limits Limits of the colour scale (numeric vector, length 2).
 #' @return Raster containing variable values with coastlines.
+#' @examples
+#' # This is an example file with data in the same format as in a panCanadian dataset file.
+#' data("example01_A2018252.L3b_DAY_CHL_POLY4_NWA.rda")
+#' lon_lim <- lon_bounds[["NWA"]]
+#' lat_lim <- lat_bounds[["NWA"]]
+#' plot_pancan(log10(dat), region="nwa", ext=c(range(lon_lim),range(lat_lim)))
+#'
 #' @export
-plot_rast_from_bin <- function(vec, ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=c(-Inf, Inf)) {
+plot_pancan <- function(vec, region="pancan", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=c(-Inf, Inf)) {
     data("wrld_simpl", package = "maptools")
-    if (resolution=="4km") {
-        data("pancan_bins_4km", package = "oceancolouR")
-        bins <- pancan_bins_4km
-    } else if (resolution=="9km") {
-        data("pancan_bins_9km", package = "oceancolouR")
-        bins <- pancan_bins_9km
-    }
+    bins <- (function(v) get(data(list=v, package="oceancolouR", envir = new.env())))(paste0(region,"_bins_",resolution))
     rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
     return(raster::spplot(raster::crop(rast, raster::extent(ext)), zlim=limits) + latticeExtra::layer(sp::sp.polygons(wrld_simpl)))
 }

@@ -11,7 +11,7 @@ var_to_rast(
 )
 }
 \arguments{
-\item{df}{Dataframe with 2 columns: bin numbers, and variable values.}
+\item{df}{Dataframe with 2 columns: bin numbers, and variable values (note: the dataframe does not have to be in order of bin number).}
 
 \item{resolution}{String, either "4km" or "9km".}
 
