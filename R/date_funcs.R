@@ -88,6 +88,25 @@ week8_date <- function(yearnum, weeknum) {
     return(x)
 }
 
+#' Date group numbers
+#'
+#' This assigns a date or date vector to a corresponding group of dates of some length in a given year. This is a helper function for making composites. The group is calculated from day 1 of the year.
+#' If no group length entered, this just uses the lubridate::week() function (7-day week length)
+#'
+#' @param dateval String or date formatted with as.Date()
+#' @return numeric value of week number
+#' @examples
+#' dategrp(dateval = "2020-03-27")
+#' dategrp(dateval = c("2020-03-27","2020-04-27"), grp_length = 4)
+#' @export
+dategrp <- function(dateval, grp_length) {
+    if(missing(grp_length)) {
+        return(lubridate::week(dateval))
+    } else {
+        return(((lubridate::yday(dateval) - 1)%/%grp_length) + 1)
+    }
+}
+
 #' List days of the year within a month
 #'
 #' Get a list of days of the year within a specific month or week (following the 8day-per-week system)
