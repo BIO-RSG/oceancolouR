@@ -19,7 +19,7 @@ This package is in continuing development, but the following list is some (not a
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
 * `haversine()`: calculate haversine distance between two points
 * `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
-* `week8()`, `week8_date`: convert to/from standard 8-day week number and date
+* `week8()`, `week8_date()`, or `grpdate()`: convert to/from standard 8-day week number and date, or other length grouping of dates
 * `days_vector()`: list julian days for a given year/month
 
 
