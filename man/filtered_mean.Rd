@@ -10,10 +10,10 @@ filtered_mean(var)
 \item{var}{Numeric vector or matrix}
 }
 \value{
-Named list containing the filtered mean, filtered standard deviation, and coefficient of variation
+Dataframe containing the filtered mean, filtered standard deviation, and coefficient of variation
 }
 \description{
-Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean). NA values are removed.
+Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean). NA values are removed before performing the calculations.
 }
 \examples{
 filtered_mean(rnorm(50))
