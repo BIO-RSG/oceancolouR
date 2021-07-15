@@ -13,7 +13,7 @@ filtered_mean(var)
 Named list containing the filtered mean, filtered standard deviation, and coefficient of variation
 }
 \description{
-Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean)
+Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean). NA values are removed.
 }
 \examples{
 filtered_mean(rnorm(50))

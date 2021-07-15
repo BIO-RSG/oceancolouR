@@ -232,7 +232,7 @@ pos_angle <- function(x) {
 
 #' Calculate filtered mean, stdev, and CV
 #'
-#' Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean)
+#' Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean). NA values are removed.
 #'
 #' @param var Numeric vector or matrix
 #' @return Named list containing the filtered mean, filtered standard deviation, and coefficient of variation
