@@ -228,3 +228,25 @@ pos_angle <- function(x) {
     a[a < 0] <- (2*pi) + a[a < 0]
     return (a)
 }
+
+#' Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean)
+#'
+#' @param var Numeric vector or matrix
+#' @return Named list containing the filtered mean, filtered st.dev, and coefficient of variation
+#' @examples
+#' filtered_mean(rnorm(50))
+#' filtered_mean(matrix(rnorm(60),nrow=12,ncol=5))
+#'
+#' @export
+filtered_mean <- function(var) {
+    var <- var[is.finite(var)]
+    vmean <- mean(var)
+    vsd <- sd(var)
+    valid_ind <- var > vmean-1.5*vsd & var < vmean+1.5*vsd
+    filtered_mean <- mean(var[valid_ind])
+    filtered_sd <- sd(var[valid_ind])
+    coef_of_variation <- filtered_sd/filtered_mean
+    return(data.frame(filtered_mean=filtered_mean,
+                filtered_sd=filtered_sd,
+                coef_of_variation=coef_of_variation))
+}

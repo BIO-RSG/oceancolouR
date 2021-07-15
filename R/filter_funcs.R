@@ -327,13 +327,8 @@ collapse_window <- function(var, input_ws, output_ws, min_pix, useCVfilter=TRUE,
   var <- var[is.finite(var)]
   if (length(var) < min_pix) {return(NA)}
   if (useCVfilter) {
-    vmean <- mean(var)
-    vsd <- sd(var)
-    valid_ind <- var > vmean-1.5*vsd & var < vmean+1.5*vsd
-    filtered_mean <- mean(var[valid_ind])
-    filtered_sd <- sd(var[valid_ind])
-    CV <- filtered_sd/filtered_mean
-    if (median(CV) > max_CV) {return(NA)}
+    CV <- filtered_mean(var)$coef_of_variation
+    if (CV > max_CV) {return(NA)}
   }
   if (stat_to_use=="median") {
     return(median(var))
