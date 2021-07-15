@@ -2,7 +2,7 @@
 % Please edit documentation in R/math_funcs.R
 \name{filtered_mean}
 \alias{filtered_mean}
-\title{Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean)}
+\title{Calculate filtered mean, stdev, and CV}
 \usage{
 filtered_mean(var)
 }
@@ -10,7 +10,7 @@ filtered_mean(var)
 \item{var}{Numeric vector or matrix}
 }
 \value{
-Named list containing the filtered mean, filtered st.dev, and coefficient of variation
+Named list containing the filtered mean, filtered standard deviation, and coefficient of variation
 }
 \description{
 Given a numeric vector, calculate the filtered mean, filtered standard deviation, and coefficient of variation (filtered standard deviation over filtered mean)
