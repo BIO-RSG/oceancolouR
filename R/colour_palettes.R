@@ -13,6 +13,20 @@
 #' https://doi.org/10.1029/2019GC008515
 #'
 #'
+#' @param n Number of colours to return
+#' @return A vector of hexadecimal colours (#RRGGBB)
+#' @example
+#'
+#' thirtycols <- drywet(30)
+#'
+#' library(ggplot2)
+#' ggplot(data = reshape2::melt(volcano), aes(x = Var1, y = Var2, fill = value)) +
+#' geom_tile() +
+#' scale_fill_gradientn(colours = gmt_drywet(20))
+#'
+#' @name continuous
+NULL
+
 #' @export
 gmt_drywet <- function(n = 25) {
   drywet <- rev(rgb(r = c(134,238,180,50,12,38,8),
@@ -71,3 +85,4 @@ gmt_polar <- function(n = 25) {
                   maxColorValue = 255)
   colorRampPalette(polar)(n)
 }
+
