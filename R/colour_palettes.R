@@ -24,7 +24,7 @@
 #' geom_tile() +
 #' scale_fill_gradientn(colours = gmt_drywet(20))
 #'
-#' @name continuous
+#' @name gmt_palettes
 NULL
 
 #' @export
