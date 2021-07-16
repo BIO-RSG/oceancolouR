@@ -17,6 +17,6 @@ These are a few of the standard palettes included in GMT. See: https://docs.gene
 }
 \references{
 GMT 6: Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
-The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564.
+The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556-5564.
 https://doi.org/10.1029/2019GC008515
 }
