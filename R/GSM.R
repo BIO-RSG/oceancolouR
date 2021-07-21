@@ -52,13 +52,13 @@ get_gs <- function(lambda) {
 
 
 
-#' Get predefined exponents for GSM
+#' Get predefined IOP exponents for GSM
 #'
-#' Library of existing optimized exponents for the Garver-Siegel-Maritorena algorithm, used on the IOPs.
+#' Library of existing optimized exponents for the Garver-Siegel-Maritorena algorithm, used on the IOPs chl, adg, and bbp within the absorption and backscattering terms of the algorithm.
 #'
 #' region="global" for the standard exponents, "nwa" (Northwest Atlantic) or "nep" (Northeast Pacific) for the regionally-tuned exponents used in Clay et al 2019.
 #'
-#' gtype="gc" uses the g coefficients that are constant across wavebands, "gs" uses the spectrally-dependent g coefficients described in Clay et al 2019.
+#' gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019.
 #'
 #' @param sensor String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)
 #' @param region String, either "global", "nwa", or "nep"
@@ -68,7 +68,7 @@ get_gs <- function(lambda) {
 #' https://www.mdpi.com/2072-4292/11/22/2609
 #' @return Numeric vector of exponents used on the IOPs in the algorithm, in this order: chl, adg, bbp
 #' @export
-get_gsm_exps <- function(sensor, region, gtype) {
+get_gsm_IOPexps <- function(sensor, region, gtype) {
 
     stopifnot(sensor %in% c("modis", "seawifs", "viirs"),
               region %in% c("global", "nwa", "nep"),
@@ -199,7 +199,7 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' lambda <- c(412, 443, 469, 488, 531, 547, 555, 645, 667, 678)
 #'
 #' # tuned exponents for atlantic region, modis, GSM_GS (see Clay et al 2019 reference)
-#' tuned_exps <- get_gsm_exps("modis", "nwa", "gs")
+#' tuned_exps <- get_gsm_IOPexps("modis", "nwa", "gs")
 #' chl_exp <- tuned_exps[1]
 #' adg_exp <- tuned_exps[2]
 #' bbp_exp <- tuned_exps[3]
