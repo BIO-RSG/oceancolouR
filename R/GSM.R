@@ -98,6 +98,17 @@ get_gsm_exps <- function(sensor, region, gtype) {
 }
 
 
+#' Convert Rrs below sea level
+#'
+#' Given a set of remote-sensing reflectances (Rrs) above sea level, convert them to equivalent values just below the surface.
+#'
+#' @param rrs Numeric value, vector, or matrix of Rrs
+#' @return Numeric value, vector, or matrix of corresponding Rrs below sea level
+#' @export
+rrs_above_to_below_sea_level <- function(rrs) {
+    return(rrs/(0.52 + 1.7*rrs))
+}
+
 
 # Algorithm for GSM model. This function is called by the "gsm" function below.
 # A = c(Chl,  adg(ref_value),  bbp(ref_value))

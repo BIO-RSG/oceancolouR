@@ -19,7 +19,7 @@ This package is in continuing development, but the following list is some (not a
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
 * `haversine()`: calculate haversine distance between two points
 * `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
-* `week8()`, `week8_date()`: convert to/from standard 8-day week number and date, or other length grouping of dates with `dategrp()`
+* `week8()`, `week8_date`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
 
 
@@ -63,7 +63,7 @@ Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). Chlorophyll a algorithms f
 **EOF:**  
 Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis. Remote Sensing. 10. 10.3390/rs10020265.  
 
-**Regional tuning for OCx, GSM:**  
+**Regional tuning for OCx (POLY4), GSM (GSM_GC, GSM_GS):**  
 Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
 
 **Integerized Sinusoidal Binning Scheme:**  
