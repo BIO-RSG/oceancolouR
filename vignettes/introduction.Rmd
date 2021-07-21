@@ -1,5 +1,5 @@
 ---
-title: "introduction"
+title: "Introduction"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{introduction}
@@ -9,11 +9,432 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r setup}
+`oceancolouR` contains a collection of functions used in various projects in the BIO Remote Sensing Group, including functions to work with the level-3 binned ocean colour data downloaded from NASA, calculate chlorophyll-a using different algorithms, and some extra functions to simplify formatting and statistics. For example:  
+
+**Chlorophyll-a algorithms:**  
+
+* `gsm()`: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
+* `oci()`, `ocx()` : OCI and OCX algorithms for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`
+* `qaa()`: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
+* `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a  
+
+**Working with L3b files:**  
+
+* `gen_start_bin()`: given a resolution (4km or 9km), generate bin numbers at the start of the row on the global grid  
+* `gen_bin_grid()`: given a resolution (4km or 9km), generate a global grid of bin numbers  
+* `var_to_rast()`: given a dataframe with column1=bin number and column2=variable, plot the variable on a raster map  
+* `plot_pancan()`: given a vector of data from a panCanadian L3b data file, plot the variable on a raster map with coastlines  
+* `avg_columns()`: condense a matrix by averaging selected columns  
+* `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format  
+
+**Other:**  
+
+* `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
+* `haversine()`: calculate haversine distance between two points
+* `geoMean()`: calculate geometric mean
+* `week8()`, `week8_date`: convert to/from standard 8-day week number and date
+* `days_vector()`: list julian days for a given year/month
+
+
+## How to install
+
+First you need to install the package dependencies:  
+
+```{r}
+#install.packages(c("lubridate", "raster", "hdf5r", "latticeExtra", "sp",
+#                   "maptools", "scales", "lmodel2", "stringr", "boot"))
+```
+
+Then install `oceancolouR` using one of the commands below, and restart R:  
+
+```{r}
+#remotes::install_github("BIO-RSG/oceancolouR")
+#devtools::install_github("BIO-RSG/oceancolouR")
+```
+
+Now load the package:  
+
+```{r}
 library(oceancolouR)
+```
+
+
+## Datasets
+
+There are numeric vectors included in the package, which give the bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA level-3 daily binned images, for the Pan-Canadian grid, Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence (approximate boundaries defined below in decimal degrees), at both 4km and 9km resolution.  
+
+    * Pan-Canadian grid:        -147 to -41, 39 to 86  
+    * Northwest Atlantic:       -95 to -42, 39 to 82  
+    * Northeast Pacific:        -140 to -122, 46 to 60  
+    * Gulf of Saint Lawrence:   -75 to -49, 41 to 53  
+
+Datasets can be loaded using the following command:  `data("region_variable_resolution")`, where:  
+
+- *region* is either *pancan*, *nwa*, *nep*, or *gosl*  
+- *variable* is either *bins*, *lats*, *lons*, or *bath*  
+- *resolution* is either *4km* or *9km*  
+
+For example:  
+
+```{r}
+data("nwa_lons_4km")
+str(nwa_lons_4km)
+```
+
+## Variables
+
+- `num_pix`  
+- `lon_bounds`  
+- `lat_bounds`  
+- `all_lambda`  
+
+The package contains a few variables as well -- Named lists of the number of pixels in the dataset vectors for each region and resolution, as well as their longitude and latitude bounds (`num_pix`, `lon_bounds`, and `lat_bounds`, respectively), printed below using do.call and cbind to simplify the output:  
+
+```{r}
+do.call(cbind, num_pix)
+do.call(cbind, lon_bounds)
+do.call(cbind, lat_bounds)
+```
+
+... and the list of wavebands (in nanometres) for commonly-used sensors:  
+```{r}
+all_lambda
+```
+
+## Examples
+
+### Chlorophyll algorithms
+
+Below are some examples using Rrs (remote sensing reflectances) at specific wavebands to calculate chlorophyll-a using the different functions available in the package. First, we'll define example in situ chlorophyll and satellite Rrs data to use:  
+
+
+```{r}
+# Some in situ chl / SeaWiFS Rrs data used in Clay et al (2019)
+input <- matrix(c(0.166,0.00199,0.00332,0.00513,0.00397,0.00229,0.00083,0.102,
+                  0.00265,0.00396,0.00468,0.00372,0.00233,0.00023,6.229,0.01333,
+                  0.01128,0.00843,0.00824,0.00724,0.0023,5.391,0.00738,0.00696,
+                  0.00623,0.00635,0.00726,0.002,0.592,0.00574,0.00636,0.00633,
+                  0.00489,0.00307,0.00012,0.097,0.00545,0.0064,0.0064,0.00487,
+                  0.00297,7e-05,0.197,0.00874,0.00969,0.0093,0.00666,0.00386,
+                  0.00051,0.303,0.00722,0.00857,0.00881,0.00671,0.004,0.00055,
+                  2.041,0.00207,0.00166,0.00434,0.00408,0.00485,0.00206,0.331,
+                  0.00504,0.00647,0.00691,0.00602,0.00394,1e-04,0.508,0.00788,
+                  0.00803,0.00777,0.00688,0.00505,0.00091,0.128,0.00574,0.0069,
+                  0.00676,0.00507,0.00299,0.00034,13.208,0.00087,0.00151,0.00192,
+                  0.00231,0.00293,0.00086,3.035,0.00021,0.00154,0.00271,0.00266,
+                  0.00257,0.00043,0.542,0.00255,0.00366,0.00436,0.00356,0.00236,
+                  2e-04,3.309,0.00632,0.00658,0.00626,0.00569,0.00489,0.00137,
+                  11.693,0.01883,0.01728,0.01259,0.01236,0.00972,0.00425,5.901,
+                  0.00207,0.00247,0.00306,0.00292,0.00306,0.00066,0.198,0.00077,
+                  0.00329,0.0049,0.00458,0.00352,0.00154,0.149,0.0063,0.00719,
+                  0.00706,0.00573,0.00355,0.00038,0.262,0.00697,0.00754,0.00707,
+                  0.006,0.00386,0.00067,3.239,0.0082,0.00761,0.00681,0.00616,
+                  0.00503,0.0015,7.049,0.00861,0.00772,0.00669,0.00673,0.00621,
+                  0.00212,6.35,0.00123,0.00162,0.00226,0.0022,0.00234,0.00048,
+                  5.881,0.00075,0.00154,0.00224,0.00218,0.00245,0.00053,0.824,
+                  0.00967,0.01074,0.00733,0.00861,0.00624,0.00312,0.538,0.01484,
+                  0.01257,0.01033,0.00939,0.0068,0.00198,0.237,0.00318,0.00469,
+                  0.00528,0.00387,0.00228,0.00119), ncol=7, byrow=TRUE)
+colnames(input) <- c("in_situ_chl","Rrs_412","Rrs_443","Rrs_490","Rrs_510","Rrs_555","Rrs_670")
+chl_insitu <- input[,1]
+rrs <- input[,2:ncol(input)]
+head(input)
+```
+
+
+#### OCx
+
+This is the standard band ratio chlorophyll algorithm, which requires tuned coefficients and blue/green wavebands based on sensor (modis, seawifs, or viirs). The argument *use_443nm* indicates whether the 443nm band should be used in the band ratio (in Clay et al 2019, it was found to increase algorithm error). For the standard OCx algorithm, this band is still in use, so we'll set *use_443nm=TRUE*.  
+
+```{r}
+use_443nm <- TRUE
+coefficients <- get_ocx_coefs("seawifs", region="global", alg="ocx")
+wavebands <- get_ocx_lambda("seawifs", use_443nm = use_443nm)
+# calculate the band ratio
+br <- get_br(rrs=rrs, blues=wavebands$blues, green=wavebands$green, use_443nm=use_443nm)$rrs_ocx
+# calculate ocx chl for each data point
+chl_ocx <- ocx(rrs=rrs, blues=wavebands$blues, green=wavebands$green, coefs=coefficients)
+str(chl_ocx)
+```
+
+`get_ocx_coefs()` contains coefficients that have been optimized for the global ocean, and also the coefficients that were optimized for the NWA (Northwest Atlantic) and NEP (Northeast Pacific). You can also optimize the coefficients for your own region by using the `optimize_ocx_coefs()` function if you have a dataset of in situ chlorophyll and corresponding satellite Rrs values. This function will attempt to force the calculated satellite chl-a onto a 1:1 line with the in situ chla and return the optimal coefficients.  
+**WARNING**: This does NOT separate the input data into training and test sets - that must be done manually by the user.  
+
+```{r}
+# what degree polynomial should be used for the algorithm? (for example, OC3M,
+# used for MODIS-Aqua, is degree 4)
+alg_degree <- 4
+# add in situ chlorophyll and the band ratio calculated above to a dataframe
+df <- data.frame(x=log10(chl_insitu), y=log10(br), stringsAsFactors = FALSE)
+# get the optimal coefficients for this dataset only (they will not necessarily
+# be optimal for any other dataset since this dataset is so small and the
+# coefficients are not tuned using training and test sets)
+best_alg_coefs <- optimize_ocx_coefs(data = df, alg_degree = alg_degree)
+# calculate ocx with the optimal coefficients
+chl_ocx_new <- ocx(rrs=rrs, blues=wavebands$blues, green=wavebands$green, coefs=best_alg_coefs)
+# plot the results
+library(ggplot2)
+ggplot(data.frame(x=chl_insitu, y=chl_ocx_new)) +
+  geom_point(aes(x=x,y=y), alpha=0.6, color="darkgreen", size=3) +
+  geom_abline(slope=1,intercept=0) +
+  scale_x_log10(limits=c(0.05,30)) +
+  scale_y_log10(limits=c(0.05,30)) +
+  theme_bw() +
+  labs(x = "In situ chl", y = "OCx chl")
+```
+
+Here's an example using a RasterStack instead of a matrix, where each layer of the stack contains the pixels from a different waveband. This can also be done with `hu()`, `oci()`, and `eof_chl()`.  
+
+```{r}
+library(raster)
+rrs_stack <- stack(lapply(1:ncol(rrs), function(i) raster(matrix(rrs[,i], nrow=7))))
+names(rrs_stack) <- colnames(rrs)
+chl_raster <- ocx(rrs=rrs_stack, blues=wavebands$blues, green=wavebands$green, coefs=coefficients)
+spplot(chl_raster, par.settings=list(layout.heights=list(top.padding=0,bottom.padding=0),
+                                     layout.widths=list(left.padding=0,right.padding=0)))
+```
+
+
+
+#### Hu
+
+The Hu algorithm is simple to use, but only works for chlorophyll < ~0.3 mg m<sup>-3</sup> (see plot below), and is usually blended with OCx for values 0.15-0.2 (see *OCI* algorithm below). The wavebands that you must use depend only on the sensor (modis, seawifs, or viirs), and the coefficients only depend on the version you want to use (version 1 or 2, see ?hu for references). Here we'll use another piece of a matchup dataset for MODIS-Aqua made up of smaller concentrations:  
+
+```{r}
+chl_insitu_hu <- c(0.085,0.09,0.1,0.106,0.107,0.122,0.122,0.126,0.128,0.133,0.134,0.143,0.153,0.166,0.166,0.173,0.175,0.182,0.189,0.194,0.197,0.198,0.199,0.208,0.225,0.236,0.249,0.254,0.254,0.258,0.259,0.262,0.266,0.274,0.276,0.28,0.283,0.305,0.311,0.314,0.314,0.318,0.326,0.327,0.34,0.355,0.404,0.405,0.413,0.423,0.435,0.46,0.473,0.493,0.53,0.66,0.66,0.672,0.691,0.726,0.752,0.803,0.803,0.806,0.817,0.829,0.889,0.895,0.897,0.976,1.004,1.006,1.036,1.161,1.219,1.252,1.253,1.835,2.075,2.551,4.117,5.297)
+rrs_hu <- matrix(c(0.01042,0.01143,0.00645,0.01166,0.00751,0.00482,0.01019,0.01377,0.00759,0.00724,0.00627,0.00987,0.0101,0.0076,0.00818,0.00637,0.0116,0.00718,0.0091,0.00814,0.0158,0.00721,0.0137,0.00832,0.00442,0.00858,0.01847,0.01217,0.01029,0.00905,0.006,0.01071,0.01411,0.00882,0.00682,0.0096,0.0103,0.00565,0.01648,0.01592,0.01125,0.00791,0.01568,0.01148,0.00789,0.01236,0.00632,0.01144,0.01533,0.0119,0.01201,0.02022,0.00814,0.00768,0.00603,0.00911,0.01096,0.01402,0.00946,0.01063,0.01438,0.01168,0.0117,0.01114,0.01317,0.0099,0.01077,0.00826,0.01352,0.01026,0.01035,0.01166,0.01033,0.01148,0.00933,0.01217,0.01078,0.01174,0.01237,0.00587,0.01591,0.01053,0.00343,0.00407,0.00237,0.00291,0.00323,0.00166,0.00346,0.00377,0.00321,0.00352,0.00281,0.00339,0.0039,0.00357,0.00262,0.00297,0.00358,0.00341,0.00365,0.00331,0.00498,0.00351,0.00499,0.00346,0.00195,0.00361,0.00623,0.00458,0.00348,0.00388,0.00272,0.00458,0.00485,0.00317,0.00313,0.00457,0.004,0.00244,0.00487,0.00597,0.00487,0.00375,0.00578,0.0047,0.00358,0.0035,0.00305,0.00475,0.00558,0.00373,0.00454,0.00624,0.00366,0.00374,0.00268,0.00441,0.00417,0.00431,0.00339,0.00388,0.00476,0.00494,0.00434,0.00476,0.0052,0.00352,0.00461,0.00329,0.00507,0.00431,0.00384,0.00494,0.00441,0.0034,0.0041,0.00477,0.0034,0.00524,0.00518,0.00242,0.00628,0.00384,0.00038,0.00051,0.00023,0.00012,0.00039,2e-05,0.00028,0.00027,0.00028,0.00048,0.00033,0.00029,0.00014,0.00039,9e-05,0.00035,0.00024,0.00031,0.00039,2e-04,0.00054,0.00037,0.00044,0.00033,1e-04,0.00048,0.00065,0.00033,0.00029,0.00053,2e-04,0.00065,0.00051,0.00033,0.00025,0.00067,0.00055,0.00015,0.00034,0.00066,0.00047,0.00038,6e-04,0.00029,0.00044,0.00019,0.00038,5e-04,0.00082,0.00019,0.00058,0.00042,0.00041,4e-04,0.00022,0.00068,0.00032,0.00045,0.00025,0.00015,0.00031,0.00034,0.00065,5e-04,0.00074,0.00048,0.00061,0.00051,0.00037,0.00048,0.00023,0.00032,0.00049,0.00049,0.00052,0.00034,0.00051,0.00031,0.00119,0.00039,0.00061,0.00022), ncol=3)
+colnames(rrs_hu) <- c("Rrs_443", "Rrs_547", "Rrs_667")
+wavebands <- get_ci_bands("modis")
+coefficients <- get_ci_coefs(version=2)
+chl_hu <- hu(rrs_hu, wavebands, coefficients)
+ggplot(data.frame(x=chl_insitu_hu, y=chl_hu)) +
+  geom_point(aes(x=x,y=y), alpha=0.6, color="darkgreen", size=3) +
+  geom_abline(slope=1,intercept=0) +
+  scale_x_log10(limits=c(0.05,30)) +
+  scale_y_log10(limits=c(0.05,30)) +
+  theme_bw() +
+  labs(x = "In situ chl", y = "Hu chl") +
+  geom_vline(xintercept=0.3, color="red", linetype="dashed")
+```
+
+
+
+
+#### OCI
+
+OCI is a blended algorithm using Hu for the lower concentrations (<0.15), OCx for the higher concentrations (>0.2) and a blend of the two algorithms in between. This is the algorithm currently used by [NASA OBPG](https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/) for the *chlor_a* variable. Note that we have the region in `get_ocx_coefs()` set to *global* to use the same coefficients as NASA OBPG, but this could also be set to *nwa* or *nep* to use the coefficients optimized to those regions for the OCx portion of the algorithm.  
+
+```{r}
+use_443nm <- TRUE
+wavebands <- get_ocx_lambda("seawifs", use_443nm = use_443nm)
+ocx_coefs <- get_ocx_coefs("seawifs", "global", "ocx")
+chl_oci <- oci(rrs, wavebands$blues, wavebands$green, ocx_coefs, use_443nm=use_443nm,
+               sensor="seawifs", CI_coef_version=2)$oci_chl
+str(chl_oci)
+```
+
+#### POLY4
+
+POLY4 is simply the OCx algorithm with coefficients optimized for the Northwest Atlantic or Northeast Pacific. The 443nm waveband is not used in this algorithm (see Clay et al 2019).  
+
+POLY4 can be implemented like this, using the Northwest Atlantic (NWA) as an example:  
+
+```{r}
+use_443nm <- FALSE
+wavebands <- get_ocx_lambda("seawifs", use_443nm = use_443nm)
+coefficients <- get_ocx_coefs(sensor = "seawifs", region = "nwa", alg= "poly4")
+chl_poly4 <- ocx(rrs, wavebands$blues, wavebands$green, coefficients, use_443nm=use_443nm)
+str(chl_poly4)
+```
+
+#### GSM
+
+This is the GSM (Garver-Siegel-Maritorena) semi-analytical algorithm, which requires Rrs just below the sea surface. Rrs can be converted from above to below-surface using `rrs_above_to_below_sea_level()`. This algorithm uses every available waveband for the selected sensor, and requires the proper coefficients and exponents, which depend on sensor, region, and the user's choice of a quadratic model with constant coefficients, or a model with spectrally-dependent coefficients and exponent on the second polynomial term. You must use `get_gsm_IOPexps()` to retrieve the tuned exponents (exponents on the IOPs *chl*, *adg*, and *bbp*).  
+
+
+##### GSM_GC
+
+This is the original version of the GSM algorithm, which is in the form of a quadratic and uses the same coefficients for each waveband.  
+
+
+```{r}
+# convert rrs from above to below sea level
+tmp_rrs <- rrs_above_to_below_sea_level(rrs)
+# get wavebands for seawifs
+lambda <- all_lambda[["SeaWiFS"]]
+# get globally-tuned exponents, seawifs, GSM_GC (see Clay et al 2019 reference)
+tuned_exps <- get_gsm_IOPexps("seawifs", "global", "gc")
+chl_exp <- tuned_exps[1]
+adg_exp <- tuned_exps[2]
+bbp_exp <- tuned_exps[3]
+# run gsm to process multiple records stored in an rrs matrix, where
+# rows=records and columns=wavelengths
+# this gives a matrix of iops (chl, adg, bbp, and a column indicating if the result
+# should be considered valid)
+iops <- apply(X=tmp_rrs, MARGIN=1, FUN=gsm, lambda=lambda, adg_exp=adg_exp, bbp_exp=bbp_exp, 
+              chl_exp=chl_exp, gtype="gc")
+chl_gsmgc_original <- iops[1,]
+str(chl_gsmgc_original)
+```
+
+
+To use this version of the algorithm with IOP exponents tuned to the NWA, set the region to "nwa" instead of "global" in the gsm exps function:  
+
+```{r}
+tuned_exps <- get_gsm_IOPexps("seawifs", "nwa", "gc")
+chl_exp <- tuned_exps[1]
+adg_exp <- tuned_exps[2]
+bbp_exp <- tuned_exps[3]
+iops <- apply(X=tmp_rrs, MARGIN=1, FUN=gsm, lambda=lambda, adg_exp=adg_exp, bbp_exp=bbp_exp,
+              chl_exp=chl_exp, gtype="gc")
+chl_gsmgc_nwa <- iops[1,]
+str(chl_gsmgc_nwa)
+```
+
+##### GSM_GS
+
+In this version of the model, the coefficients are spectrally-dependent, as well as the exponent on the second term (i.e. it is not forced into a quadratic shape). Set the *gtype* argument in `get_gsm_IOPexps()` and `gsm()` to *gs* to retrieve the optimal IOP exponents that were tuned using this model (note in this example, we're also specifying that we want the exponents tuned using NWA data, but we could set that to "global" instead):  
+
+```{r}
+tuned_exps <- get_gsm_IOPexps("seawifs", "nwa", "gs")
+chl_exp <- tuned_exps[1]
+adg_exp <- tuned_exps[2]
+bbp_exp <- tuned_exps[3]
+iops <- apply(X=tmp_rrs, MARGIN=1, FUN=gsm, lambda=lambda, adg_exp=adg_exp, bbp_exp=bbp_exp,
+              chl_exp=chl_exp, gtype="gs")
+chl_gsmgs_nwa <- iops[1,]
+str(chl_gsmgs_nwa)
+```
+
+
+#### EOF
+
+To use this algorithm, you need a training set containing in situ chlorophyll data and corresponding satellite Rrs matchups at every waveband you want to use in the model. The training set and the chlorophyll images that you want to create should be restricted to the same general area / time span so that the training set can fully capture the variability in that area / time.  
+
+NOTE: the training set in the example below is a subset of the training set used in the Gulf of Saint Lawrence, but the example Rrs are from outside that area in the Northwest Atlantic, so they might not work very well with this algorithm.  
+
+```{r}
+# create training set dataframe
+training <- data.frame(chla = c(0.26, 1.94, 4.33, 0.43, 1.8975, 0.635,
+                                2.3025, 0.51, 0.6025, 0.245),
+                       Rrs_412 = c(0.00186, 0.00182, 0.00045, 0.00165, 0.00351,
+                                   0.00242, 0.00187, 0.00063, 0.00014, 0.00433),
+                       Rrs_443 = c(0.00233, 0.00199, 0.00099, 0.00166, 0.00382,
+                                   0.00274, 0.00201, 0.00144, 0.00072, 0.00409),
+                       Rrs_490 = c(0.00283, 0.00197, 0.00162, 0.00161, 0.00352,
+                                   0.00312, 0.0022, 0.00204, 0.00125, 0.0038),
+                       Rrs_510 = c(0.00251, 0.00205, 0.0017, 0.00153, 0.00316,
+                                   0.00316, 0.00225, 0.00206, 0.0014, 0.00334),
+                       Rrs_555 = c(0.00186, 0.00189, 0.00182, 0.00126, 0.00214,
+                                   0.00282, 0.00236, 0.00177, 0.00134, 0.0028),
+                       Rrs_670 = c(0.00025, 0.00022, 0.00029, 6e-05, 0.00032,
+                                   0.00043, 0.00063, 0.00017, 0.00014, 3e-04),
+                       stringsAsFactors = FALSE)
+chl_eof <- eof_chl(rrs=as.data.frame(rrs), training_set=training)
+str(chl_eof)
+```
+
+#### QAA
+
+This algorithm has not yet been thoroughly tested and tuned for use in the NWA and NEP, unlike the other algorithms.  
+
+```{r}
+# select wavelengths
+wavebands <- all_lambda[["SeaWiFS"]]
+# run qaa to process multiple records stored in an rrs matrix, where rows=records and columns=wavelengths
+chl_qaa <- apply(X=rrs, MARGIN=1, FUN=qaa, lambda=wavebands)
+# extract chl from the results
+chl_qaa <- as.numeric(sapply(chl_qaa, "[[", 3))
+str(chl_qaa)
+```
+
+
+Now a quick graph showing the differences between the algorithms for this short example dataset:  
+
+```{r fig.height=5, fig.width=7}
+library(ggplot2)
+library(patchwork)
+library(dplyr)
+chl_df <- data.frame(In_situ_chl = chl_insitu,
+                     OCx = chl_ocx,
+                     OCI = chl_oci,
+                     POLY4 = chl_poly4,
+                     GSMGC_global = chl_gsmgc_original,
+                     GSMGC_nwa = chl_gsmgc_nwa,
+                     GSMGS_nwa = chl_gsmgs_nwa,
+                     EOF = chl_eof,
+                     QAA = chl_qaa,
+                     stringsAsFactors = FALSE) %>%
+  tidyr::pivot_longer(cols = OCx:QAA, names_to = "Algorithm", values_to = "Satellite_chl")
+ggplot(chl_df, aes(x=In_situ_chl, y=Satellite_chl, color=Algorithm)) +
+  geom_point() +
+  geom_abline(slope=1, intercept=0) +
+  geom_smooth(method=lm, se=FALSE, linetype="dashed", size=0.7) +
+  scale_x_log10(limits=c(0.09, 15)) +
+  scale_y_log10(limits=c(0.09, 15)) +
+  theme_bw()
+```
+
+
+
+#### References
+
+**OCx:**  
+O'Reilly, John & Maritorena, S. & Mitchell, B.G. & Siegel, David & Carder, Kendall & Garver, S.A. & Kahru, Mati & Mcclain, Charles. (1998). Ocean color chlorophyll algorithms for SeaWiFS. Journal of Geophysical Research. 103. 937-953.  
+
+**GSM:**  
+Maritorena, Stephane & Siegel, David & Peterson, Alan. (2002). Optimization of a semianalytical ocean color model for global-scale application. Applied optics. 41. 2705-14. 10.1364/AO.41.002705.  
+
+**QAA:**  
+Lee, Zhongping & Carder, Kendall & Arnone, Robert. (2002). Deriving Inherent Optical Properties from Water Color: a Multiband Quasi-Analytical Algorithm for Optically Deep Waters. Applied optics. 41. 5755-72. 10.1364/AO.41.005755.  
+
+**OCI:**  
+Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). Chlorophyll a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference. Journal of Geophysical Research. 117. C01011. 10.1029/2011JC007395.  
+
+**EOF:**  
+Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis. Remote Sensing. 10. 10.3390/rs10020265.  
+
+**Regional tuning for OCx (POLY4), GSM (GSM_GC, GSM_GS):**  
+Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
+
+
+<br><br>
+
+
+### Examples using other functions
+
+[Coming soon]  
+
+```{r echo=FALSE}
+
+# Testing `sparkle_fill()`:
+
+# library(oceancolouR)
+# library(raster)
+# library(sp)
+# data("nwa_lats_4km")
+# data("nwa_lons_4km")
+# data("nwa_bath_4km")
+# df = data.frame(lon=nwa_lons_4km,
+#                 lat=nwa_lats_4km,
+#                 bathy=nwa_bath_4km, stringsAsFactors = FALSE)
+# coordinates(df) = ~lon+lat
+# 
+# xres2 <- 0.04
+# yres2 <- (2/3) * xres2
+# rast2 <- raster(ext=extent(df), resolution = c(xres2,yres2))
+# rast2 <- rasterize(df, rast2, df$bathy, fun = mean, na.rm = T)
+# test2_bilinear = sparkle_fill(x=rast2, min_sides=8, fun="bilinear")
+# test2_mean = sparkle_fill(x=rast2, min_sides=8, fun="mean")
+# test2_median = sparkle_fill(x=rast2, min_sides=8, fun="median")
+# rast2_stack = stack(rast2, test2_bilinear, test2_mean, test2_median)
+# names(rast2_stack) <- c("rast2", "bilinear", "mean", "median")
+# spplot(rast2_stack)
 ```
