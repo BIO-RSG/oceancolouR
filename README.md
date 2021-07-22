@@ -26,8 +26,8 @@ This package is in continuing development, but the following list is some (not a
 ## How to install
 
 ``` r
-remotes::install_github("BIO-RSG/oceancolouR")
-#devtools::install_github("BIO-RSG/oceancolouR")
+remotes::install_github("BIO-RSG/oceancolouR", build_vignettes = TRUE)
+#devtools::install_github("BIO-RSG/oceancolouR", build_vignettes = TRUE)
 ```
 
 ## Datasets
