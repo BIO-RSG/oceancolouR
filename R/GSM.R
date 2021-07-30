@@ -247,10 +247,10 @@ gsm <- function(rrs, lambda, iop3=c(0.01, 0.03, 0.019), adg_exp, bbp_exp, chl_ex
     bbpstar <- (443/lambda) ^ bbp_exp
 
     if (gtype=="gc") {
-        # Constants in eq. 2 Gordon et al., 1988: g1=0.0949, g2=0.0794
-        g1 <- rep(0.0949,length(lambda))
-        g2 <- rep(0.0794,length(lambda))
-        g3 <- rep(2,length(lambda))
+        # Constants in eq. 2 Gordon et al., 1988
+        g1 <- 0.0949
+        g2 <- 0.0794
+        g3 <- 2
     } else if (gtype=="gs") {
         # get the g coefficients based on lambda
         gs <- get_gs(lambda)
