@@ -24,8 +24,8 @@ Given a numeric vector and lower and upper limits of allowed values, set the val
 \details{
 Other methods to get the same result:
 \enumerate{
-\item ifelse(v>upper,upper,ifelse(v<lower,lower,v))
-\item \code{v[v<upper] <- upper}
+\item \code{ifelse(v>upper,upper,ifelse(v<lower,lower,v))}
+\item \code{v[v<upper] <- upper;}
 \code{v[v>lower] <- lower}
 }
 }

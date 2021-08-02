@@ -65,7 +65,7 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #'
 #' @importFrom magrittr "%>%"
 #' @export
-get_closest_bin <- function(geo_df, bin_df, measure="geodesic") {
+get_closest_bins <- function(geo_df, bin_df, measure="geodesic") {
     dplyr::bind_cols(
         geo_df,
         lapply(1:nrow(geo_df),
