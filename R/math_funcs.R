@@ -263,8 +263,8 @@ filtered_mean <- function(var) {
 #'
 #' 1. ifelse(v>upper,upper,ifelse(v<lower,lower,v))
 #'
-#' 2. v[v<upper] <- upper
-#'    v[v>lower] <- lower
+#' 2. `v[v<upper] <- upper`
+#'    `v[v>lower] <- lower`
 #'
 # (1) is slowest, (2) is sometimes faster than set_limits
 # (note: this has not been tested extensively)
