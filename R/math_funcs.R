@@ -253,3 +253,46 @@ filtered_mean <- function(var) {
                 filtered_sd=filtered_sd,
                 coef_of_variation=coef_of_variation))
 }
+
+
+#' Set values outside range to upper/lower limits
+#'
+#' Given a numeric vector and lower and upper limits of allowed values, set the values outside the accepted range to the nearest limit.
+#'
+#' Other methods to get the same result:
+#'
+#' 1. ifelse(v>upper,upper,ifelse(v<lower,lower,v))
+#'
+#' 2. v[v<upper] <- upper
+#'    v[v>lower] <- lower
+#'
+# (1) is slowest, (2) is sometimes faster than set_limits
+# (note: this has not been tested extensively)
+#'
+#' @param v Numeric vector
+#' @param lower Lower limit, single numeric value
+#' @param upper Upper limit, single numeric value
+#' @param na.rm How to treat NA values
+#' @return Numeric vector where values beyond the accepted range have been converted to the lower/upper limits
+#' @examples
+#' v <- 1:10
+#' l <- 3
+#' v <- set_limits(v,l)
+#'
+#' v <- rnorm(1e5)
+#' l <- -2
+#' u <- 2
+#'
+#' ptm <- Sys.time()
+#' v <- set_limits(v,l,u)
+#' print(Sys.time()-ptm)
+#'
+#' ptm <- Sys.time()
+#' v[v<l] <- l
+#' v[v>u] <- u
+#' print(Sys.time()-ptm)
+#'
+#' @export
+set_limits <- function(v, lower=-Inf, upper=Inf, na.rm=TRUE) {
+    pmax(pmin(v,upper,na.rm=na.rm),lower,na.rm=na.rm)
+}

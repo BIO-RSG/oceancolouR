@@ -70,3 +70,36 @@ raster_to_matrix <- function(r, rnames) {
 order_string <- function(x) {
     paste0(stringr::str_sort(unlist(strsplit(x, split = ""))), collapse="")
 }
+
+
+#' Make scales of patchwork object the same
+#'
+#' Given a patchwork object (see patchwork library), make the x and/or y scales of the plots the same.
+#'
+#' Note that if you want to manually adjust scales (ymin, ymax, etc), you should do it in each plot using, for example, scale_y_continuous limits. Here, xmin/xmax are only used if xsame=TRUE, and ymin/ymax are only used if ysame=TRUE.
+#'
+#' @param p Patchwork object
+#' @param xsame TRUE/FALSE, should x axes be the same?
+#' @param ysame TRUE/FALSE, should y axes be the same?
+#' @param xmin Optional minimum value for x axis (see details)
+#' @param xmax Optional maximum value for x axis (see details)
+#' @param ymin Optional minimum value for y axis (see details)
+#' @param ymax Optional maximum value for y axis (see details)
+#' @return Patchwork object, with axes adjusted
+#' @export
+same_scales <- function(p, xsame=TRUE, ysame=TRUE, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) {
+    if (xsame) {
+        p_ranges_x <- sapply(1:length(p), function(i) ggplot2::ggplot_build(p[[i]])$layout$panel_scales_x[[1]]$range$range)
+        new_xmin <- max(c(min(p_ranges_x), xmin))
+        new_xmax <- min(c(max(p_ranges_x), xmax))
+        p_new <- p & ggplot2::xlim(new_xmin, new_xmax)
+    }
+    if (ysame) {
+        p_ranges_y <- sapply(1:length(p), function(i) ggplot2::ggplot_build(p[[i]])$layout$panel_scales_y[[1]]$range$range)
+        new_ymin <- max(c(min(p_ranges_y), ymin))
+        new_ymax <- min(c(max(p_ranges_y), ymax))
+        p_new <- p & ggplot2::ylim(new_ymin, new_ymax)
+    }
+    return(p_new)
+}
+

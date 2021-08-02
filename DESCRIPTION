@@ -28,7 +28,8 @@ Imports:
     ggplot2,
     dplyr,
     patchwork,
-    tidyr
+    tidyr,
+    geodist
 Suggests: 
     knitr,
     rmarkdown
