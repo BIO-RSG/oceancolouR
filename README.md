@@ -22,9 +22,6 @@ This package is in continuing development, but the following list is some (not a
 * `week8()`, `week8_date`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
 
-Hello
-
-
 ## How to install
 
 ``` r
