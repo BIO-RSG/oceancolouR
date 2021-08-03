@@ -54,14 +54,15 @@ First you need to install the package dependencies:
 
 ```{r}
 #install.packages(c("lubridate", "raster", "hdf5r", "latticeExtra", "sp",
-#                   "maptools", "scales", "lmodel2", "stringr", "boot"))
+#                   "maptools", "scales", "lmodel2", "stringr", "boot",
+#                   "dplyr", "tidyr", "ggplot2", "patchwork", "geodist"))
 ```
 
 Then install `oceancolouR` using one of the commands below, and restart R:  
 
 ```{r}
-#remotes::install_github("BIO-RSG/oceancolouR")
-#devtools::install_github("BIO-RSG/oceancolouR")
+#remotes::install_github("BIO-RSG/oceancolouR", build_vignettes = TRUE)
+#devtools::install_github("BIO-RSG/oceancolouR", build_vignettes = TRUE)
 ```
 
 Now load the package:  
