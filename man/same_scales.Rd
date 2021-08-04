@@ -2,7 +2,7 @@
 % Please edit documentation in R/formatting.R
 \name{same_scales}
 \alias{same_scales}
-\title{Make scales of patchwork object the same}
+\title{Make scales of list of ggplot objects the same}
 \usage{
 same_scales(
   p,
@@ -15,7 +15,7 @@ same_scales(
 )
 }
 \arguments{
-\item{p}{Patchwork object}
+\item{p}{List of ggplot objects}
 
 \item{xsame}{TRUE/FALSE, should x axes be the same?}
 
@@ -30,11 +30,26 @@ same_scales(
 \item{ymax}{Optional maximum value for y axis (see details)}
 }
 \value{
-Patchwork object, with axes adjusted
+Same list of ggplots, with axes adjusted
 }
 \description{
-Given a patchwork object (see patchwork library), make the x and/or y scales of the plots the same.
+Given a list of ggplots, make the x and/or y scales of the plots the same.
 }
 \details{
 Note that if you want to manually adjust scales (ymin, ymax, etc), you should do it in each plot using, for example, scale_y_continuous limits. Here, xmin/xmax are only used if xsame=TRUE, and ymin/ymax are only used if ysame=TRUE.
+}
+\examples{
+library(ggplot2)
+library(patchwork) # for wrap_plots
+
+p1 <- ggplot(data.frame(x=1:100,y1=1:100), aes(x=x,y=y1)) + geom_point()
+p2 <- ggplot(data.frame(x=1:100,y2=rnorm(100)), aes(x=x,y=y2)) + geom_point()
+p3 <- ggplot(data.frame(x=1:100,y3=50:-49), aes(x=x,y=y3)) + geom_point()
+p4 <- ggplot(data.frame(x=4:5, y4=1:2), aes(x=x,y=y4)) + geom_point()
+p <- list(p1, p2, p3, p4)
+
+wrap_plots(p)
+wrap_plots(same_scales(p))
+wrap_plots(same_scales(p, xsame=FALSE))
+
 }

@@ -72,33 +72,48 @@ order_string <- function(x) {
 }
 
 
-#' Make scales of patchwork object the same
+#' Make scales of list of ggplot objects the same
 #'
-#' Given a patchwork object (see patchwork library), make the x and/or y scales of the plots the same.
+#' Given a list of ggplots, make the x and/or y scales of the plots the same.
 #'
 #' Note that if you want to manually adjust scales (ymin, ymax, etc), you should do it in each plot using, for example, scale_y_continuous limits. Here, xmin/xmax are only used if xsame=TRUE, and ymin/ymax are only used if ysame=TRUE.
 #'
-#' @param p Patchwork object
+#' @param p List of ggplot objects
 #' @param xsame TRUE/FALSE, should x axes be the same?
 #' @param ysame TRUE/FALSE, should y axes be the same?
 #' @param xmin Optional minimum value for x axis (see details)
 #' @param xmax Optional maximum value for x axis (see details)
 #' @param ymin Optional minimum value for y axis (see details)
 #' @param ymax Optional maximum value for y axis (see details)
-#' @return Patchwork object, with axes adjusted
+#' @return Same list of ggplots, with axes adjusted
+#' @examples
+#' library(ggplot2)
+#' library(patchwork) # for wrap_plots
+#'
+#' p1 <- ggplot(data.frame(x=1:100,y1=1:100), aes(x=x,y=y1)) + geom_point()
+#' p2 <- ggplot(data.frame(x=1:100,y2=rnorm(100)), aes(x=x,y=y2)) + geom_point()
+#' p3 <- ggplot(data.frame(x=1:100,y3=50:-49), aes(x=x,y=y3)) + geom_point()
+#' p4 <- ggplot(data.frame(x=4:5, y4=1:2), aes(x=x,y=y4)) + geom_point()
+#' p <- list(p1, p2, p3, p4)
+#'
+#' wrap_plots(p)
+#' wrap_plots(same_scales(p))
+#' wrap_plots(same_scales(p, xsame=FALSE))
+#'
 #' @export
 same_scales <- function(p, xsame=TRUE, ysame=TRUE, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) {
+    p_new <- p
     if (xsame) {
         p_ranges_x <- sapply(1:length(p), function(i) ggplot2::ggplot_build(p[[i]])$layout$panel_scales_x[[1]]$range$range)
         new_xmin <- max(c(min(p_ranges_x), xmin))
         new_xmax <- min(c(max(p_ranges_x), xmax))
-        p_new <- p & ggplot2::xlim(new_xmin, new_xmax)
+        p_new <- lapply(1:length(p_new), function(i) {p_new[[i]] + ggplot2::xlim(new_xmin, new_xmax)})
     }
     if (ysame) {
         p_ranges_y <- sapply(1:length(p), function(i) ggplot2::ggplot_build(p[[i]])$layout$panel_scales_y[[1]]$range$range)
         new_ymin <- max(c(min(p_ranges_y), ymin))
         new_ymax <- min(c(max(p_ranges_y), ymax))
-        p_new <- p & ggplot2::ylim(new_ymin, new_ymax)
+        p_new <- lapply(1:length(p_new), function(i) {p_new[[i]] + ggplot2::ylim(new_ymin, new_ymax)})
     }
     return(p_new)
 }
