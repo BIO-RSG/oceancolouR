@@ -29,9 +29,9 @@ gsm(
 )
 }
 \arguments{
-\item{rrs}{Remote sensing reflectances below sea level, numeric vector}
+\item{rrs}{Remote sensing reflectances below sea level, numeric vector, MUST be ordered from shortest wavelength to longest}
 
-\item{lambda}{Wavelengths corresponding to rrs, numeric vector}
+\item{lambda}{Wavelengths corresponding to rrs, numeric vector, MUST be in same order as rrs}
 
 \item{iop3}{Numeric vector of starting guesses for nls (nonlinear least squares) parameters, in this order: chl, adg443, bbp443}
 

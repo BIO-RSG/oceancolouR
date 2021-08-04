@@ -159,8 +159,8 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #'
 #' Acceptable range of IOPs defined as: 0 <= chla <= 64, 0.0001 <= adg443 <= 2, 0.0001 <= bbp443 <= 0.1
 #'
-#' @param rrs Remote sensing reflectances below sea level, numeric vector
-#' @param lambda Wavelengths corresponding to rrs, numeric vector
+#' @param rrs Remote sensing reflectances below sea level, numeric vector, MUST be ordered from shortest wavelength to longest
+#' @param lambda Wavelengths corresponding to rrs, numeric vector, MUST be in same order as rrs
 #' @param iop3 Numeric vector of starting guesses for nls (nonlinear least squares) parameters, in this order: chl, adg443, bbp443
 #' @param adg_exp Numeric value, exponent on the adg term
 #' @param bbp_exp Numeric value, exponent on the bbp term
