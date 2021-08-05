@@ -130,6 +130,7 @@ same_scales <- function(p, xsame=TRUE, ysame=TRUE, xmin=-Inf, xmax=Inf, ymin=-In
 #' p <- ggplot(data.frame(x1=1:100,y1=50:-49), aes(x=x1,y=y1)) + geom_point()
 #' get_ranges(p)
 #'
+#' @export
 get_ranges <- function(p) {
     xranges <- ggplot2::ggplot_build(p)$layout$panel_scales_x[[1]]$range$range
     yranges <- ggplot2::ggplot_build(p)$layout$panel_scales_y[[1]]$range$range
