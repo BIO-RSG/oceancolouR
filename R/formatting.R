@@ -104,17 +104,35 @@ order_string <- function(x) {
 same_scales <- function(p, xsame=TRUE, ysame=TRUE, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) {
     p_new <- p
     if (xsame) {
-        p_ranges_x <- sapply(1:length(p), function(i) ggplot2::ggplot_build(p[[i]])$layout$panel_scales_x[[1]]$range$range)
+        p_ranges_x <- sapply(1:length(p), function(i) get_ranges(p[[i]])$x)
         new_xmin <- max(c(min(p_ranges_x), xmin))
         new_xmax <- min(c(max(p_ranges_x), xmax))
         p_new <- lapply(1:length(p_new), function(i) {p_new[[i]] + ggplot2::xlim(new_xmin, new_xmax)})
     }
     if (ysame) {
-        p_ranges_y <- sapply(1:length(p), function(i) ggplot2::ggplot_build(p[[i]])$layout$panel_scales_y[[1]]$range$range)
+        p_ranges_y <- sapply(1:length(p), function(i) get_ranges(p[[i]])$y)
         new_ymin <- max(c(min(p_ranges_y), ymin))
         new_ymax <- min(c(max(p_ranges_y), ymax))
         p_new <- lapply(1:length(p_new), function(i) {p_new[[i]] + ggplot2::ylim(new_ymin, new_ymax)})
     }
     return(p_new)
+}
+
+
+#' Get ggplot scale ranges
+#'
+#' Given a ggplot object, get the ranges of the x and y scales.
+#'
+#' @param p A ggplot object
+#' @return Named list with x and y axis ranges
+#' @examples
+#' library(ggplot2)
+#' p <- ggplot(data.frame(x1=1:100,y1=50:-49), aes(x=x1,y=y1)) + geom_point()
+#' get_ranges(p)
+#'
+get_ranges <- function(p) {
+    xranges <- ggplot2::ggplot_build(p)$layout$panel_scales_x[[1]]$range$range
+    yranges <- ggplot2::ggplot_build(p)$layout$panel_scales_y[[1]]$range$range
+    return(list(x=xranges,y=yranges))
 }
 
