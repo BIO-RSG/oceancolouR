@@ -15,6 +15,7 @@ This package is in continuing development, but the following list is some (not a
 
 **Other:** 
 
+* `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell)
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
 * `haversine()`: calculate haversine distance between two points
@@ -76,6 +77,9 @@ Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algor
 
 **Integerized Sinusoidal Binning Scheme:**  
 https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/  
+
+**In situ matchups and filtered mean:**
+Bailey, Sean & Werdell, Jeremy. (2006). A multi-sensor approach for the on-orbit validation of ocean color satellite data products. Remote Sensing of Environment. 102. 12-23. 10.1016/j.rse.2006.01.015.
 
 
 
