@@ -15,7 +15,7 @@ This package is in continuing development, but the following list is some (not a
 
 **Other:** 
 
-* `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell)
+* `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell, 2006)
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
 * `haversine()`: calculate haversine distance between two points
