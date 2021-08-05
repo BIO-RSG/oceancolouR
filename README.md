@@ -29,6 +29,15 @@ remotes::install_github("BIO-RSG/oceancolouR", build_vignettes = TRUE)
 #devtools::install_github("BIO-RSG/oceancolouR", build_vignettes = TRUE)
 ```
 
+## Vignette
+
+To access the vignette in RStudio, type the following in the console:  
+
+``` r
+vignette(topic="introduction", package="oceancolouR")
+```
+
+
 ## Datasets
 
 There are numeric vectors included in the package, which give the bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA binned images, for the Pan-Canadian grid, Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence (approximate boundaries defined below in decimal degrees), at both 4km and 9km resolution.  
