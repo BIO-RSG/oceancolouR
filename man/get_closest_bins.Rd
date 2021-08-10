@@ -30,8 +30,6 @@ geo_df dataframe with new columns "dist" (distance to closest bin(s), in metres)
 If you have a dataframe of longitudes and latitudes, find the closest bin numbers from NASA's 4km or 9km-resolution L3b (level-3 binned) files.
 }
 \details{
-Warning: As of 30 Jul 2021, if there is more than one closest bin, this will crash.
-
 Bin/lat/lon vectors used for the bin_df variable can be loaded using the command data("region_variable_resolution"), where:
 
 region is either pancan, nwa, nep, or gosl, variable is either bins, lats, lons, or bath, and resolution is either 4km or 9km
