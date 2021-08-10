@@ -4,14 +4,14 @@
 \alias{get_bins}
 \title{Get bin info at 4km and 9km resolution}
 \usage{
-get_bins(region = "pancan", resolution = "4km")
+get_bins(region = "pancan", resolution = "4km", variables = "all")
 }
 \arguments{
 \item{region}{String, either "pancan", "nwa", "nep", or "gosl"}
 
 \item{resolution}{String, either "4km" or "9km".}
 
-\item{returninfo}{String with columns: blank or "all" for all columns, or a subset of c("bin","longitude","latitude","bathymetry")}
+\item{variables}{String with columns: blank or "all" for all columns, or a subset of c("bin","longitude","latitude","bathymetry")}
 }
 \value{
 Data frame with columns of bin, longitude, latitude, bathymetry

@@ -88,7 +88,7 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
 #'
 #' @param region String, either "pancan", "nwa", "nep", or "gosl"
 #' @param resolution String, either "4km" or "9km".
-#' @param returninfo String with columns: blank or "all" for all columns, or a subset of c("bin","longitude","latitude","bathymetry")
+#' @param variables String with columns: blank or "all" for all columns, or a subset of c("bin","longitude","latitude","bathymetry")
 #' @return Data frame with columns of bin, longitude, latitude, bathymetry
 #' @examples
 #' library(dplyr)
@@ -104,8 +104,14 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
 #'    scale_colour_gradientn(colours = pals::ocean.deep(30))
 #' @export
 #'
-get_bins <- function(region = "pancan", resolution = "4km") {
-    data(paste0(region,"_",resolution))
+get_bins <- function(region = "pancan", resolution = "4km", variables = "all") {
+    reginfo = paste0(region,"_",resolution)
+    bins <- (function(v) get(data(list=reginfo)))(reginfo)
+    # bins <- (function(v) get(data(list=reginfo, package="oceancolouR", envir = new.env())))(reginfo)
+    if (any(variables != "all")) {
+        bins = bins[,which(names(bins) %in% variables)]
+    }
+    return(bins)
 }
 
 #' Plot panCanadian L3b file
