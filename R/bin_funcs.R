@@ -82,6 +82,31 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
 
 }
 
+#' Get bin info at 4km and 9km resolution
+#'
+#' Get corresponding bin number, latitude, longitude and depth for Pan-Canadian Grid or subregions
+#'
+#' @param region String, either "pancan", "nwa", "nep", or "gosl"
+#' @param resolution String, either "4km" or "9km".
+#' @param returninfo String with columns: blank or "all" for all columns, or a subset of c("bin","longitude","latitude","bathymetry")
+#' @return Data frame with columns of bin, longitude, latitude, bathymetry
+#' @examples
+#' library(dplyr)
+#' library(ggplot2)
+#' library(oceancolouR)
+#'
+#' pancan_bins_4km <- get_bins()
+#'
+#' # Map of the North West Atlantic bin bathymetry
+#' get_bins(region = "nwa", resolution = "9km") %>%
+#' ggplot(aes(x = longitude, y = latitude, colour = bathymetry)) +
+#'    geom_point(size = 0.5) +
+#'    scale_colour_gradientn(colours = pals::ocean.deep(30))
+#' @export
+#'
+get_bins <- function(region = "pancan", resolution = "4km") {
+    data(paste0(region,"_",resolution))
+}
 
 #' Plot panCanadian L3b file
 #'
@@ -109,7 +134,6 @@ plot_pancan <- function(vec, region="pancan", ext=c(xmn=-147, xmx=-41, ymn=39, y
     rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
     return(raster::spplot(raster::crop(rast, raster::extent(ext)), zlim=limits) + latticeExtra::layer(sp::sp.polygons(wrld_simpl)))
 }
-
 
 #' Condense a matrix by averaging selected columns
 #'
