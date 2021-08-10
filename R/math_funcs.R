@@ -239,6 +239,8 @@ pos_angle <- function(x) {
 #' @examples
 #' filtered_mean(rnorm(50))
 #' filtered_mean(matrix(rnorm(60),nrow=12,ncol=5))
+#' @references
+#' Bailey, Sean & Werdell, Jeremy. (2006). A multi-sensor approach for the on-orbit validation of ocean color satellite data products. Remote Sensing of Environment. 102. 12-23. 10.1016/j.rse.2006.01.015.
 #'
 #' @export
 filtered_mean <- function(var) {
