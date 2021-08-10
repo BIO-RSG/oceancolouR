@@ -268,8 +268,8 @@ filtered_mean <- function(var) {
 #' 2. `v[v<upper] <- upper;`
 #'    `v[v>lower] <- lower`
 #'
-# (1) is slowest, (2) is sometimes faster than set_limits
-# (note: this has not been tested extensively)
+#' (1) is slowest, (2) is sometimes faster than set_limits
+#' (note: this has not been tested extensively)
 #'
 #' @param v Numeric vector
 #' @param lower Lower limit, single numeric value

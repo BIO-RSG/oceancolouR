@@ -28,6 +28,9 @@ Other methods to get the same result:
 \item \code{v[v<upper] <- upper;}
 \code{v[v>lower] <- lower}
 }
+
+(1) is slowest, (2) is sometimes faster than set_limits
+(note: this has not been tested extensively)
 }
 \examples{
 v <- 1:10
