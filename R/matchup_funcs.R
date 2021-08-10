@@ -48,7 +48,7 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #'                      stringsAsFactors = FALSE)
 #' # note that this example is using a bin grid restricted to the Northwest Atlantic (NWA),
 #' # so if any points in geo_df are near the edge of the grid, they might have fewer matching bins
-#' bin_df <- get_bins(region="nwa", resolution="4km", variables=c("bin","l))
+#' bin_df <- get_bins(region="nwa", resolution="4km", variables=c("bin","latitude","longitude"))
 #'
 #' # get closest bins within 10km, limited to the 50 closest bins
 #' closest_bins <- get_closest_bins(geo_df=geo_df, bin_df=bin_df, max_bins=50, radius=10000)
