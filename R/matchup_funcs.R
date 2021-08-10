@@ -34,11 +34,7 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #'
 #' If you have a dataframe of longitudes and latitudes, find the closest bin numbers from NASA's 4km or 9km-resolution L3b (level-3 binned) files.
 #'
-#' Bin/lat/lon vectors used for the bin_df variable can be loaded using the command data("region_variable_resolution"), where:
-#'
-#' region is either pancan, nwa, nep, or gosl, variable is either bins, lats, lons, or bath, and resolution is either 4km or 9km
-#'
-#' (see examples)
+#' Bin/lat/lon data can be retrieved using the get_bins() function (see examples).
 #'
 #' @param geo_df Dataframe with numeric columns longitude, latitude
 #' @param bin_df Dataframe with numeric columns bin, longitude, latitude (created using the bin, lon, lat vectors in this package, see details)
@@ -47,21 +43,14 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #' @param radius Maximum distance between lat/lon pair and bin lat/lon (in metres)
 #' @return geo_df dataframe with new columns "dist" (distance to closest bin(s), in metres), "bin" (closest bin number(s)), and bin_latitude/longitude
 #' @examples
-#' data("nwa_bins_4km")
-#' data("nwa_lons_4km")
-#' data("nwa_lats_4km")
-#'
 #' # note that this example is using a bin grid restricted to the Northwest Atlantic (NWA),
 #' # so if any points in geo_df are near the edge of the grid, they might have fewer matching bins
 #' geo_df <- data.frame(latitude=c(43.76299,43.6579,43.47346,51.83278,52.19771,60.32528,60.19208,52.28504,52.06484,44.6917,47.46267),
 #'                      longitude=c(-62.7525,-62.6464,-62.45467,-46.45183,-45.65968,-48.6459,-48.68755,-53.53753,-54.30495,-63.6417,-59.95133),
 #'                      stringsAsFactors = FALSE)
-#' bin_df <- data.frame(bin=nwa_bins_4km,
-#'                      latitude=nwa_lats_4km,
-#'                      longitude=nwa_lons_4km,
-#'                      stringsAsFactors = FALSE)
+#' bin_df <- get_bins(region="nwa", resolution="4km", variables=c("bin","l))
 #'
-#' # get closest bins within 10km
+#' # get closest bins within 10km, limited to the 50 closest bins
 #' closest_bins <- get_closest_bins(geo_df=geo_df, bin_df=bin_df, max_bins=50, radius=10000)
 #' head(closest_bins)
 #'
