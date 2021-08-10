@@ -8,7 +8,7 @@ get_closest_bins(
   geo_df,
   bin_df,
   measure = "geodesic",
-  max_bins = 1,
+  max_bins = 100,
   radius = Inf
 )
 }
