@@ -30,7 +30,7 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 }
 
 
-#' Given lat/lon, find closest bin
+#' Given lat/lon, find closest bin(s)
 #'
 #' If you have a dataframe of longitudes and latitudes, find the closest bin numbers from NASA's 4km or 9km-resolution L3b (level-3 binned) files.
 #'
@@ -38,21 +38,23 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #'
 #' Bin/lat/lon vectors used for the bin_df variable can be loaded using the command data("region_variable_resolution"), where:
 #'
-#'    region is either pancan, nwa, nep, or gosl
-#'    variable is either bins, lats, lons, or bath
-#'    resolution is either 4km or 9km
+#' region is either pancan, nwa, nep, or gosl, variable is either bins, lats, lons, or bath, and resolution is either 4km or 9km
 #'
 #' (see examples)
 #'
 #' @param geo_df Dataframe with numeric columns longitude, latitude
 #' @param bin_df Dataframe with numeric columns bin, longitude, latitude (created using the bin, lon, lat vectors in this package, see details)
 #' @param measure Algorithm to use for distance calculation, see "measure" in ?geodist::geodist
-#' @return geo_df dataframe with new columns "dist" (distance to closest bin, in metres) and "bin" (closest bin number)
+#' @param max_bins Maximum number of closest bins to return (<= 25)
+#' @param radius Maximum distance between lat/lon pair and bin lat/lon (in metres)
+#' @return geo_df dataframe with new columns "dist" (distance to closest bin(s), in metres), "bin" (closest bin number(s)), and bin_latitude/longitude
 #' @examples
 #' data("nwa_bins_4km")
 #' data("nwa_lons_4km")
 #' data("nwa_lats_4km")
 #'
+#' # note that this example is using a bin grid restricted to the Northwest Atlantic (NWA),
+#' # so if any points in geo_df are near the edge of the grid, they might have fewer matching bins
 #' geo_df <- data.frame(latitude=c(43.76299,43.6579,43.47346,51.83278,52.19771,60.32528,60.19208,52.28504,52.06484,44.6917,47.46267),
 #'                      longitude=c(-62.7525,-62.6464,-62.45467,-46.45183,-45.65968,-48.6459,-48.68755,-53.53753,-54.30495,-63.6417,-59.95133),
 #'                      stringsAsFactors = FALSE)
@@ -61,24 +63,38 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #'                      longitude=nwa_lons_4km,
 #'                      stringsAsFactors = FALSE)
 #'
-#' closest_bins <- get_closest_bin(geo_df=geo_df, bin_df=bin_df)
+#' # get closest bins within 5km
+#' # maximum 30 matched bins for each lat/lon (this will be reset to 25 in the function, with a warning)
+#' closest_bins <- get_closest_bins(geo_df=geo_df, bin_df=bin_df, max_bins=30, radius=5000)
+#' head(closest_bins)
 #'
 #' @importFrom magrittr "%>%"
 #' @export
-get_closest_bins <- function(geo_df, bin_df, measure="geodesic") {
-    dplyr::bind_cols(
-        geo_df,
-        lapply(1:nrow(geo_df),
-               function(i) {
-                   geo_lon <- geo_df$longitude[i]
-                   geo_lat <- geo_df$latitude[i]
-                   tmp_bin_df <- bin_df %>% dplyr::filter(abs(latitude - geo_lat) < 1 & abs(longitude - geo_lon) < 1)
-                   tmp_bin_df$dist <- as.numeric(geodist::geodist(x=data.frame(longitude=geo_lon, latitude=geo_lat),
-                                                                  y=tmp_bin_df %>% dplyr::select(longitude, latitude),
-                                                                  measure=measure))
-                   tmp_bin_df[which.min(tmp_bin_df$dist),c("dist","bin")]
-               }) %>%
-            do.call(rbind, .)
-    )
+get_closest_bins <- function(geo_df, bin_df, measure="geodesic", max_bins=1, radius=Inf) {
+    if (max_bins > 25) {
+        max_bins <- 25
+        print("Warning: max_bins has been set to 25")
+    }
+    geo_df$id <- 1:nrow(geo_df)
+    matched_bins <- lapply(1:nrow(geo_df),
+                           function(i) {
+                               geo_lon <- geo_df$longitude[i]
+                               geo_lat <- geo_df$latitude[i]
+                               tmp_bin_df <- bin_df %>% dplyr::filter(abs(latitude - geo_lat) < 1 & abs(longitude - geo_lon) < 1)
+                               tmp_bin_df$dist <- as.numeric(geodist::geodist(x=data.frame(longitude=geo_lon, latitude=geo_lat),
+                                                                              y=tmp_bin_df %>% dplyr::select(longitude, latitude),
+                                                                              measure=measure))
+                               tmp_bin_df <- tmp_bin_df %>%
+                                   dplyr::arrange(dist) %>%
+                                   dplyr::slice_head(n=max_bins) %>%
+                                   dplyr::filter(dist<=radius) %>%
+                                   dplyr::rename(bin_latitude=latitude,
+                                                 bin_longitude=longitude) %>%
+                                   dplyr::mutate(id=geo_df$id[i])
+                               return(tmp_bin_df)
+                           }) %>%
+        do.call(rbind, .)
+    matched_bins[,c("latitude","longitude")] <- geo_df[matched_bins$id,c("latitude","longitude")]
+    return(matched_bins[,c(6,7,1:4)])
 }
 

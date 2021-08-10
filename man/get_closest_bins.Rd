@@ -2,9 +2,15 @@
 % Please edit documentation in R/matchup_funcs.R
 \name{get_closest_bins}
 \alias{get_closest_bins}
-\title{Given lat/lon, find closest bin}
+\title{Given lat/lon, find closest bin(s)}
 \usage{
-get_closest_bins(geo_df, bin_df, measure = "geodesic")
+get_closest_bins(
+  geo_df,
+  bin_df,
+  measure = "geodesic",
+  max_bins = 1,
+  radius = Inf
+)
 }
 \arguments{
 \item{geo_df}{Dataframe with numeric columns longitude, latitude}
@@ -12,9 +18,13 @@ get_closest_bins(geo_df, bin_df, measure = "geodesic")
 \item{bin_df}{Dataframe with numeric columns bin, longitude, latitude (created using the bin, lon, lat vectors in this package, see details)}
 
 \item{measure}{Algorithm to use for distance calculation, see "measure" in ?geodist::geodist}
+
+\item{max_bins}{Maximum number of closest bins to return (<= 25)}
+
+\item{radius}{Maximum distance between lat/lon pair and bin lat/lon (in metres)}
 }
 \value{
-geo_df dataframe with new columns "dist" (distance to closest bin, in metres) and "bin" (closest bin number)
+geo_df dataframe with new columns "dist" (distance to closest bin(s), in metres), "bin" (closest bin number(s)), and bin_latitude/longitude
 }
 \description{
 If you have a dataframe of longitudes and latitudes, find the closest bin numbers from NASA's 4km or 9km-resolution L3b (level-3 binned) files.
@@ -24,9 +34,7 @@ Warning: As of 30 Jul 2021, if there is more than one closest bin, this will cra
 
 Bin/lat/lon vectors used for the bin_df variable can be loaded using the command data("region_variable_resolution"), where:
 
-region is either pancan, nwa, nep, or gosl
-variable is either bins, lats, lons, or bath
-resolution is either 4km or 9km
+region is either pancan, nwa, nep, or gosl, variable is either bins, lats, lons, or bath, and resolution is either 4km or 9km
 
 (see examples)
 }
@@ -35,6 +43,8 @@ data("nwa_bins_4km")
 data("nwa_lons_4km")
 data("nwa_lats_4km")
 
+# note that this example is using a bin grid restricted to the Northwest Atlantic (NWA),
+# so if any points in geo_df are near the edge of the grid, they might have fewer matching bins
 geo_df <- data.frame(latitude=c(43.76299,43.6579,43.47346,51.83278,52.19771,60.32528,60.19208,52.28504,52.06484,44.6917,47.46267),
                      longitude=c(-62.7525,-62.6464,-62.45467,-46.45183,-45.65968,-48.6459,-48.68755,-53.53753,-54.30495,-63.6417,-59.95133),
                      stringsAsFactors = FALSE)
@@ -43,6 +53,9 @@ bin_df <- data.frame(bin=nwa_bins_4km,
                      longitude=nwa_lons_4km,
                      stringsAsFactors = FALSE)
 
-closest_bins <- get_closest_bin(geo_df=geo_df, bin_df=bin_df)
+# get closest bins within 5km
+# maximum 30 matched bins for each lat/lon (this will be reset to 25 in the function, with a warning)
+closest_bins <- get_closest_bins(geo_df=geo_df, bin_df=bin_df, max_bins=30, radius=5000)
+head(closest_bins)
 
 }
