@@ -32,6 +32,7 @@ knitr::opts_chunk$set(
 
 **Working with L3b files:**  
 
+* `get_bins()`: retrieve the bin numbers with corresponding longitude, latitude and bathymetry for the Pan-Canadian grid and sub-regions
 * `gen_start_bin()`: given a resolution (4km or 9km), generate bin numbers at the start of the row on the global grid  
 * `gen_bin_grid()`: given a resolution (4km or 9km), generate a global grid of bin numbers  
 * `var_to_rast()`: given a dataframe with column1=bin number and column2=variable, plot the variable on a raster map  
@@ -41,12 +42,12 @@ knitr::opts_chunk$set(
 
 **Other:**  
 
-* `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
-* `haversine()`: calculate haversine distance between two points
-* `geoMean()`: calculate geometric mean
+* `all_lambda`: returns wavebands for commonly used ocean colour sensors
+* `geoMean()` and `geoSD()`: calculate geometric mean and geometric standard deviation
 * `week8()`, `week8_date`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
-
+* `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
+* `haversine()`: calculate haversine distance between two points
 
 ## How to install
 
@@ -72,36 +73,32 @@ library(oceancolouR)
 ```
 
 
-## Datasets
+## L3BIN Data
 
-There are numeric vectors included in the package, which give the bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA level-3 daily binned images, for the Pan-Canadian grid, Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence (approximate boundaries defined below in decimal degrees), at both 4km and 9km resolution.  
+At level 3, pixels are assigned to a static location on the earth surface ("bin"). Included are numeric vectors which give bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA level-3 daily binned images at 4km and 9km resolution. These cover the Pan-Canadian grid and selected subregions (Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence) with approximate latitude and longitude boundaries:  
 
-    * Pan-Canadian grid:        -147 to -41, 39 to 86  
-    * Northwest Atlantic:       -95 to -42, 39 to 82  
-    * Northeast Pacific:        -140 to -122, 46 to 60  
-    * Gulf of Saint Lawrence:   -75 to -49, 41 to 53  
+    * Pan-Canadian grid ("pancan"):        -147 to -41, 39 to 86  
+    * Northwest Atlantic ("nwa"):       -95 to -42, 39 to 82  
+    * Northeast Pacific ("nep"):        -140 to -122, 46 to 60  
+    * Gulf of Saint Lawrence ("gosl"):   -75 to -49, 41 to 53  
 
-Datasets can be loaded using the following command:  `data("region_variable_resolution")`, where:  
+These datasets can be loaded using the `get_bins()` function where:  
 
-- *region* is either *pancan*, *nwa*, *nep*, or *gosl*  
-- *variable* is either *bins*, *lats*, *lons*, or *bath*  
-- *resolution* is either *4km* or *9km*  
+- *region* is either *pancan*, *nwa*, *nep*, or *gosl*   
+- *resolution* is either *4km* or *9km*
+- *variables* include *bin*, *latitude*, *longitude* and *bathymetry* 
 
 For example:  
 
-```{r}
-data("nwa_lons_4km")
-str(nwa_lons_4km)
-```
+`bindata <- get_bins()` returns bin numbers with corresponding latitude, longitude and bathymetry for the Pan-Canadian grid at 4km resolution
 
-## Variables
+`bindata <- get_bins(region = "nwa", resolution = "9km", variables = c("bin","bathymetry"))` returns the bin numbers and corresponding bathymetry for the Northwest Atlantic at 9km resolution.
 
-- `num_pix`  
-- `lon_bounds`  
-- `lat_bounds`  
-- `all_lambda`  
+### Other Info
 
-The package contains a few variables as well -- Named lists of the number of pixels in the dataset vectors for each region and resolution, as well as their longitude and latitude bounds (`num_pix`, `lon_bounds`, and `lat_bounds`, respectively), printed below using do.call and cbind to simplify the output:  
+`num_pix` quickly returns the number of bins (/pixels) in each subregion, and `lon_bounds` and `lat_bounds` return the corresponding longitude and latitude bounds.
+
+Or, using do.call and cbind to simplify the output:  
 
 ```{r}
 do.call(cbind, num_pix)
@@ -109,9 +106,10 @@ do.call(cbind, lon_bounds)
 do.call(cbind, lat_bounds)
 ```
 
-... and the list of wavebands (in nanometres) for commonly-used sensors:  
+Other reference info includes `all_lambda`, a list of wavebands (in nanometres) for commonly-used ocean colour sensors:
+
 ```{r}
-all_lambda
+str(all_lambda)
 ```
 
 ## Examples
