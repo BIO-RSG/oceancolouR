@@ -45,7 +45,7 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #' @param geo_df Dataframe with numeric columns longitude, latitude
 #' @param bin_df Dataframe with numeric columns bin, longitude, latitude (created using the bin, lon, lat vectors in this package, see details)
 #' @param measure Algorithm to use for distance calculation, see "measure" in ?geodist::geodist
-#' @param max_bins Maximum number of closest bins to return (<= 25)
+#' @param max_bins Maximum number of closest bins to return (<= 100)
 #' @param radius Maximum distance between lat/lon pair and bin lat/lon (in metres)
 #' @return geo_df dataframe with new columns "dist" (distance to closest bin(s), in metres), "bin" (closest bin number(s)), and bin_latitude/longitude
 #' @examples
@@ -63,17 +63,16 @@ get_match <- function(grid_x, grid_y, grid_values, x, y) {
 #'                      longitude=nwa_lons_4km,
 #'                      stringsAsFactors = FALSE)
 #'
-#' # get closest bins within 5km
-#' # maximum 30 matched bins for each lat/lon (this will be reset to 25 in the function, with a warning)
-#' closest_bins <- get_closest_bins(geo_df=geo_df, bin_df=bin_df, max_bins=30, radius=5000)
+#' # get closest bins within 10km
+#' closest_bins <- get_closest_bins(geo_df=geo_df, bin_df=bin_df, max_bins=50, radius=10000)
 #' head(closest_bins)
 #'
 #' @importFrom magrittr "%>%"
 #' @export
 get_closest_bins <- function(geo_df, bin_df, measure="geodesic", max_bins=1, radius=Inf) {
-    if (max_bins > 25) {
-        max_bins <- 25
-        print("Warning: max_bins has been set to 25")
+    if (max_bins > 100) {
+        max_bins <- 100
+        print("Warning: max_bins has been set to 100")
     }
     geo_df$id <- 1:nrow(geo_df)
     matched_bins <- lapply(1:nrow(geo_df),
