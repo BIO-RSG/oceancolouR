@@ -11,7 +11,7 @@
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr "group_by"
 #' @importFrom dplyr "ungroup"
-#' @importFrom dplyr "file"
+#' @importFrom dplyr "filter"
 #' @importFrom dplyr "mutate"
 #' @importFrom dplyr "summarise"
 #' @export
