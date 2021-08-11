@@ -8,10 +8,15 @@
 #' @param matlon If x is a matrix, it needs a matrix of latitudes with dim(matlon) == dim(x)
 #' @param matlat If x is a matrix, it needs a matrix of longitudes with dim(matlat) == dim(x)
 #' @return Filled RasterLayer or matrix
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr "group_by"
+#' @importFrom dplyr "ungroup"
+#' @importFrom dplyr "file"
+#' @importFrom dplyr "mutate"
+#' @importFrom dplyr "summarise"
 #' @export
 sparkle_fill <- function (x, min_sides = 4, fun = "med", matlon, matlat, ...) {
     if (class(x)[1] == "RasterLayer") {
-        require(dplyr)
         idx_na <- which(as.vector(is.na(x)) == TRUE)
         adj <- raster::adjacent(x, idx_na, directions = 8, include = F,
                                 id = T)
@@ -20,13 +25,11 @@ sparkle_fill <- function (x, min_sides = 4, fun = "med", matlon, matlat, ...) {
         adj <- adj %>% group_by(id) %>% mutate(n = sum(!is.na(val))) %>%
             ungroup() %>% filter(n >= (min_sides)) # Was 8 - min_sides before...
         if (fun == "mean") {
-            adj <- adj %>% group_by(id) %>% summarise(fillval = mean(val,
-                                                                     na.rm = T)) %>% ungroup()
+            adj <- adj %>% group_by(id) %>% summarise(fillval = mean(val, na.rm = T)) %>% ungroup()
             x[idx_na[adj$id]] <- adj$fillval
         }
         else if (fun == "median") {
-            adj <- adj %>% group_by(id) %>% summarise(fillval = median(val,
-                                                                       na.rm = T)) %>% ungroup()
+            adj <- adj %>% group_by(id) %>% summarise(fillval = median(val, na.rm = T)) %>% ungroup()
             x[idx_na[adj$id]] <- adj$fillval
         }
         else if (fun == "bilinear") {
@@ -40,7 +43,6 @@ sparkle_fill <- function (x, min_sides = 4, fun = "med", matlon, matlat, ...) {
             message("Please enter lat and lon matrices")
         }
         else {
-            require(dplyr)
             x <- raster::raster(x, xmn = min(matlon), xmx = max(matlon),
                                 ymn = min(matlat), ymx = max(matlat))
             idx_na <- which(as.vector(is.na(x)) == TRUE)
@@ -48,17 +50,13 @@ sparkle_fill <- function (x, min_sides = 4, fun = "med", matlon, matlat, ...) {
                                     include = F, id = T)
             adj <- as.data.frame(adj)
             adj$val <- x[adj$to]
-            adj <- adj %>% group_by(id) %>% mutate(n = sum(!is.na(val))) %>%
-                # ungroup() %>% filter(n >= (8 - min_sides))
-                ungroup() %>% filter(n >= (min_sides))
+            adj <- adj %>% group_by(id) %>% mutate(n = sum(!is.na(val))) %>% ungroup() %>% filter(n >= (min_sides))
             if (fun == "mean") {
-                adj <- adj %>% group_by(id) %>% summarise(fillval = mean(val,
-                                                                         na.rm = T)) %>% ungroup()
+                adj <- adj %>% group_by(id) %>% summarise(fillval = mean(val, na.rm = T)) %>% ungroup()
                 x[idx_na[adj$id]] <- adj$fillval
             }
             else if (fun == "median") {
-                adj <- adj %>% group_by(id) %>% summarise(fillval = median(val,
-                                                                           na.rm = T)) %>% ungroup()
+                adj <- adj %>% group_by(id) %>% summarise(fillval = median(val, na.rm = T)) %>% ungroup()
                 x[idx_na[adj$id]] <- adj$fillval
             }
             else if (fun == "bilinear") {
