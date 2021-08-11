@@ -4,7 +4,7 @@
 \alias{sparkle_fill}
 \title{Sparkle fill: fill small holes in raster or matrix}
 \usage{
-sparkle_fill(x, min_sides = 4, fun = "med", matlon, matlat, ...)
+sparkle_fill(x, min_sides = 4, fun = "median", matlon, matlat, ...)
 }
 \arguments{
 \item{x}{RasterLayer or matrix to fill gaps for}

@@ -15,7 +15,7 @@
 #' @importFrom dplyr "mutate"
 #' @importFrom dplyr "summarise"
 #' @export
-sparkle_fill <- function (x, min_sides = 4, fun = "med", matlon, matlat, ...) {
+sparkle_fill <- function (x, min_sides = 4, fun = "median", matlon, matlat, ...) {
     if (class(x)[1] == "RasterLayer") {
         idx_na <- which(as.vector(is.na(x)) == TRUE)
         adj <- raster::adjacent(x, idx_na, directions = 8, include = F,
@@ -54,16 +54,14 @@ sparkle_fill <- function (x, min_sides = 4, fun = "med", matlon, matlat, ...) {
             if (fun == "mean") {
                 adj <- adj %>% group_by(id) %>% summarise(fillval = mean(val, na.rm = T)) %>% ungroup()
                 x[idx_na[adj$id]] <- adj$fillval
-            }
-            else if (fun == "median") {
+            } else if (fun == "median") {
                 adj <- adj %>% group_by(id) %>% summarise(fillval = median(val, na.rm = T)) %>% ungroup()
                 x[idx_na[adj$id]] <- adj$fillval
-            }
-            else if (fun == "bilinear") {
+            } else if (fun == "bilinear") {
                 x2 <- raster::resample(x, x, "bilinear")
                 x[idx_na[adj$id]] <- x2[idx_na[adj$id]]
             }
-            x <- as.matrix(x)
+            x <- raster::as.matrix(x)
             return(x)
         }
     }
