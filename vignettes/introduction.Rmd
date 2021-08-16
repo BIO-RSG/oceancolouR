@@ -21,33 +21,51 @@ knitr::opts_chunk$set(
 )
 ```
 
-`oceancolouR` contains a collection of functions used in various projects in the BIO Remote Sensing Group, including functions to work with the level-3 binned ocean colour data downloaded from NASA, calculate chlorophyll-a using different algorithms, and some extra functions to simplify formatting and statistics. For example:  
+`oceancolouR` contains a collection of functions used in various projects in the BIO Remote Sensing Group, including functions to work with the level-3 binned ocean colour data downloaded from NASA, calculate chlorophyll-a using different algorithms, and some extra functions to simplify formatting and statistics. For example (click to expand):  
 
-**Chlorophyll-a algorithms:**  
-
+<details>
+<summary>Chlorophyll-a algorithms</summary>
 * `gsm()`: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
-* `oci()`, `ocx()` : OCI and OCX algorithms for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`
+* `ocx()`: OCX algorithm for MODIS-Aqua, VIIRS-SNPP and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`. This can also be used to calculate POLY4 chla (see examples below)
+* `ci()`, `hu()`, `oci()`: Color Index, Hu, and OCI (OCx-Hu combination) algorithms
 * `qaa()`: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
 * `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a  
+</details>
 
-**Working with L3b files:**  
-
+<details>
+<summary>Working with L3b files</summary>
 * `get_bins()`: retrieve the bin numbers with corresponding longitude, latitude and bathymetry for the Pan-Canadian grid and sub-regions
 * `gen_start_bin()`: given a resolution (4km or 9km), generate bin numbers at the start of the row on the global grid  
 * `gen_bin_grid()`: given a resolution (4km or 9km), generate a global grid of bin numbers  
 * `var_to_rast()`: given a dataframe with column1=bin number and column2=variable, plot the variable on a raster map  
 * `plot_pancan()`: given a vector of data from a panCanadian L3b data file, plot the variable on a raster map with coastlines  
-* `avg_columns()`: condense a matrix by averaging selected columns  
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format  
+* `get_closest_bins()`: given a dataframe of latitudes and longitudes, find the closest bin numbers (used in L3b/insitu matchups)  
+</details>
 
-**Other:**  
-
-* `all_lambda`: returns wavebands for commonly used ocean colour sensors
+<details>
+<summary>Math/stats functions</summary>
 * `geoMean()` and `geoSD()`: calculate geometric mean and geometric standard deviation
-* `week8()`, `week8_date`: convert to/from standard 8-day week number and date
-* `days_vector()`: list julian days for a given year/month
-* `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
-* `haversine()`: calculate haversine distance between two points
+* `avg_columns()`: condense a matrix by averaging selected columns  
+* `shifted_gaussian()`: given input parameters and an independent vector, calculate the corresponding points along a shifted gaussian curve (used in phytoplankton bloom fitting)  
+* `find_line()`: given the (x,y) coordinates of 2 points, calculate slope and intercept of the line through them  
+* `shift_line()`: shift a slanted line "up" or "down" a specified distance in the direction perpendicular to the line  
+* `add_matrices()`: add matrices together, using na.rm argument on each individual cell  
+* `plus_minus()`: get a vector of numbers from (x-n) to (x+n)  
+* `pos_angle()`: convert an angle to its equivalent angle between 0 and 2pi radians  
+* `filtered_mean()`: given a vector, calculate the filtered mean, standard deviation, and coefficient of variation  
+* `set_limits()`: given a vector and a lower and upper limit, convert values beyond those limits to the nearest limit  
+</details>
+
+<details>
+<summary>Other</summary>
+* `all_lambda`: returns wavebands for commonly used ocean colour sensors
+* `sparkle_fill()`: fills small holes in a raster or matrix  
+* `week8()`, `week8_date()`: convert to/from standard 8-day week number and date
+* `days_vector()`: list julian days for a given year/month  
+* `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame  
+* `haversine()`: calculate haversine distance between two points  
+</details><br>
 
 ## How to install
 
