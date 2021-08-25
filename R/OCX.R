@@ -97,6 +97,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 
     # some boundaries defined here:
     # https://oceancolor.sci.gsfc.nasa.gov/docs/ocssw/get__chl_8c_source.html#l00140
+    # https://oceancolor.gsfc.nasa.gov/docs/ocssw/chl_8h_source.html
 
     blues <- sort(blues)
 
@@ -107,7 +108,11 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 
     if (!use_443nm) {
         blues <- blues[blues != "Rrs_443"]
-        rrsb <- data.frame(rrs[,colnames(rrs) %in% blues],stringsAsFactors=F)
+        if (nrow(rrs)==1) {
+            rrsb <- data.frame(matrix(rrs[,colnames(rrs) %in% blues],nrow=1))
+        } else {
+            rrsb <- data.frame(rrs[,colnames(rrs) %in% blues])
+        }
         colnames(rrsb) <- blues
         if (length(blues)==1) {
             valid_ind <- rrsg > 0 & rrsb[,1] > 0
@@ -118,7 +123,11 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
         rrsb[!valid_ind,] <- NA
     } else {
         # Get dataframe of blue Rrs
-        rrsb <- data.frame(rrs[,colnames(rrs) %in% blues],stringsAsFactors=F)
+        if (nrow(rrs)==1) {
+            rrsb <- data.frame(matrix(rrs[,colnames(rrs) %in% blues],nrow=1))
+        } else {
+            rrsb <- data.frame(rrs[,colnames(rrs) %in% blues])
+        }
         colnames(rrsb) <- blues
         if (length(blues)==2) {
             valid_ind <- rrsg > 0 & rrsb[,2] > 0 & rrsb[,1] > -0.001
@@ -224,7 +233,12 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = c(blues, green))
     } else if (input_class == "matrix") {
-        rrs <- rrs[,sort(c(blues, green))]
+        if (nrow(rrs)==1) {
+            rrs <- matrix(rrs[, sort(c(blues, green))], nrow=1)
+            colnames(rrs) <- sort(c(blues, green))
+        } else {
+            rrs <- rrs[, sort(c(blues, green))]
+        }
     }
 
     # calculate band ratio and chlorophyll

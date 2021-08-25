@@ -212,7 +212,12 @@ hu <- function(rrs, wave, coefs) {
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = paste0("Rrs_", wave))
     } else if (input_class == "matrix") {
-        rrs <- rrs[,paste0("Rrs_", wave)]
+        if (nrow(rrs)==1) {
+            rrs <- matrix(rrs[, paste0("Rrs_", wave)], nrow=1)
+            colnames(rrs) <- paste0("Rrs_", wave)
+        } else {
+            rrs <- rrs[, paste0("Rrs_", wave)]
+        }
     }
 
     wblue <- wave[1]

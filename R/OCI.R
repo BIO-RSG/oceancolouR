@@ -57,8 +57,15 @@ oci <- function(rrs, blues, green, ocx_coefs, use_443nm, sensor="seawifs", CI_co
         ocx_rrs <- raster_to_matrix(r = rrs, rnames = c(blues, green))
         ci_rrs <- raster_to_matrix(r = rrs, rnames = paste0("Rrs_", hu_bands))
     } else if (input_class == "matrix") {
-        ocx_rrs <- rrs[,sort(c(blues, green))]
-        ci_rrs <- rrs[,sort(paste0("Rrs_", hu_bands))]
+        if (nrow(rrs)==1) {
+            ocx_rrs <- matrix(rrs[,sort(c(blues, green))], nrow=1)
+            ci_rrs <- matrix(rrs[,sort(paste0("Rrs_", hu_bands))], nrow=1)
+            colnames(ocx_rrs) <- sort(c(blues, green))
+            colnames(ci_rrs) <- sort(paste0("Rrs_", hu_bands))
+        } else {
+            ocx_rrs <- rrs[,sort(c(blues, green))]
+            ci_rrs <- rrs[,sort(paste0("Rrs_", hu_bands))]
+        }
     }
 
     chl_ocx <- ocx(rrs=ocx_rrs, blues=blues, green=green, coefs=ocx_coefs, use_443nm=use_443nm)
