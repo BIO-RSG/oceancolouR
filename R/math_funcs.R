@@ -298,3 +298,25 @@ filtered_mean <- function(var) {
 set_limits <- function(v, lower=-Inf, upper=Inf, na.rm=TRUE) {
     pmax(pmin(v,upper,na.rm=na.rm),lower,na.rm=na.rm)
 }
+
+
+#' Check if a vector is monotonically increasing/decreasing
+#'
+#' @param v Numeric vector
+#' @param direction String, either "increasing" or "decreasing"
+#' @return TRUE/FALSE
+#' @examples
+#' v1 <- sample(1:100,size=10)
+#' v2 <- 1:10
+#' monotonic_check(v1)
+#' monotonic_check(v2)
+#' monotonic_check(v2, direction="decreasing")
+#'
+#' @export
+monotonic_check <- function(v, direction="increasing") {
+    if (direction=="increasing") {
+        return(all(v == cummax(v)))
+    } else if (direction=="decreasing") {
+        return(all(v == cummin(v)))
+    }
+}
