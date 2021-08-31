@@ -67,6 +67,15 @@ knitr::opts_chunk$set(
 * `haversine()`: calculate haversine distance between two points  
 </details><br>
 
+## Disclaimer
+
+The scripts for `ci()`, `hu()`, `ocx()`, and `oci()` were written to attempt to copy the products in [NASA OBPG](https://oceancolor.gsfc.nasa.gov/) processing, i.e. the *chlor_a* and *chl_ocx* variables in their satellite files. Though the code has been reviewed multiple times to ensure that the calculations, boundaries, and checks are the same, the output has only been compared to the variables in one L2 image for SeaWiFS (*S2006116164706.L2_GAC_OC.nc*) and one for MODIS-Aqua (*A2020103163000.L2_LAC_OC.nc*). For these images, passing the Rrs through the `ocx()` and `oci()` functions returns results nearly identical to *chl_ocx* and *chlor_a* respectively, aside from negligible differences due to precision in R vs C++. The scripts for NASA's processing can be found [here](https://oceancolor.sci.gsfc.nasa.gov/docs/ocssw/dir_6ccb91f4c2064ceb88562b4f384b06f5.html).  
+
+`ocx()` and `gsm()` functions were used to produce the results of the algorithms (*POLY 1-4*, *GSM_GC*, *GSM_GCGS*, and *GSM_GS*) in [Clay et al 2019](https://www.mdpi.com/2072-4292/11/22/2609/htm).  
+
+`qaa()` has not been validated in the NWA region yet.  
+
+
 ## How to install
 
 First you need to install the package dependencies:  
