@@ -73,6 +73,8 @@ The scripts for `ci()`, `hu()`, `ocx()`, and `oci()` were written to attempt to 
 
 `ocx()` and `gsm()` functions were used to produce the results of the algorithms (*POLY 1-4*, *GSM_GC*, *GSM_GCGS*, and *GSM_GS*) in [Clay et al 2019](https://www.mdpi.com/2072-4292/11/22/2609/htm).  
 
+`eof_chl()` is the code written by Julien Laliberte, taken from [here](https://catalogue.ogsl.ca/data/mpo/dcb7ed2e-bce9-40c5-a197-71ac6b46bd5c/algorithme_predict_chl-a.pdf), which was used to produce the results of [Laliberte et al 2018](https://www.mdpi.com/2072-4292/10/2/265).  
+
 `qaa()` has not been validated in the NWA region yet.  
 
 
