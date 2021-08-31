@@ -2,7 +2,7 @@
 #'
 #' Calculate chlorophyll-a for input Rrs (remote sensing reflectances) using the EOF (empirical orthogonal function) method tested in the Gulf of Saint Lawrence.
 #'
-#' The training set should be created using in situ chlorophyll-a values matched to satellite Rrs. Use caution if you try to predict chlorophyll-a from Rrs where the region / water type / time period is very different from those used in the training set.
+#' The training set should be created using in situ chlorophyll-a values matched to satellite Rrs. Use caution if you try to predict chlorophyll-a from Rrs where the region / water type / time period is very different from those used in the training set. The training set should contain at least 50 matchups (i.e. 50 chla values paired with satellite Rrs, see figure 4 from Laliberté et al, 2018).
 #'
 #' @param rrs Either a dataframe containing numeric columns of Rrs data with the naming format "Rrs_XXX", where XXX is the wavelength in nanometres, or a RasterStack where each raster contains the Rrs data and follows the same naming format.
 #' @param training_set Dataframe with numeric columns of Rrs data with the same naming format as in rrs, and a column named "chla" containing the corresponding in situ chlorophyll-a.

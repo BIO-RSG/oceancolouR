@@ -18,7 +18,7 @@ Numeric vector of chla values (for dataframe input) or raster of chla values (fo
 Calculate chlorophyll-a for input Rrs (remote sensing reflectances) using the EOF (empirical orthogonal function) method tested in the Gulf of Saint Lawrence.
 }
 \details{
-The training set should be created using in situ chlorophyll-a values matched to satellite Rrs. Use caution if you try to predict chlorophyll-a from Rrs where the region / water type / time period is very different from those used in the training set.
+The training set should be created using in situ chlorophyll-a values matched to satellite Rrs. Use caution if you try to predict chlorophyll-a from Rrs where the region / water type / time period is very different from those used in the training set. The training set should contain at least 50 matchups (i.e. 50 chla values paired with satellite Rrs, see figure 4 from Laliberté et al, 2018).
 }
 \examples{
 # create training set dataframe and rrs dataframe to test the function
