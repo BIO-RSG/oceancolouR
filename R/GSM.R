@@ -8,37 +8,14 @@
 get_gs <- function(lambda) {
 
     # Spectrally-dependent g coefficients for 400-700nm at 10nm intervals.
-    g_lambda <- seq(400,700,by=10)
-    gs_all <- list(g1=c(0.0741506663108934,0.0715677856118096,0.0696710302801319,0.0685287201876029,
-                        0.0696508174466669,0.0772854546146616,0.0801088917456024,0.0831607019724111,
-                        0.0869404404234872,0.0877889627116253,0.0875313655055949,0.0861334256256866,
-                        0.0843746243091012,0.0820683879426047,0.0800267140772176,0.0780733121656009,
-                        0.0763222547148317,0.0753585594018177,0.0756826630809369,0.0767541054732122,
-                        0.078084966262557,0.0784328573114403,0.0783437259230638,0.0782152125331966,
-                        0.0780006950155139,0.0781912606804756,0.0789255444927423,0.0797867813587184,
-                        0.0794801629308588,0.0788705433193678,0.0790601284091157),
-                   g2=c(0.0804812448582737,0.0820469203229378,0.0841063688845819,0.086165505980941,
-                        0.0889947957043606,0.10088816688655,0.114241894530481,0.139435280475089,
-                        0.209499418648362,0.262082478195844,0.281994529041355,0.25676244345273,
-                        0.223288045458878,0.19673313531248,0.181062431366567,0.171677942779835,
-                        0.16512773255519,0.162372957625953,0.163967506976479,0.171164949950375,
-                        0.186392243529789,0.193935755286762,0.19556263935158,0.196925147566756,
-                        0.19734446888493,0.200897987836546,0.222669878787164,0.251330000765241,
-                        0.246450854098513,0.226979734831274,0.232272804510047),
-                   g3=c(1.48390768955065,1.45204753288004,1.43531916589843,1.43002586240363,
-                        1.45952758059577,1.63872754787611,1.74887145006781,1.90553035892429,
-                        2.18904761776977,2.30910695833387,2.3211931604049,2.22151493678141,
-                        2.10581050188318,1.9920372042663,1.90967638988007,1.84637406204401,
-                        1.79678848121282,1.77220096917138,1.78158307535396,1.82113328655168,
-                        1.8878820585764,1.91432622218574,1.91717818862859,1.91858953410232,
-                        1.91603793331892,1.92832816707188,1.99229167234146,2.06628017243855,
-                        2.05098056665546,2.00000340834201,2.01371743612098))
+    load("spectralg_coefs")
+    g_lambda <- spectralg_coefs[,1]
 
     # Interpolate to find values for the necessary wavelengths for each of the 3 g coefficients.
     g <- data.frame(matrix(nrow=length(lambda),ncol=3),stringsAsFactors=F)
 
     for (i in 1:3) {
-        ag <- gs_all[[i]]
+        ag <- spectralg_coefs[,i+1]
         x <- c(g_lambda,lambda)
         y <- c(ag,approx(g_lambda,ag,lambda,rule=2)$y)
         xy <- as.data.frame(t(rbind(x,y)))
@@ -52,7 +29,7 @@ get_gs <- function(lambda) {
 
 
 
-#' Get predefined IOP exponents for GSM
+#' Get predefined IOP exponents for GSM in specific regions (NWA or NEP only)
 #'
 #' Library of existing optimized exponents for the Garver-Siegel-Maritorena algorithm, used on the IOPs chl, adg, and bbp within the absorption and backscattering terms of the algorithm.
 #'
@@ -61,7 +38,7 @@ get_gs <- function(lambda) {
 #' gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019.
 #'
 #' @param sensor String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)
-#' @param region String, either "global", "nwa", or "nep"
+#' @param region String, either "nwa", or "nep"
 #' @param gtype String, either "gc" or "gs" (see description below)
 #' @references
 #' Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
@@ -71,16 +48,10 @@ get_gs <- function(lambda) {
 get_gsm_IOPexps <- function(sensor, region, gtype) {
 
     stopifnot(sensor %in% c("modis", "seawifs", "viirs"),
-              region %in% c("global", "nwa", "nep"),
+              region %in% c("nwa", "nep"),
               gtype %in% c("gc", "gs"))
 
-    exps <- list("global"=list("modis"=list("gc"=c(1,0.02061,1.03373),
-                                            "gs"=c(1,0.02061,1.03373)),
-                               "seawifs"=list("gc"=c(1,0.02061,1.03373),
-                                              "gs"=c(1,0.02061,1.03373)),
-                               "viirs"=list("gc"=c(1,0.02061,1.03373),
-                                            "gs"=c(1,0.02061,1.03373))),
-                 "nwa"=list("modis"=list("gc"=c(0.5,0.038,0.8),
+    exps <- list("nwa"=list("modis"=list("gc"=c(0.5,0.038,0.8),
                                          "gs"=c(0.5,0.036,0.75)),
                             "seawifs"=list("gc"=c(0.5,0.035,0.6),
                                            "gs"=c(0.5,0.034,0.525)),
@@ -95,6 +66,59 @@ get_gsm_IOPexps <- function(sensor, region, gtype) {
 
     return(as.numeric(exps[[region]][[sensor]][[gtype]]))
 
+}
+
+
+
+#' Get water absorption coefficients (aw) for selected wavebands
+#'
+#' If lambda contains wavebands that are not integer values, the value will be interpolated. Bands must be within 400-700nm (inclusive).
+#'
+#' @param lambda Numeric vector of wavebands (nanometers)
+#' @references
+#' Sources for default aw, bbw, and aphstar: Pope and Fry 1997, and Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
+#' @return Numeric vector of aw coefficients corresponding to lambda
+#' @export
+get_aw <- function(lambda) {
+    lambda <- sort(lambda)
+    load("aw_coefs")
+    # subset aw vector to the values corresponding to the wavelengths you selected, interpolating if necessary
+    selected_coefs <- approx(x=aw_coefs[,1],y=aw_coefs[,2],xout=lambda)$y
+    return(selected_coefs)
+}
+
+#' Get water backscattering coefficients (bbw) for selected wavebands
+#'
+#' If lambda contains wavebands that are not integer values, the value will be interpolated. Bands must be within 400-700nm (inclusive).
+#'
+#' @param lambda Numeric vector of wavebands (nanometers)
+#' @references
+#' Sources for default aw, bbw, and aphstar: Pope and Fry 1997, and Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
+#' @return Numeric vector of bbw coefficients corresponding to lambda
+#' @export
+get_bbw <- function(lambda) {
+    lambda <- sort(lambda)
+    load("bbw_coefs")
+    # subset bbw vector to the values corresponding to the wavelengths you selected, interpolating if necessary
+    selected_coefs <- approx(x=bbw_coefs[,1],y=bbw_coefs[,2],xout=lambda)$y
+    return(selected_coefs)
+}
+
+#' Get phytoplankton absorption coefficients (aphstar) for selected wavebands
+#'
+#' If lambda contains wavebands that are not integer values, the value will be interpolated. Bands must be within 400-700nm (inclusive).
+#'
+#' @param lambda Numeric vector of wavebands (nanometers)
+#' @references
+#' Sources for default aw, bbw, and aphstar: Pope and Fry 1997, and Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
+#' @return Numeric vector of aphstar coefficients corresponding to lambda
+#' @export
+get_aphstar <- function(lambda) {
+    lambda <- sort(lambda)
+    load("aphstar_coefs")
+    # subset aphstar vector to the values corresponding to the wavelengths you selected, interpolating if necessary
+    selected_coefs <- approx(x=aphstar_coefs[,1],y=aphstar_coefs[,2],xout=lambda)$y
+    return(selected_coefs)
 }
 
 
@@ -145,15 +169,13 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 }
 
 
-#' GSM algorithm
+#' GSM algorithm for MODIS-Aqua, SeaWiFS, or VIIRS-SNPP
 #'
 #' Compute the inherent optical properties (IOPs) of the water (adg443, bbp443, chla) using the GSM (Garver-Siegel-Maritorena) semi-analytical algorithm. Adg443 = absorption of colored detrital and dissolved organic materials at 443nm, bbp443 = backscattering of particulate matter at 443nm, chla = chlorophyll-a.
 #'
 #' This code was originally written for SeaWiFS using wavelengths 412, 443, 490, 555, and 670nm. If other sensors/wavelengths are used, the function will choose the wavelengths closest to the wavelengths listed above.
 #'
 #' Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
-#'
-#' Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry 1997 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt), Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
 #'
 #' Options for g coefficients include "gs" (spectrally-dependent) or "gc" (constant). For gc, the model is quadratic and uses the coefficients in eq. 2 in Gordon et al 1988 (g1=0.0949, g2=0.0794). For gs, the coefficients vary spectrally, and the exponent is also allowed to vary spectrally so the model is no longer perfectly quadratic.
 #'
@@ -162,13 +184,13 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' @param rrs Remote sensing reflectances below sea level, numeric vector, MUST be ordered from shortest wavelength to longest
 #' @param lambda Wavelengths corresponding to rrs, numeric vector, MUST be in same order as rrs
 #' @param iop3 Numeric vector of starting guesses for nls (nonlinear least squares) parameters, in this order: chl, adg443, bbp443
-#' @param adg_exp Numeric value, exponent on the adg term
-#' @param bbp_exp Numeric value, exponent on the bbp term
-#' @param chl_exp Numeric value, exponent on the chl term
+#' @param adg_exp Numeric value, exponent on the adg term (default = globally-tuned exponent)
+#' @param bbp_exp Numeric value, exponent on the bbp term (default = globally-tuned exponent)
+#' @param chl_exp Numeric value, exponent on the chl term (default = globally-tuned exponent)
 #' @param gtype String, either "gs" or "gc" to indicate the type of g coefficients to use (see details).
-#' @param aw_all Named list of water absorption coefficients (names must be same as lambda)
-#' @param bbw_all Named list of water backscattering coefficients (names must be same as lambda)
-#' @param aphstar_all Named list of specific absorption coefficients (i.e. absorption per unit chlorophyll-a, names must be same as lambda)
+#' @param aw Numeric vector of water absorption coefficients corresponding to lambda
+#' @param bbw Numeric vector of water backscattering coefficients corresponding to lambda
+#' @param aphstar Numeric vector of specific absorption coefficients corresponding to lambda (i.e. absorption per unit chlorophyll-a)
 #' @references
 #' Maritorena, Stéphane & Siegel, David & Peterson, Alan. (2002). Optimization of a semianalytical ocean color model for global-scale application. Applied optics. 41. 2705-14. 10.1364/AO.41.002705.
 #' https://www.researchgate.net/publication/11345370_Optimization_of_a_semianalytical_ocean_color_model_for_global-scale_application
@@ -215,33 +237,12 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' cat("\n\n\nSet of records:\n\n")
 #' print(test_gsm)
 #' @export
-gsm <- function(rrs, lambda, iop3=c(0.01, 0.03, 0.019), adg_exp, bbp_exp, chl_exp, gtype="gs",
-                aw_all = list('410'=0.00473000,'412'=0.00455056,'443'=0.00706914,
-                              '469'=0.01043260,'486'=0.01392170,'488'=0.01451670,
-                              '490'=0.01500000,'510'=0.03250000,'531'=0.04391530,
-                              '547'=0.05316860,'551'=0.05779250,'555'=0.05960000,
-                              '645'=0.32500000,'667'=0.43488800,'670'=0.43900000,
-                              '671'=0.44283100,'678'=0.46232300),
-                bbw_all = list('410'=0.003395150,'412'=0.003325000,'443'=0.002436175,
-                               '469'=0.001908315,'486'=0.001638700,'488'=0.001610175,
-                               '490'=0.001582255,'510'=0.001333585,'531'=0.001122495,
-                               '547'=0.000988925,'551'=0.000958665,'555'=0.000929535,
-                               '645'=0.000490150,'667'=0.000425025,'670'=0.000416998,
-                               '671'=0.000414364,'678'=0.000396492),
-                aphstar_all = list('410'=0.054343207,'412'=0.055765253,'443'=0.063251586,
-                                   '469'=0.051276462,'486'=0.041649554,'488'=0.040647623,
-                                   '490'=0.039546143,'510'=0.025104817,'531'=0.015745358,
-                                   '547'=0.011477324,'551'=0.010425453,'555'=0.009381989,
-                                   '645'=0.008966522,'667'=0.019877564,'670'=0.022861409,
-                                   '671'=0.023645549,'678'=0.024389358)) {
+gsm <- function(rrs, lambda, iop3=c(0.01, 0.03, 0.019),
+                adg_exp=0.02061, bbp_exp=1.03373, chl_exp=1, gtype="gs",
+                aw=get_aw(lambda), bbw=get_bbw(lambda), aphstar=get_aphstar(lambda)) {
 
     # If the Rrs for any wavelengths are NA, skip this match.
     if (any(is.na(rrs))) {return(c(NA,NA,NA,T))}
-
-    # subset aw, bbw, and aphstar vectors to the values corresponding to the wavelengths you selected.
-    aw <- as.numeric(aw_all[names(aw_all) %in% as.character(lambda)])
-    bbw <- as.numeric(bbw_all[names(bbw_all) %in% as.character(lambda)])
-    aphstar <- as.numeric(aphstar_all[names(aphstar_all) %in% lambda])
 
     adgstar <- exp( - adg_exp * (lambda - 443))
     bbpstar <- (443/lambda) ^ bbp_exp

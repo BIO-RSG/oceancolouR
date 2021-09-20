@@ -2,30 +2,19 @@
 % Please edit documentation in R/GSM.R
 \name{gsm}
 \alias{gsm}
-\title{GSM algorithm}
+\title{GSM algorithm for MODIS-Aqua, SeaWiFS, or VIIRS-SNPP}
 \usage{
 gsm(
   rrs,
   lambda,
   iop3 = c(0.01, 0.03, 0.019),
-  adg_exp,
-  bbp_exp,
-  chl_exp,
+  adg_exp = 0.02061,
+  bbp_exp = 1.03373,
+  chl_exp = 1,
   gtype = "gs",
-  aw_all = list(`410` = 0.00473, `412` = 0.00455056, `443` = 0.00706914, `469` =
-    0.0104326, `486` = 0.0139217, `488` = 0.0145167, `490` = 0.015, `510` = 0.0325, `531`
-    = 0.0439153, `547` = 0.0531686, `551` = 0.0577925, `555` = 0.0596, `645` = 0.325,
-    `667` = 0.434888, `670` = 0.439, `671` = 0.442831, `678` = 0.462323),
-  bbw_all = list(`410` = 0.00339515, `412` = 0.003325, `443` = 0.002436175, `469` =
-    0.001908315, `486` = 0.0016387, `488` = 0.001610175, `490` = 0.001582255, `510` =
-    0.001333585, `531` = 0.001122495, `547` = 0.000988925, `551` = 0.000958665, `555` =
-    0.000929535, `645` = 0.00049015, `667` = 0.000425025, `670` = 0.000416998, `671` =
-    0.000414364, `678` = 0.000396492),
-  aphstar_all = list(`410` = 0.054343207, `412` = 0.055765253, `443` = 0.063251586,
-    `469` = 0.051276462, `486` = 0.041649554, `488` = 0.040647623, `490` = 0.039546143,
-    `510` = 0.025104817, `531` = 0.015745358, `547` = 0.011477324, `551` = 0.010425453,
-    `555` = 0.009381989, `645` = 0.008966522, `667` = 0.019877564, `670` = 0.022861409,
-    `671` = 0.023645549, `678` = 0.024389358)
+  aw = get_aw(lambda),
+  bbw = get_bbw(lambda),
+  aphstar = get_aphstar(lambda)
 )
 }
 \arguments{
@@ -35,19 +24,19 @@ gsm(
 
 \item{iop3}{Numeric vector of starting guesses for nls (nonlinear least squares) parameters, in this order: chl, adg443, bbp443}
 
-\item{adg_exp}{Numeric value, exponent on the adg term}
+\item{adg_exp}{Numeric value, exponent on the adg term (default = globally-tuned exponent)}
 
-\item{bbp_exp}{Numeric value, exponent on the bbp term}
+\item{bbp_exp}{Numeric value, exponent on the bbp term (default = globally-tuned exponent)}
 
-\item{chl_exp}{Numeric value, exponent on the chl term}
+\item{chl_exp}{Numeric value, exponent on the chl term (default = globally-tuned exponent)}
 
 \item{gtype}{String, either "gs" or "gc" to indicate the type of g coefficients to use (see details).}
 
-\item{aw_all}{Named list of water absorption coefficients (names must be same as lambda)}
+\item{aw}{Numeric vector of water absorption coefficients corresponding to lambda}
 
-\item{bbw_all}{Named list of water backscattering coefficients (names must be same as lambda)}
+\item{bbw}{Numeric vector of water backscattering coefficients corresponding to lambda}
 
-\item{aphstar_all}{Named list of specific absorption coefficients (i.e. absorption per unit chlorophyll-a, names must be same as lambda)}
+\item{aphstar}{Numeric vector of specific absorption coefficients corresponding to lambda (i.e. absorption per unit chlorophyll-a)}
 }
 \value{
 Named vector containing IOPs (chl, adg443, bbp443, in that order), and a value named "invalid" that is either 0 or 1 (1 indicates that at least one of the IOPs is outside the acceptable range, defined in the details section).
@@ -59,8 +48,6 @@ Compute the inherent optical properties (IOPs) of the water (adg443, bbp443, chl
 This code was originally written for SeaWiFS using wavelengths 412, 443, 490, 555, and 670nm. If other sensors/wavelengths are used, the function will choose the wavelengths closest to the wavelengths listed above.
 
 Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
-
-Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry 1997 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt), Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
 
 Options for g coefficients include "gs" (spectrally-dependent) or "gc" (constant). For gc, the model is quadratic and uses the coefficients in eq. 2 in Gordon et al 1988 (g1=0.0949, g2=0.0794). For gs, the coefficients vary spectrally, and the exponent is also allowed to vary spectrally so the model is no longer perfectly quadratic.
 

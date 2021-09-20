@@ -2,14 +2,14 @@
 % Please edit documentation in R/GSM.R
 \name{get_gsm_IOPexps}
 \alias{get_gsm_IOPexps}
-\title{Get predefined IOP exponents for GSM}
+\title{Get predefined IOP exponents for GSM in specific regions (NWA or NEP only)}
 \usage{
 get_gsm_IOPexps(sensor, region, gtype)
 }
 \arguments{
 \item{sensor}{String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)}
 
-\item{region}{String, either "global", "nwa", or "nep"}
+\item{region}{String, either "nwa", or "nep"}
 
 \item{gtype}{String, either "gc" or "gs" (see description below)}
 }
