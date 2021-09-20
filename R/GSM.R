@@ -8,7 +8,7 @@
 get_gs <- function(lambda) {
 
     # Spectrally-dependent g coefficients for 400-700nm at 10nm intervals.
-    load("spectralg_coefs")
+    data("spectralg_coefs")
     g_lambda <- spectralg_coefs[,1]
 
     # Interpolate to find values for the necessary wavelengths for each of the 3 g coefficients.
@@ -81,7 +81,7 @@ get_gsm_IOPexps <- function(sensor, region, gtype) {
 #' @export
 get_aw <- function(lambda) {
     lambda <- sort(lambda)
-    load("aw_coefs")
+    data("aw_coefs")
     # subset aw vector to the values corresponding to the wavelengths you selected, interpolating if necessary
     selected_coefs <- approx(x=aw_coefs[,1],y=aw_coefs[,2],xout=lambda)$y
     return(selected_coefs)
@@ -98,7 +98,7 @@ get_aw <- function(lambda) {
 #' @export
 get_bbw <- function(lambda) {
     lambda <- sort(lambda)
-    load("bbw_coefs")
+    data("bbw_coefs")
     # subset bbw vector to the values corresponding to the wavelengths you selected, interpolating if necessary
     selected_coefs <- approx(x=bbw_coefs[,1],y=bbw_coefs[,2],xout=lambda)$y
     return(selected_coefs)
@@ -115,7 +115,7 @@ get_bbw <- function(lambda) {
 #' @export
 get_aphstar <- function(lambda) {
     lambda <- sort(lambda)
-    load("aphstar_coefs")
+    data("aphstar_coefs")
     # subset aphstar vector to the values corresponding to the wavelengths you selected, interpolating if necessary
     selected_coefs <- approx(x=aphstar_coefs[,1],y=aphstar_coefs[,2],xout=lambda)$y
     return(selected_coefs)
