@@ -309,23 +309,19 @@ This is the original version of the GSM algorithm, which is in the form of a qua
 tmp_rrs <- rrs_above_to_below_sea_level(rrs)
 # get wavebands for seawifs
 lambda <- all_lambda[["SeaWiFS"]]
-# get globally-tuned exponents, seawifs, GSM_GC (see Clay et al 2019 reference)
-tuned_exps <- get_gsm_IOPexps("seawifs", "global", "gc")
-chl_exp <- tuned_exps[1]
-adg_exp <- tuned_exps[2]
-bbp_exp <- tuned_exps[3]
 # run gsm to process multiple records stored in an rrs matrix, where
 # rows=records and columns=wavelengths
 # this gives a matrix of iops (chl, adg, bbp, and a column indicating if the result
 # should be considered valid)
-iops <- apply(X=tmp_rrs, MARGIN=1, FUN=gsm, lambda=lambda, adg_exp=adg_exp, bbp_exp=bbp_exp, 
-              chl_exp=chl_exp, gtype="gc")
+# NOTE: we're using the globally-tuned exponents on adg, bbp, and chl (the defaults
+# in the gsm() function)
+iops <- apply(X=tmp_rrs, MARGIN=1, FUN=gsm, lambda=lambda, gtype="gc")
 chl_gsmgc_original <- iops[1,]
 str(chl_gsmgc_original)
 ```
 
 
-To use this version of the algorithm with IOP exponents tuned to the NWA, set the region to "nwa" instead of "global" in the gsm exps function:  
+To use this version of the algorithm with IOP exponents tuned to the NWA, set the region to "nwa" in the gsm exps function:  
 
 ```{r}
 tuned_exps <- get_gsm_IOPexps("seawifs", "nwa", "gc")
@@ -340,7 +336,7 @@ str(chl_gsmgc_nwa)
 
 ##### GSM_GS
 
-In this version of the model, the coefficients are spectrally-dependent, as well as the exponent on the second term (i.e. it is not forced into a quadratic shape). Set the *gtype* argument in `get_gsm_IOPexps()` and `gsm()` to *gs* to retrieve the optimal IOP exponents that were tuned using this model (note in this example, we're also specifying that we want the exponents tuned using NWA data, but we could set that to "global" instead):  
+In this version of the model, the coefficients are spectrally-dependent, as well as the exponent on the second term (i.e. it is not forced into a quadratic shape). Set the *gtype* argument in `get_gsm_IOPexps()` and `gsm()` to *gs* to retrieve the optimal IOP exponents that were tuned using this model (note in this example, we're also specifying that we want the exponents tuned using NWA data):  
 
 ```{r}
 tuned_exps <- get_gsm_IOPexps("seawifs", "nwa", "gs")
