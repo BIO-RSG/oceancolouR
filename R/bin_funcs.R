@@ -128,7 +128,8 @@ get_bins <- function(region = "pancan", resolution = "4km", variables = "all") {
 #' @return Raster containing variable values with coastlines.
 #' @examples
 #' # This is an example file with data in the same format as in a panCanadian dataset file.
-#' data("example01_A2018252.L3b_DAY_CHL_POLY4_NWA.rda")
+#' data("example01_A2018252.L3b_DAY_CHL_POLY4_NWA")
+#' dat <- example01_A2018252.L3b_DAY_CHL_POLY4_NWA
 #' lon_lim <- lon_bounds[["NWA"]]
 #' lat_lim <- lat_bounds[["NWA"]]
 #' plot_pancan(log10(dat), region="nwa", ext=c(range(lon_lim),range(lat_lim)))
