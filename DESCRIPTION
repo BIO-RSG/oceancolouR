@@ -29,7 +29,8 @@ Imports:
     dplyr,
     patchwork,
     tidyr,
-    geodist
+    geodist,
+    rasterVis
 Suggests: 
     knitr,
     rmarkdown

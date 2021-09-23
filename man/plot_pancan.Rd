@@ -9,7 +9,7 @@ plot_pancan(
   region = "pancan",
   ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86),
   resolution = "4km",
-  limits = c(-Inf, Inf)
+  limits = NULL
 )
 }
 \arguments{

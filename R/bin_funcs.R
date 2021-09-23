@@ -134,11 +134,11 @@ get_bins <- function(region = "pancan", resolution = "4km", variables = "all") {
 #' plot_pancan(log10(dat), region="nwa", ext=c(range(lon_lim),range(lat_lim)))
 #'
 #' @export
-plot_pancan <- function(vec, region="pancan", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=c(-Inf, Inf)) {
-    data("wrld_simpl", package = "maptools")
+plot_pancan <- function(vec, region="pancan", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=NULL) {
     bins <- (function(v) get(data(list=v, package="oceancolouR", envir = new.env())))(paste0(region,"_bins_",resolution))
     rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
-    return(raster::spplot(raster::crop(rast, raster::extent(ext)), zlim=limits) + latticeExtra::layer(sp::sp.polygons(wrld_simpl)))
+    p <- make_raster_map(rast,xlim=ext[1:2],ylim=ext[3:4],col_limits=limits)
+    return(p)
 }
 
 #' Condense a matrix by averaging selected columns
