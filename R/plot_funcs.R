@@ -39,6 +39,7 @@ sinh_trans <- function() {
 #' @param ylim Latitude limits
 #' @param col_limits Color scale limits
 #' @param cm Color scale
+#' @param na.value Color to use for NA values in raster
 #' @return Raster containing variable values with coastlines.
 #' @import ggplot2
 #' @examples
@@ -54,7 +55,7 @@ sinh_trans <- function() {
 #' make_raster_map(log10(tr),title=NULL)
 #'
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100)) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),na.value="transparent") {
     worldmap <- map_data("world")
     p <- rasterVis::gplot(rast) +
         geom_tile(aes(fill = value)) +
@@ -74,9 +75,9 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_li
               plot.title=element_text(hjust=0.5)) +
         guides(fill = guide_colorbar(ticks.colour = "black"))
     if (!is.null(col_limits)) {
-        p <- p + scale_fill_gradientn(colours = cm, limits=col_limits)
+        p <- p + scale_fill_gradientn(colours = cm, limits=col_limits, na.value=na.value)
     } else {
-        p <- p + scale_fill_gradientn(colours = cm)
+        p <- p + scale_fill_gradientn(colours = cm, na.value=na.value)
     }
     return(p)
 }

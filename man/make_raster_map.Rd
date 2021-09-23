@@ -11,7 +11,8 @@ make_raster_map(
   ylim = c(39, 82),
   col_limits = NULL,
   cm = colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
-    "#FF7F00", "red", "#7F0000"))(100)
+    "#FF7F00", "red", "#7F0000"))(100),
+  na.value = "transparent"
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ make_raster_map(
 \item{col_limits}{Color scale limits}
 
 \item{cm}{Color scale}
+
+\item{na.value}{Color to use for NA values in raster}
 }
 \value{
 Raster containing variable values with coastlines.
