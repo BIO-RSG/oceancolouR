@@ -12,13 +12,16 @@ make_raster_map(
   col_limits = NULL,
   cm = colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
     "#FF7F00", "red", "#7F0000"))(100),
-  na.value = "transparent"
+  na.value = "transparent",
+  map_alpha = 0.8,
+  raster_alpha = 1,
+  nrow = 1
 )
 }
 \arguments{
-\item{rast}{Georeferenced raster}
+\item{rast}{Georeferenced RasterLayer or RasterStack}
 
-\item{title}{Optional title of the map}
+\item{title}{Optional title of the map, for a single raster}
 
 \item{xlim}{Longitude limits}
 
@@ -29,12 +32,18 @@ make_raster_map(
 \item{cm}{Color scale}
 
 \item{na.value}{Color to use for NA values in raster}
+
+\item{map_alpha}{Transparency of landmasses on map, 0-1}
+
+\item{raster_alpha}{Transparency of raster, 0-1}
+
+\item{nrow}{Number of rows of plots, for raster stacks}
 }
 \value{
-Raster containing variable values with coastlines.
+Raster or grid of rasters on maps with coastlines.
 }
 \description{
-Plot a georeferenced raster on a map
+Plot a raster on a map. If a RasterStack is provided instead, facet_wrap will be used to plot the raster layers on separate maps, and nrow specifies the number of rows of maps (note: they will be plotted by row rather than by column). The names of the raster layers in the stack will be used as titles, and the maps will all use the same color scale.
 }
 \examples{
 # use SGLI L2 data
