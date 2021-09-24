@@ -14,7 +14,6 @@ make_raster_map(
     "#FF7F00", "red", "#7F0000"))(100),
   na.value = "transparent",
   map_alpha = 0.8,
-  raster_alpha = 1,
   nrow = 1
 )
 }
@@ -34,8 +33,6 @@ make_raster_map(
 \item{na.value}{Color to use for NA values in raster}
 
 \item{map_alpha}{Transparency of landmasses on map, 0-1}
-
-\item{raster_alpha}{Transparency of raster, 0-1}
 
 \item{nrow}{Number of rows of plots, for raster stacks}
 }

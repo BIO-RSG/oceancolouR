@@ -43,7 +43,6 @@ sinh_trans <- function() {
 #' @param cm Color scale
 #' @param na.value Color to use for NA values in raster
 #' @param map_alpha Transparency of landmasses on map, 0-1
-#' @param raster_alpha Transparency of raster, 0-1
 #' @param nrow Number of rows of plots, for raster stacks
 #' @return Raster or grid of rasters on maps with coastlines.
 #' @import ggplot2
@@ -60,11 +59,11 @@ sinh_trans <- function() {
 #' make_raster_map(log10(tr),title=NULL)
 #'
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),na.value="transparent",map_alpha=0.8,raster_alpha=1,nrow=1) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),na.value="transparent",map_alpha=0.8,nrow=1) {
     stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
     worldmap <- map_data("world")
     p <- rasterVis::gplot(rast) +
-        geom_tile(aes(fill = value),alpha=raster_alpha) +
+        geom_tile(aes(fill = value)) +
         geom_map(data = worldmap, map = worldmap,
                  aes(x = long, y = lat, group = group, map_id=region),
                  fill = "white", colour = "#7f7f7f", size=0.5, alpha=map_alpha) +
