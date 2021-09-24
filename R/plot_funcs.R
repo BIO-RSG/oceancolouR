@@ -61,7 +61,7 @@ sinh_trans <- function() {
 #' @export
 make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),na.value="transparent",map_alpha=0.8,nrow=1) {
     stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
-    worldmap <- map_data("world")
+    worldmap <- ggplot2::map_data("world")
     p <- rasterVis::gplot(rast) +
         geom_tile(aes(fill = value)) +
         geom_map(data = worldmap, map = worldmap,
