@@ -25,24 +25,71 @@ read_h5_L3b <- function(h5_file, var_name) {
 }
 
 
-#
-# # num = base 2 flag number to convert to binary string
-# get_flag_data <- function(num,dict) {
-#     dict[as.logical(intToBits(num)),]
-# }
-#
-# # given a matrix of quality flags, separate them into matrices for individual flags
-# # note we're using bit INDICES, not bit numbers (i.e. for bit 0, use which_bit_inds=1)
-# separate_flags <- function(flag_mat, which_bit_inds) {
-#     flag_bits <- lapply(as.numeric(flag_mat),intToBits)
-#     flag_bits <- matrix(do.call(rbind,flag_bits)[,which_bit_inds],nrow=length(flag_bits))
-#     flag_bits <- matrix(as.logical(flag_bits),nrow=nrow(flag_bits))
-#     flag_bits <- lapply(1:ncol(flag_bits),function(x) matrix(flag_bits[,x],nrow=nrow(flag_mat)))
-#     return(flag_bits)
-# }
+#' Get flag data
+#'
+#' Given a number from a matrix of quality flags in a satellite file that uses the bit string system for flags, and the dataframe of all flag bits/names/descriptions, get the descriptions of the flags used by that specific number.
+#'
+#' @param num Number in the flag matrix
+#' @param flag_df Dataframe containing bits and their corresponding info, in order
+#' @return Subsetted flag_df containing only the info of the flags contained within the "num" value
+#' @examples
+#' # load example SGLI dataset containing real data, their quality flags, and flag descriptions
+#' data("example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000")
+#' data("sgli_flag_df")
+#' # look at the descriptions of the flags
+#' sgli_flag_df
+#' # get the flag value of the first pixel
+#' pixel1_flag <- example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000$flags[1]
+#' pixel1_flag
+#' # now plug it into the function to see which flags are used in this value
+#' get_flag_data(num=pixel1_flag,flag_df=sgli_flag_df)
+#'
+#' @export
+get_flag_data <- function(num,flag_df) {
+    flag_df[as.logical(intToBits(num)),]
+}
 
 
-
-
-
-
+#' Separate flag masks
+#'
+#' Given a vector or matrix of quality flags using the bit string system for flags, and the indices of the bits to use (starting at 1, for bit0), separate the flag mask into individual flags.
+#'
+#' @param flags Matrix or vector of flags
+#' @param which_bits Bit masks to retrieve, starting at 0 (bit 0 value = 2^0 = 1)
+#' @return List, in the same order as which_bits, where each list item is a logical matrix or vector (same size as "flags") that contains only the information for a particular bit
+#' @examples
+#' # load example SGLI dataset containing real data, their quality flags, and flag descriptions
+#' data("example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000")
+#' data("sgli_flag_df")
+#' flag_dat <- example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000$flags
+#' # subset to see a quick example
+#' flag_dat <- flag_dat[1:100]
+#' # bits to retrieve
+#' bits <- c(0:5,8)
+#' bit_names <- sgli_flag_df$name[sgli_flag_df$bit %in% bits]
+#' # try splitting flags in vector format
+#' sfl <- separate_flags(flag_dat, bits)
+#' sfl <- do.call(cbind,sfl)
+#' colnames(sfl) <- bit_names
+#' sfl
+#' # now try it in matrix format
+#' flag_dat <- matrix(flag_dat,nrow=10)
+#' sfl <- separate_flags(flag_dat, bits)
+#' # plot the STRAYLIGHT flag
+#' names(sfl) <- bit_names
+#' raster::spplot(raster::raster(sfl$STRAYLIGHT))
+#'
+#' @export
+separate_flags <- function(flags, which_bits) {
+    stopifnot(class(flags)[1] %in% c("matrix","integer","numeric"))
+    flag_bits <- lapply(as.numeric(flags),intToBits)
+    flag_bits <- matrix(do.call(rbind,flag_bits)[,which_bits+1],nrow=length(flag_bits))
+    flag_bits <- matrix(as.logical(flag_bits),nrow=nrow(flag_bits))
+    if (class(flags)[1]=="matrix") {
+        flag_bits <- lapply(1:ncol(flag_bits),function(x) matrix(flag_bits[,x],nrow=nrow(flags)))
+    } else {
+        flag_bits <- lapply(1:ncol(flag_bits),function(x) as.logical(flag_bits[,x]))
+    }
+    names(flag_bits) <- which_bits
+    return(flag_bits)
+}
