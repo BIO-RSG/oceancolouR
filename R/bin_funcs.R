@@ -172,7 +172,7 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
         }
     }
 
-    new_mat <- lapply(1:length(dlist), function(x) {rowMeans(mat[,dlist[[x]]], na.rm=TRUE)})
+    new_mat <- lapply(1:length(dlist), function(x) {rowMeans(matrix(mat[,dlist[[x]]],nrow=nrow(mat)), na.rm=TRUE)})
     mat <- do.call(cbind, new_mat)
 
     return(mat)
