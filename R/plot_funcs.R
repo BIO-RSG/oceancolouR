@@ -36,11 +36,12 @@ sinh_trans <- function() {
 #' Plot a raster on a map. If a RasterStack is provided instead, facet_wrap will be used to plot the raster layers on separate maps, and nrow specifies the number of rows of maps (note: they will be plotted by row rather than by column). The names of the raster layers in the stack will be used as titles, and the maps will all use the same color scale.
 #'
 #' @param rast Georeferenced RasterLayer or RasterStack
-#' @param title Optional title of the map, for a single raster
+#' @param title Optional title of the map
 #' @param xlim Longitude limits
 #' @param ylim Latitude limits
 #' @param col_limits Color scale limits
 #' @param cm Color scale
+#' @param set_extremes TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL
 #' @param na.value Color to use for NA values in raster
 #' @param map_alpha Transparency of landmasses on map, 0-1
 #' @param nrow Number of rows of plots, for raster stacks
@@ -59,9 +60,25 @@ sinh_trans <- function() {
 #' make_raster_map(log10(tr),title=NULL)
 #'
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),na.value="transparent",map_alpha=0.8,nrow=1) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",map_alpha=0.8,nrow=1) {
     stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
     worldmap <- ggplot2::map_data("world")
+    if (!is.null(col_limits)) {
+        if (set_extremes) {
+            if (nlayers(rast) == 1) {
+                rast[rast < col_limits[1]] <- col_limits[1]
+                rast[rast > col_limits[2]] <- col_limits[2]
+            } else {
+                rast <- lapply(1:(raster::nlayers(rast)),
+                               function(lx)
+                                   {r <- rast[[lx]]; r[r<col_limits[1]] <- col_limits[1]; r[r>col_limits[2]] <- col_limits[2]; r})
+                rast <- raster::stack(rast)
+            }
+        }
+        colscale <- scale_fill_gradientn(colours = cm, limits=col_limits, na.value=na.value)
+    } else {
+        colscale <- scale_fill_gradientn(colours = cm, na.value=na.value)
+    }
     p <- rasterVis::gplot(rast) +
         geom_tile(aes(fill = value)) +
         geom_map(data = worldmap, map = worldmap,
@@ -77,16 +94,11 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_li
               legend.margin=margin(0,0,0,0),
               legend.box.margin=margin(-10,0,-10,-10),
               plot.title=element_text(hjust=0.5)) +
-        guides(fill = guide_colorbar(ticks.colour = "black"))
+        guides(fill = guide_colorbar(ticks.colour = "black")) +
+        colscale +
+        ggtitle(title)
     if (class(rast)=="RasterStack") {
         p <- p + facet_wrap(~ variable, nrow=nrow)
-    } else {
-        p <- p + ggtitle(title)
-    }
-    if (!is.null(col_limits)) {
-        p <- p + scale_fill_gradientn(colours = cm, limits=col_limits, na.value=na.value)
-    } else {
-        p <- p + scale_fill_gradientn(colours = cm, na.value=na.value)
     }
     return(p)
 }

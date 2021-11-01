@@ -12,6 +12,7 @@ make_raster_map(
   col_limits = NULL,
   cm = colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
     "#FF7F00", "red", "#7F0000"))(100),
+  set_extremes = FALSE,
   na.value = "transparent",
   map_alpha = 0.8,
   nrow = 1
@@ -20,7 +21,7 @@ make_raster_map(
 \arguments{
 \item{rast}{Georeferenced RasterLayer or RasterStack}
 
-\item{title}{Optional title of the map, for a single raster}
+\item{title}{Optional title of the map}
 
 \item{xlim}{Longitude limits}
 
@@ -29,6 +30,8 @@ make_raster_map(
 \item{col_limits}{Color scale limits}
 
 \item{cm}{Color scale}
+
+\item{set_extremes}{TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL}
 
 \item{na.value}{Color to use for NA values in raster}
 
