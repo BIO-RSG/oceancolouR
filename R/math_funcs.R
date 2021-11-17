@@ -320,3 +320,19 @@ monotonic_check <- function(v, direction="increasing") {
         return(all(v == cummin(v)))
     }
 }
+
+
+#' Find all the factors of a positive integer
+#'
+#' @param x Positive integer
+#' @return Vector of integers containing all the positive factors of x (from 1 to x inclusive)
+#' @examples
+#' find_factors(112749)
+#'
+#' @export
+find_factors <- function(x) {
+    x <- as.integer(abs(x))
+    factors <- 1:x
+    factors <- factors[x %% factors == 0L]
+    return(factors)
+}
