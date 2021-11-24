@@ -65,7 +65,7 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_li
     worldmap <- ggplot2::map_data("world")
     if (!is.null(col_limits)) {
         if (set_extremes) {
-            if (nlayers(rast) == 1) {
+            if (raster::nlayers(rast) == 1) {
                 rast[rast < col_limits[1]] <- col_limits[1]
                 rast[rast > col_limits[2]] <- col_limits[2]
             } else {
