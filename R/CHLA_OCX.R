@@ -13,45 +13,97 @@
 #' @export
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 
-    stopifnot(sensor %in% c("modis", "seawifs", "viirs"),
-              ((region=="global" & alg=="ocx") | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "ocx"))))
+    stopifnot(sensor %in% c("modis", "seawifs", "viirs", "landsat8", "sentinel2"),
+              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "ocx","oc2","oc3","oc4"))))
 
-    coefs <- list("global"=list("modis"=list("ocx"=c(0.2424,-2.7423,1.8017,0.0015,-1.228)),
-                                "seawifs"=list("ocx"=c(0.3272,-2.994,2.7218,-1.2259,-0.5683)),
-                                "viirs"=list("ocx"=c(0.2228,-2.4683,1.5867,-0.4275,-0.7768))),
-                  "nwa"=list("modis"=list("poly1"=c(0.36695,-3.27757),
-                                          "poly2"=c(0.37539,-3.12409,-0.75408),
-                                          "poly3"=c(0.37657,-3.26173,-0.60435,1.1404),
-                                          "poly4"=c(0.37925,-3.28487,-0.7583,1.49122,0.8002),
-                                          "ocx"=c(0.2424,-2.7423,1.8017,0.0015,-1.228)),
-                             "seawifs"=list("poly1"=c(0.51664,-3.84589),
-                                            "poly2"=c(0.51424,-3.59265,-0.95058),
-                                            "poly3"=c(0.52039,-3.75269,-0.92392,1.71524),
-                                            "poly4"=c(0.51824,-3.68431,-0.97401,0.84875,0.77874),
-                                            "ocx"=c(0.3272,-2.994,2.7218,-1.2259,-0.5683)),
-                             "viirs"=list("poly1"=c(0.43399,-3.09652),
-                                          "poly2"=c(0.41461,-2.54637,-1.47087),
-                                          "poly3"=c(0.44156,-3.05795,-0.65894,1.21248),
-                                          "poly4"=c(0.44786,-3.11091,-0.77987,1.425,0.90445),
-                                          "ocx"=c(0.2228,-2.4683,1.5867,-0.4275,-0.7768))),
-                  "nep"=list("modis"=list("poly1"=c(0.24947,-2.84152),
-                                          "poly2"=c(0.28424,-2.66996,-1.09915),
-                                          "poly3"=c(0.2805,-2.77728,-1.01747,0.92282),
-                                          "poly4"=c(0.26575,-2.84142,-0.57938,0.74974,0.47743),
-                                          "ocx"=c(0.2424,-2.7423,1.8017,0.0015,-1.228)),
-                             "seawifs"=list("poly1"=c(0.41867,-3.14708),
-                                            "poly2"=c(0.42171,-2.95509,-0.68104),
-                                            "poly3"=c(0.42506,-2.74285,-1.48743,0.17624),
-                                            "poly4"=c(0.42516,-3.14271,-0.70269,1.21802,1.59686),
-                                            "ocx"=c(0.3272,-2.994,2.7218,-1.2259,-0.5683)),
-                             "viirs"=list("poly1"=c(0.31886,-2.6501),
-                                          "poly2"=c(0.33771,-2.56462,-0.5314),
-                                          "poly3"=c(0.3303,-2.74252,-0.34545,1.35569),
-                                          "poly4"=c(0.33055,-2.76455,-0.39595,1.52198,0.46509),
-                                          "ocx"=c(0.2228,-2.4683,1.5867,-0.4275,-0.7768))))
-
-    return(as.numeric(coefs[[region]][[sensor]][[alg]]))
-
+    # Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
+    # "ocx" refers to those that are
+    nasa_coefs <- list("modis" = list("oc3" = c(0.2424,-2.7423,1.8017,0.0015,-1.228),
+                                      "oc2" = c(0.2500,-2.4752,1.4061,-2.8233,0.5405)),
+                      "seawifs" = list("oc4" = c(0.3272,-2.994,2.7218,-1.2259,-0.5683),
+                                       "oc3" = c(0.2515,-2.3798,1.5823,-0.6372,-0.5692),
+                                       "oc2" = c(0.2511,-2.0853,1.5035,-3.1747,0.3383)),
+                      "viirs" = list("oc3" = c(0.2228,-2.4683,1.5867,-0.4275,-0.7768)),
+                      "landsat8" = list("oc3" = c(0.2412,-2.0546,1.1776,-0.5538,-0.4570),
+                                        "oc2" = c(0.1977,-1.8117,1.9743,-2.5635,-0.7218))
+                      )
+    # Subset of the NASA coefs that are default for "ocx"
+    standard_coefs <- list("modis" = list("ocx" = nasa_coefs$modis$oc3),
+                           "seawifs" = list("ocx" = nasa_coefs$seawifs$oc4),
+                           "viirs" = list("ocx" = nasa_coefs$viirs$oc3),
+                           "landsat8" = list("ocx" = nasa_coefs$landsat8$oc3),
+                           # Assuming S2 is the same as L8 for now:
+                           "sentinel2" = list("ocx" = nasa_coefs$landsat8$oc3))
+    # Coefficients parameterized for some sensors in the Northwest Atlantic Ocean
+    nwa_coefs <- list("modis"=list("poly1" = c(0.36695,-3.27757),
+                                  "poly2" = c(0.37539,-3.12409,-0.75408),
+                                  "poly3" = c(0.37657,-3.26173,-0.60435,1.1404),
+                                  "poly4" = c(0.37925,-3.28487,-0.7583,1.49122,0.8002)),
+                     "seawifs"=list("poly1" = c(0.51664,-3.84589),
+                                    "poly2" = c(0.51424,-3.59265,-0.95058),
+                                    "poly3" = c(0.52039,-3.75269,-0.92392,1.71524),
+                                    "poly4" = c(0.51824,-3.68431,-0.97401,0.84875,0.77874)),
+                     "viirs"=list("poly1" = c(0.43399,-3.09652),
+                                  "poly2" = c(0.41461,-2.54637,-1.47087),
+                                  "poly3" = c(0.44156,-3.05795,-0.65894,1.21248),
+                                  "poly4" = c(0.44786,-3.11091,-0.77987,1.425,0.90445)
+                                  ))
+    # Coefficients parameterized for some sensors in the Northeast Pacific Ocean
+    nep_coefs <- list("modis"=list("poly1" = c(0.24947,-2.84152),
+                                   "poly2" = c(0.28424,-2.66996,-1.09915),
+                                   "poly3" = c(0.2805,-2.77728,-1.01747,0.92282),
+                                   "poly4" = c(0.26575,-2.84142,-0.57938,0.74974,0.47743)),
+                      "seawifs"=list("poly1" = c(0.41867,-3.14708),
+                                     "poly2" = c(0.42171,-2.95509,-0.68104),
+                                     "poly3" = c(0.42506,-2.74285,-1.48743,0.17624),
+                                     "poly4" = c(0.42516,-3.14271,-0.70269,1.21802,1.59686)),
+                      "viirs"=list("poly1" = c(0.31886,-2.6501),
+                                   "poly2" = c(0.33771,-2.56462,-0.5314),
+                                   "poly3" = c(0.3303,-2.74252,-0.34545,1.35569),
+                                   "poly4" = c(0.33055,-2.76455,-0.39595,1.52198,0.46509)))
+    # Combine into master list:
+    coefs <- list("global" = list("modis" = c(nasa_coefs$modis,
+                                              standard_coefs$modis),
+                                  "viirs" = c(nasa_coefs$viirs,
+                                              standard_coefs$viirs),
+                                  "seawifs" = c(nasa_coefs$seawifs,
+                                                standard_coefs$seawifs),
+                                  "landsat8" = c(nasa_coefs$landsat8,
+                                                 standard_coefs$landsat8),
+                                  "sentinel2" = c(standard_coefs$sentinel2)),
+                  "nwa" = list("modis" = c(nasa_coefs$modis,
+                                           standard_coefs$modis,
+                                           nwa_coefs$modis),
+                               "viirs" = c(nasa_coefs$viirs,
+                                           standard_coefs$viirs,
+                                           nwa_coefs$viirs),
+                               "seawifs" = c(nasa_coefs$seawifs,
+                                             standard_coefs$seawifs,
+                                             nwa_coefs$seawifs),
+                               "landsat8" = c(nasa_coefs$landsat8,
+                                              standard_coefs$landsat8),
+                               "sentinel2" = standard_coefs$sentinel2),
+                  "nep" = list("modis" = c(nasa_coefs$modis,
+                                           standard_coefs$modis,
+                                           nep_coefs$modis),
+                               "viirs" = c(nasa_coefs$viirs,
+                                           standard_coefs$viirs,
+                                           nep_coefs$viirs),
+                               "seawifs" = c(nasa_coefs$seawifs,
+                                             standard_coefs$seawifs,
+                                             nep_coefs$seawifs),
+                               "landsat8" = c(nasa_coefs$landsat8,
+                                              standard_coefs$landsat8),
+                               "sentinel2" = standard_coefs$sentinel2))
+    # Return coeffs, if available
+    coef_vals = try({
+        coefs[[region]][[sensor]][[alg]]
+        })
+    if (length(coef_vals)==0) {
+        message("Not parameterized for that region / sensor / algorithm")
+    } else {
+        return(coef_vals)
+    }
 }
 
 
@@ -68,11 +120,13 @@ get_ocx_lambda <- function(sensor, use_443nm) {
     # Blue Rrs wavelengths used in band ratio algorithms
     all_blues <- list("modis"=c("Rrs_443","Rrs_488"),
                       "seawifs"=c("Rrs_443","Rrs_490","Rrs_510"),
-                      "viirs"=c("Rrs_443","Rrs_486"))
+                      "viirs"=c("Rrs_443","Rrs_486"),
+                      "landsat8"=c("Rrs_443","Rrs_482"))
     # Green Rrs wavelengths used in band ratio algorithms
     all_greens <- list("modis"="Rrs_547",
                        "seawifs"="Rrs_555",
-                       "viirs"="Rrs_551") # algorithm for viirs uses 550, not 551
+                       "viirs"="Rrs_551",
+                       "landsat8"="Rrs_561") # algorithm for viirs uses 550, not 551
 
     blues <- all_blues[[sensor]]
     green <- all_greens[[sensor]]
