@@ -134,7 +134,7 @@ get_ci_coefs <- function(version) {
 #' @return Numeric vector of wavebands for the selected sensor, to use in the color index and Hu algorithm.
 #' @export
 get_ci_bands <- function(sensor) {
-    stopifnot(sensor %in% c("modis", "seawifs", "viirs", "landsat8"))
+    stopifnot(sensor %in% c("modis", "seawifs", "viirs", "landsat8", "sentinel2))
     if (sensor=="modis") {
         return(c(443,547,667))
     } else if (sensor=="landsat8") {
