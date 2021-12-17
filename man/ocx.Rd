@@ -34,7 +34,7 @@ chl <- input[,1]
 best_alg_coefs <- get_ocx_coefs("modis", region="global", alg="ocx")
 # get the wavebands used in the ocx algorithm for modis, and include the 443nm band as an option
 use_443nm <- TRUE
-lambdas <- get_ocx_lambda("modis", use_443nm = use_443nm)
+lambdas <- get_ocx_bands("modis", use_443nm = use_443nm)
 # calculate the band ratio
 br <- get_br(rrs=rrs, blues=lambdas$blues, green=lambdas$green, use_443nm=use_443nm)$rrs_ocx
 # calculate ocx chl for each data point using those coefficients

@@ -115,7 +115,7 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
 #' @return Named list of 2 character vectors, one for "green" waveband(s) and one for "blue"
 #' @export
-get_ocx_lambda <- function(sensor, use_443nm) {
+get_ocx_bands <- function(sensor, use_443nm) {
 
     # Blue Rrs wavelengths used in band ratio algorithms
     all_blues <- list("modis"=c("Rrs_443","Rrs_488"),
@@ -252,7 +252,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #' best_alg_coefs <- get_ocx_coefs("modis", region="global", alg="ocx")
 #' # get the wavebands used in the ocx algorithm for modis, and include the 443nm band as an option
 #' use_443nm <- TRUE
-#' lambdas <- get_ocx_lambda("modis", use_443nm = use_443nm)
+#' lambdas <- get_ocx_bands("modis", use_443nm = use_443nm)
 #' # calculate the band ratio
 #' br <- get_br(rrs=rrs, blues=lambdas$blues, green=lambdas$green, use_443nm=use_443nm)$rrs_ocx
 #' # calculate ocx chl for each data point using those coefficients
@@ -364,7 +364,7 @@ ocx_sse <- function(params, insitu_chl, bandratio, alg_degree=4, reg_method=3) {
 #' rrs <- input[,2:4]
 #' chl <- input[,1]
 #'
-#' lambdas <- get_ocx_lambda("modis", use_443nm = FALSE)
+#' lambdas <- get_ocx_bands("modis", use_443nm = FALSE)
 #' use_443nm <- FALSE
 #' br <- get_br(rrs=rrs, blues=lambdas$blues, green=lambdas$green, use_443nm=use_443nm)$rrs_ocx
 #' alg_degree <- 4

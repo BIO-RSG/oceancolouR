@@ -30,7 +30,8 @@ Imports:
     patchwork,
     tidyr,
     geodist,
-    rasterVis
+    rasterVis,
+    rgdal
 Suggests: 
     knitr,
     rmarkdown

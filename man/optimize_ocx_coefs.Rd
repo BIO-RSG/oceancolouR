@@ -37,7 +37,7 @@ colnames(input) <- c("in_situ_chl", "Rrs_443", "Rrs_488", "Rrs_547")
 rrs <- input[,2:4]
 chl <- input[,1]
 
-lambdas <- get_ocx_lambda("modis", use_443nm = FALSE)
+lambdas <- get_ocx_bands("modis", use_443nm = FALSE)
 use_443nm <- FALSE
 br <- get_br(rrs=rrs, blues=lambdas$blues, green=lambdas$green, use_443nm=use_443nm)$rrs_ocx
 alg_degree <- 4
