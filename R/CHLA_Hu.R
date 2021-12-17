@@ -139,6 +139,8 @@ get_ci_bands <- function(sensor) {
         return(c(443,547,667))
     } else if (sensor=="landsat8") {
         return(c(442,560,665))
+    } else if (sensor=="sentinel2") {
+        return(c(442,560,665))
     } else if (sensor=="seawifs") {
         return(c(443,555,670))
     } else if (sensor=="viirs") {
