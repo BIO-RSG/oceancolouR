@@ -54,8 +54,6 @@ oci <- function(rrs, sensor="seawifs", use_443nm=TRUE, ocx_bands=get_ocx_bands(s
 
     stopifnot(input_class %in% c("matrix", "RasterStack"))
 
-    hu_bands <- get_ci_bands(sensor)
-
     if (input_class == "RasterStack") {
         rast <- rrs[[1]] # for reformatting later
         ocx_rrs <- raster_to_matrix(r = rrs, rnames = c(blues, green))
