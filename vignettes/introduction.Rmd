@@ -189,7 +189,7 @@ This is the standard band ratio chlorophyll algorithm, which requires tuned coef
 ```{r}
 use_443nm <- TRUE
 coefficients <- get_ocx_coefs("seawifs", region="global", alg="ocx")
-wavebands <- get_ocx_lambda("seawifs", use_443nm = use_443nm)
+wavebands <- get_ocx_bands("seawifs", use_443nm = use_443nm)
 # calculate the band ratio
 br <- get_br(rrs=rrs, blues=wavebands$blues, green=wavebands$green, use_443nm=use_443nm)$rrs_ocx
 # calculate ocx chl for each data point
@@ -273,10 +273,9 @@ OCI is a blended algorithm using Hu for the lower concentrations (<0.15), OCx fo
 
 ```{r}
 use_443nm <- TRUE
-wavebands <- get_ocx_lambda("seawifs", use_443nm = use_443nm)
+wavebands <- get_ocx_bands("seawifs", use_443nm = use_443nm)
 ocx_coefs <- get_ocx_coefs("seawifs", "global", "ocx")
-chl_oci <- oci(rrs, wavebands$blues, wavebands$green, ocx_coefs, use_443nm=use_443nm,
-               sensor="seawifs", CI_coef_version=2)$oci_chl
+chl_oci <- oci(rrs, sensor="seawifs")$oci_chl
 str(chl_oci)
 ```
 
@@ -288,7 +287,7 @@ POLY4 can be implemented like this, using the Northwest Atlantic (NWA) as an exa
 
 ```{r}
 use_443nm <- FALSE
-wavebands <- get_ocx_lambda("seawifs", use_443nm = use_443nm)
+wavebands <- get_ocx_bands("seawifs", use_443nm = use_443nm)
 coefficients <- get_ocx_coefs(sensor = "seawifs", region = "nwa", alg= "poly4")
 chl_poly4 <- ocx(rrs, wavebands$blues, wavebands$green, coefficients, use_443nm=use_443nm)
 str(chl_poly4)
