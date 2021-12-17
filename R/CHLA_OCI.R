@@ -45,7 +45,7 @@
 #' plot(chl_raster)
 #'
 #' @export
-oci <- function(rrs, sensor="seawifs", use_443nm=TRUE, ocx_bands=get_ocx_bands(sensor,use_443nm), ocx_coefs=get_ocx_coefs(sensor), hu_bands=get_ci_bands(), hu_coefs=get_ci_coefs(2), CI_bound1=0.15, CI_bound2=0.2) {
+oci <- function(rrs, sensor="seawifs", use_443nm=TRUE, ocx_bands=get_ocx_bands(sensor,use_443nm), ocx_coefs=get_ocx_coefs(sensor), hu_bands=get_ci_bands(sensor), hu_coefs=get_ci_coefs(2), CI_bound1=0.15, CI_bound2=0.2) {
 
     blues <- ocx_bands$blues
     green <- ocx_bands$green
