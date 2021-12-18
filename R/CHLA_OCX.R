@@ -3,12 +3,15 @@
 #' Library of existing optimized coefficients for the polynomial band ratio algorithm.
 #' "ocx" returns the coefficients of the global ocean colour algorithm used by NASA (as of Nov 2020) for the selected sensor. "poly1" to "poly4" return the regionally-optimized coefficients for polynomial algorithms of degrees 1 to 4 for the selected sensor, for the two available regions: nwa (Northwest Atlantic) or nep (Northeast Pacific).
 #'
-#' @param sensor String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)
-#' @param region String, either "global" (for ocx), or "nwa" or "nep" (for ocx or poly1 to poly4)
-#' @param alg String, either "poly1", "poly2", "poly3", "poly4", or "ocx"
+#' @param sensor String, either modis (for MODIS-Aqua), seawifs, viirs (for VIIRS-SNPP), landsat8, or sentinel2
+#' @param region String, either "global" (for ocx algorithms), or "nwa" or "nep" (for ocx or poly1 to poly4)
+#' @param alg String, either "poly1", "poly2", "poly3", "poly4", "ocx", "oc2", "oc3", or "oc4"
 #' @references
+#' Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
+#'
 #' Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 #' https://www.mdpi.com/2072-4292/11/22/2609
+#'
 #' @return Numeric vector of polynomial coefficients, from the coefficient on the lowest degree term to highest degree.
 #' @export
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
