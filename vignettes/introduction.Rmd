@@ -272,9 +272,6 @@ ggplot(data.frame(x=chl_insitu_hu, y=chl_hu)) +
 OCI is a blended algorithm using Hu for the lower concentrations (<0.15), OCx for the higher concentrations (>0.2) and a blend of the two algorithms in between. This is the algorithm currently used by [NASA OBPG](https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/) for the *chlor_a* variable. Note that we have the region in `get_ocx_coefs()` set to *global* to use the same coefficients as NASA OBPG, but this could also be set to *nwa* or *nep* to use the coefficients optimized to those regions for the OCx portion of the algorithm.  
 
 ```{r}
-use_443nm <- TRUE
-wavebands <- get_ocx_bands("seawifs", use_443nm = use_443nm)
-ocx_coefs <- get_ocx_coefs("seawifs", "global", "ocx")
 chl_oci <- oci(rrs, sensor="seawifs")$oci_chl
 str(chl_oci)
 ```
