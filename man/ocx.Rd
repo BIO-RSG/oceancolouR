@@ -7,7 +7,7 @@
 ocx(rrs, blues, green, coefs, use_443nm = FALSE)
 }
 \arguments{
-\item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.}
+\item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.}
 
 \item{blues}{Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.}
 
@@ -18,7 +18,7 @@ ocx(rrs, blues, green, coefs, use_443nm = FALSE)
 \item{use_443nm}{Logical value, TRUE to make the 443nm band an option in the band ratio}
 }
 \value{
-For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack rrs: equivalent raster with OCx chlorophyll-a.
+For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack/Brick rrs: equivalent raster with OCx chlorophyll-a.
 }
 \description{
 Given a set of Rrs and coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.

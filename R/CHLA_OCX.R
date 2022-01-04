@@ -224,7 +224,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' Given a set of Rrs and coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
 #'
-#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
+#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
 #' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)
@@ -243,7 +243,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
 #'
-#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack rrs: equivalent raster with OCx chlorophyll-a.
+#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack/Brick rrs: equivalent raster with OCx chlorophyll-a.
 #' @examples
 #' # Some in situ chl / MODIS Rrs data used in Clay et al (2019)
 #' input <- matrix(c(0.118, 0.0072, 0.0064, 0.0035, 0.122, 0.0048, 0.005, 0.0017, 0.128, 0.0076, 0.007, 0.0032, 0.198, 0.0072, 0.007, 0.0035, 0.199, 0.0137, 0.0099, 0.005, 0.206, 0.0049, 0.005, 0.0027, 0.208, 0.0083, 0.0074, 0.0035, 0.213, 0.0035, 0.0036, 0.0023, 0.215, 0.0053, 0.0057, 0.0032, 0.217, 0.0031, 0.0041, 0.0026, 0.22, 0.0067, 0.0066, 0.0034, 0.223, 0.0032, 0.0035, 0.0023, 0.223, 0.0042, 0.0045, 0.0024, 0.249, 0.0185, 0.0125, 0.0062, 0.249, 0.0027, 0.0056, 0.005, 0.254, 0.0048, 0.0055, 0.0035, 0.403, 0.0052, 0.0055, 0.0026, 0.404, 0.0054, 0.0054, 0.0043, 0.404, 0.0026, 0.003, 0.0023, 0.418, 0.004, 0.0042, 0.0028, 0.438, 0.0053, 0.0054, 0.0032, 0.438, 0.0047, 0.0048, 0.0034, 0.5, 0.0045, 0.0048, 0.0038, 0.501, 0.0047, 0.0074, 0.0069, 0.508, 0.0138, 0.0114, 0.0075, 0.511, 0.0047, 0.0053, 0.0037, 0.958, 0.0023, 0.0034, 0.003, 0.971, 0.0072, 0.0054, 0.0038, 1.253, 0.0019, 0.003, 0.0028, 1.253, 0.0108, 0.0058, 0.0034, 1.259, 0.0017, 0.0026, 0.0026, 1.261, 0.0057, 0.0073, 0.0074, 1.264, 0.0031, 0.0032, 0.0027, 1.269, 0.0033, 0.0044, 0.0044, 1.273, 0.0047, 0.0045, 0.0036, 1.311, 0.0043, 0.0046, 0.0031, 1.975, 0.0066, 0.0051, 0.0038, 1.975, 0.0067, 0.0065, 0.0043, 1.994, 0.0016, 0.0026, 0.0029, 1.999, 0.0022, 0.0037, 0.0033, 2.019, 0.0024, 0.0032, 0.0035, 2.551, 0.0059, 0.0043, 0.0024, 3.01, 0.0037, 0.0044, 0.0036, 3.035, 8e-04, 0.0026, 0.0031, 3.064, 0.0043, 0.0042, 0.0034, 3.086, 0.0077, 0.0081, 0.0072, 3.148, 0.0061, 0.0045, 0.0034, 3.216, 0.0027, 0.0034, 0.0035, 3.222, 0.0059, 0.0046, 0.0035, 4.47, 0.0033, 0.0042, 0.0033, 4.558, 0.0052, 0.0053, 0.0037, 4.575, 0.0051, 0.0042, 0.004, 4.613, 0.0031, 0.0034, 0.0034, 4.653, 0.0014, 0.0023, 0.0033, 4.749, 6e-04, 0.0019, 0.0034, 6.644, 0.0046, 0.0039, 0.0037, 6.825, 0.0015, 0.0023, 0.0026, 6.832, 0.0042, 0.0047, 0.0045, 6.954, 0.0053, 0.0045, 0.0034, 7.049, 0.0036, 0.0034, 0.0039, 7.099, 3e-04, 0.0013, 0.0026, 7.162, 0.0027, 0.0027, 0.003, 7.407, 0.0025, 0.003, 0.0035, 7.462, 0.0056, 0.0052, 0.0049, 7.79, 0.0012, 0.0019, 0.0028, 7.89, 0.0013, 0.0022, 0.0028, 8.142, 0.0044, 0.0044, 0.0047, 8.162, 5e-04, 0.0014, 0.0024, 8.869, 0.0011, 0.0022, 0.0029, 9.274, 0.0018, 0.0022, 0.0026, 9.533, 0.0015, 0.0022, 0.003), ncol=4, byrow=TRUE)
@@ -276,7 +276,7 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
 
     input_class <- class(rrs)[1]
 
-    stopifnot(input_class %in% c("matrix", "RasterStack"))
+    stopifnot(input_class %in% c("matrix", "RasterStack", "RasterBrick"))
 
     chl_min <- 0.001
     chl_max <- 1000
@@ -286,7 +286,10 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
         coefs <- c(coefs, rep(0, (5 - length(coefs))))
     }
 
-    if (input_class == "RasterStack") {
+    if (input_class %in% c("RasterStack", "RasterBrick")) {
+        if (input_class == "RasterBrick"){
+            rrs <- raster::stack(rrs)
+        }
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = c(blues, green))
     } else if (input_class == "matrix") {
@@ -305,7 +308,7 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
     chl_final[chl_final < chl_min] <- chl_min
     chl_final[chl_final > chl_max] <- chl_max
 
-    if (input_class == "RasterStack") {
+    if (input_class %in% c("RasterStack", "RasterBrick")) {
         chl_final <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=chl_final)
     }
 

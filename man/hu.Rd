@@ -7,14 +7,14 @@
 hu(rrs, wave, coefs)
 }
 \arguments{
-\item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres, ordered from blue to green to red), OR: RasterStack of rrs layers with stack layers following the same naming convention.}
+\item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres, ordered from blue to green to red), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention.}
 
 \item{wave}{Numeric vector of Rrs wavebands matching those used in the column name(s) of rrs, arranged from shortest waveband to longest (example: c(443, 555, 670)).}
 
 \item{coefs}{Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest). See ?get_ci_coefs}
 }
 \value{
-For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by Hu for the given Rrs, wavebands, and coefficients. For RasterStack rrs: equivalent raster with Hu chlorophyll-a.
+For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by Hu for the given Rrs, wavebands, and coefficients. For RasterStack/Brick rrs: equivalent raster with Hu chlorophyll-a.
 }
 \description{
 Given a set of Rrs, and corresponding wavebands and coefficients, calculate chlorophyll using the Hu algorithm:

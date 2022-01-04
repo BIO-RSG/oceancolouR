@@ -17,7 +17,7 @@ oci(
 )
 }
 \arguments{
-\item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack of rrs layers with stack layers following the same naming convention. Names must match Rrs wavebands used in OCx (blue and green bands) and Hu (blue/green/red bands), from shortest waveband to longest, starting with "Rrs_".}
+\item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention. Names must match Rrs wavebands used in OCx (blue and green bands) and Hu (blue/green/red bands), from shortest waveband to longest, starting with "Rrs_".}
 
 \item{sensor}{String, either modis (for MODIS-Aqua), seawifs, viirs (for VIIRS-SNPP), landsat8, or sentinel2}
 
@@ -36,7 +36,7 @@ oci(
 \item{CI_bound2}{Numeric value, the higher value where blending between OCI and OCX should end}
 }
 \value{
-List containing OCI chlorophyll (For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCI for the given Rrs. For RasterStack rrs: equivalent raster with OCI chlorophyll-a), also the indices that were used for Hu and for blending.
+List containing OCI chlorophyll (For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCI for the given Rrs. For RasterStack/Brick rrs: equivalent raster with OCI chlorophyll-a), also the indices that were used for Hu and for blending.
 }
 \description{
 This is the algorithm currently used by NASA for chlor_a (as of April 2021).

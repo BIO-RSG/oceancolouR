@@ -81,8 +81,8 @@ conv_rrs_to_555 <- function(rrs, wave) {
             print(paste0("Unable to convert Rrs at ", wave, "nm to 555nm for use in OCI algorithm."))
             stop()
         }
-        LT_sw <- rrs < sw
-        GE_sw <- rrs >= sw
+        LT_sw <- rrs < sw & is.finite(rrs)
+        GE_sw <- rrs >= sw & is.finite(rrs)
         rrs[LT_sw] <- 10.0^(a1 * log10(rrs[LT_sw]) - b1)
         rrs[GE_sw] <- a2 * rrs[GE_sw] - b2
     }
@@ -161,7 +161,7 @@ get_ci_bands <- function(sensor) {
 #'
 #' This uses the SeaWiFS bands centered at 443, 555, and 670nm. For sensors with other wavebands, it uses the band closest to those (note that for MODIS, the closest "ocean" band is 547nm, not 555nm, which is for land). The difference in Rrs in the "green" band can be noticeable with a shift in wavelength, so if the sensor does not use the 555nm band, conv_rrs_to_555() is used to convert the Rrs at the green wavelength to Rrs at 555nm. This is not done with the red band because the difference in Rrs in that area of the spectrum is not as noticeable with a small shift in wavelength.
 #'
-#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres, ordered from blue to green to red), OR: RasterStack of rrs layers with stack layers following the same naming convention.
+#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres, ordered from blue to green to red), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention.
 #' @param wave Numeric vector of Rrs wavebands matching those used in the column name(s) of rrs, arranged from shortest waveband to longest (example: c(443, 555, 670)).
 #' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest). See ?get_ci_coefs
 #' @references
@@ -177,7 +177,7 @@ get_ci_bands <- function(sensor) {
 #'
 #' https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
 #'
-#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by Hu for the given Rrs, wavebands, and coefficients. For RasterStack rrs: equivalent raster with Hu chlorophyll-a.
+#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by Hu for the given Rrs, wavebands, and coefficients. For RasterStack/Brick rrs: equivalent raster with Hu chlorophyll-a.
 #' @examples
 #' # Some in situ chl / MODIS Rrs data used in Clay et al (2019)
 #' in_situ_chl <- c(0.085,0.09,0.1,0.106,0.107,0.122,0.122,0.126,0.128,0.133,0.134,0.143,0.153,0.166,0.166,0.173,0.175,0.182,0.189,0.194,0.197,0.198,0.199,0.208,0.225,0.236,0.249,0.254,0.254,0.258,0.259,0.262,0.266,0.274,0.276,0.28,0.283,0.305,0.311,0.314,0.314,0.318,0.326,0.327,0.34,0.355,0.404,0.405,0.413,0.423,0.435,0.46,0.473,0.493,0.53,0.66,0.66,0.672,0.691,0.726,0.752,0.803,0.803,0.806,0.817,0.829,0.889,0.895,0.897,0.976,1.004,1.006,1.036,1.161,1.219,1.252,1.253,1.835,2.075,2.551,4.117,5.297)
@@ -201,21 +201,28 @@ hu <- function(rrs, wave, coefs) {
 
     input_class <- class(rrs)[1]
 
-    stopifnot(input_class %in% c("matrix", "RasterStack"))
+    stopifnot(input_class %in% c("matrix", "RasterStack", "RasterBrick"))
 
-    if (!all(paste0("Rrs_", wave) %in% colnames(rrs))) {
-        stop("rrs column names must be in the form Rrs_XXX, where XXX is the waveband (nm) matching those in the wave variable, in the same order, from blue to green to red")
-    }
+    rrs_missing_msg <- "rrs names must be in the form Rrs_XXX, where XXX is the waveband (nm) matching those in the wave variable, in the same order, from blue to green to red"
 
     chl_min <- 0.001
     chl_max <- 1000
 
     wave <- sort(wave)
 
-    if (input_class == "RasterStack") {
+    if (input_class %in% c("RasterStack", "RasterBrick")) {
+        if (input_class == "RasterBrick"){
+            rrs <- raster::stack(rrs)
+        }
+        if (!all(paste0("Rrs_", wave) %in% names(rrs))) {
+            stop(rrs_missing_msg)
+        }
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = paste0("Rrs_", wave))
     } else if (input_class == "matrix") {
+        if (!all(paste0("Rrs_", wave) %in% colnames(rrs))) {
+            stop(rrs_missing_msg)
+        }
         if (nrow(rrs)==1) {
             rrs <- matrix(rrs[, paste0("Rrs_", wave)], nrow=1)
             colnames(rrs) <- paste0("Rrs_", wave)
@@ -261,7 +268,7 @@ hu <- function(rrs, wave, coefs) {
     chl_final[chl_final < chl_min] <- chl_min
     chl_final[chl_final > chl_max] <- chl_max
 
-    if (input_class == "RasterStack") {
+    if (input_class %in% c("RasterStack", "RasterBrick")) {
         chl_final <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=chl_final)
     }
 
