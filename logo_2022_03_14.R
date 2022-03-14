@@ -128,10 +128,10 @@ sysfonts::font_add_google("Baloo Tamma 2", "baloo", regular.wt = 800)
 sticker(
     g,
     package = "oceancolouR",
-    s_width = 1.6,
-    s_height = 1.6,
+    s_width = 1.65,
+    s_height = 1.65,
     s_x = 1,
-    s_y = 1.05,
+    s_y = 1.0,
     filename = "logoraw.png",
     h_color = "#69ffdc",
     h_fill = "#3a524c",
@@ -139,7 +139,7 @@ sticker(
     p_family = "baloo",
     p_color = "#69ffdc",
     white_around_sticker = F,
-    p_size = 17,
+    p_size = 18,
     dpi = 300,
     asp = 1
     # spotlight = T, l_x = 1, l_y = 1 # THIS IS NEAT tho it makes it look like a golf ball
