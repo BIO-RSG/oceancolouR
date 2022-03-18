@@ -1,4 +1,5 @@
-# oceancolouR
+# oceancolouR <a href='https://github.com/BIO-RSG/oceancolouR/README.md'><img src='man/figures/logoraw.png' align="right" height="139" /></a>
+
 
 This is a collection of frequently used functions for Ocean Colour Remote Sensing data processing and analysis using R.
 This package is in continuing development, but the following list is some (not all) of the functions included.
