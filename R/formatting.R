@@ -137,3 +137,18 @@ get_ranges <- function(p) {
     return(list(x=xranges,y=yranges))
 }
 
+
+#' Pad a string or number with zeroes in front.
+#'
+#' Given a number or string, pad the front with zeroes up to length len. This function is a simple wrapper for stringr::str_pad(s,width=len,side="left",pad="0").
+#'
+#' @param s A string or number.
+#' @param len Numeric value, length of the final string.
+#' @return s with zeroes in front.
+#' @examples
+#' pad0(45,4)
+#'
+#' @export
+pad0 <- function(s,len) {
+    stringr::str_pad(s,width=len,side="left",pad="0")
+}
