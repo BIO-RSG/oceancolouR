@@ -31,7 +31,8 @@ Imports:
     tidyr,
     geodist,
     rasterVis,
-    rgdal
+    rgdal,
+    ncdf4
 Suggests: 
     knitr,
     rmarkdown
