@@ -107,12 +107,14 @@ separate_flags <- function(flags, which_bits) {
 #' @return Dataframe containing filename, number of valid pixels, total number of pixels, and percent coverage. If file can't be read, "try-error" is returned instead.
 #' @export
 nc_image_stats <- function(file, w, e, s, n, var="geophysical_data/Rrs_555", latvar="navigation_data/latitude", lonvar="navigation_data/longitude") {
-    ncfile <- try({ncdf4::nc_open(file)}, silent=TRUE)
+    ncfile <- try({
+        nc <- ncdf4::nc_open(file)
+        latitude <- ncdf4::ncvar_get(nc,latvar)
+        longitude <- ncdf4::ncvar_get(nc,lonvar)
+        rvar <- ncdf4::ncvar_get(nc,var)
+        ncdf4::nc_close(nc)
+    }, silent=TRUE)
     if (class(ncfile)=="try-error") return(ncfile)
-    latitude <- ncdf4::ncvar_get(ncfile,latvar)
-    longitude <- ncdf4::ncvar_get(ncfile,lonvar)
-    rvar <- ncdf4::ncvar_get(ncfile,var)
-    ncdf4::nc_close(ncfile)
     reg_ind <- longitude >= w & longitude <= e & latitude >= s & latitude <= n
     nbvalpxl <- sum(is.finite(rvar) & reg_ind, na.rm=TRUE)
     nbpxltot <- sum(reg_ind, na.rm=TRUE)
