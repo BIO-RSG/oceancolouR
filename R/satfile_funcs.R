@@ -107,7 +107,7 @@ separate_flags <- function(flags, which_bits) {
 #' @return Dataframe containing filename, number of valid pixels, total number of pixels, and percent coverage. If file can't be read, "try-error" is returned instead.
 #' @export
 nc_image_stats <- function(file, w, e, s, n, var="geophysical_data/Rrs_555", latvar="navigation_data/latitude", lonvar="navigation_data/longitude") {
-    try({ncfile <- ncdf4::nc_open(file)}, silent=TRUE)
+    ncfile <- try({ncdf4::nc_open(file)}, silent=TRUE)
     if (class(ncfile)=="try-error") return(ncfile)
     latitude <- ncdf4::ncvar_get(ncfile,latvar)
     longitude <- ncdf4::ncvar_get(ncfile,lonvar)
