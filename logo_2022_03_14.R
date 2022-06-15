@@ -135,10 +135,11 @@ sticker(
     filename = "logoraw.png",
     h_color = "#69ffdc",
     h_fill = "#3a524c",
+    h_size = 0.5,
     p_y = 1.,
     p_family = "baloo",
     p_color = "#69ffdc",
-    white_around_sticker = F,
+    white_around_sticker = T,
     p_size = 18,
     dpi = 300,
     asp = 1
