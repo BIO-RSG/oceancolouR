@@ -117,9 +117,9 @@ collapse_window(
 Single numeric value representing the input window
 }
 \description{
-\preformatted{#***************************************************************************
+\if{html}{\out{<div class="sourceCode">}}\preformatted{#***************************************************************************
 # STEP 1: run checks on input
-}
+}\if{html}{\out{</div>}}
 }
 \details{
 

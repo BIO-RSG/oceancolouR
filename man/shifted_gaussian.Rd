@@ -8,6 +8,16 @@ shifted_gaussian(tv, B0, beta = 0, h, sigma, tmax)
 }
 \arguments{
 \item{tv}{Numeric vector}
+
+\item{B0}{B0}
+
+\item{beta}{beta}
+
+\item{h}{h}
+
+\item{sigma}{sigma}
+
+\item{tmax}{tmax}
 }
 \value{
 Numeric vector containing the points along the Gaussian.

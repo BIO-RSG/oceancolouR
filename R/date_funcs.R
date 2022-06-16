@@ -150,7 +150,7 @@ days_vector <- function(year, month=NULL, week=NULL) {
 #' Aug-Oct = Fall,
 #' Nov-Feb = Winter
 #'
-#' @param date
+#' @param date Date object
 #' @return String (either Spring, Summer, Fall, or Winter)
 #' @export
 get_season <- function(date) {
