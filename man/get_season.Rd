@@ -6,6 +6,9 @@
 \usage{
 get_season(date)
 }
+\arguments{
+\item{date}{Date object}
+}
 \value{
 String (either Spring, Summer, Fall, or Winter)
 }
