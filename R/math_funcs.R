@@ -3,11 +3,11 @@
 #' Given a vector tv, and parameters of a Gaussian curve, calculate a shifted Gaussian.
 #'
 #' @param tv Numeric vector
-#' @param B0
-#' @param beta
-#' @param h
-#' @param sigma
-#' @param tmax
+#' @param B0 B0
+#' @param beta beta
+#' @param h h
+#' @param sigma sigma
+#' @param tmax tmax
 #' @return Numeric vector containing the points along the Gaussian.
 #' @export
 shifted_gaussian <- function(tv, B0, beta=0, h, sigma, tmax) {
