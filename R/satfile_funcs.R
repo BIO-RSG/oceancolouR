@@ -21,6 +21,14 @@
 #' @return Data.frame with metadata and URLs of files to download.
 #' @export
 get_imglist_multi = function(dataset, minlat, maxlat, minlon, maxlon, mindate, maxdate) {
+    if(missing(mindate)) {mindate = 2022}
+    if(missing(maxdate)) {maxdate = 2022}
+    if(missing(minlat)) {minlat = 44.585138}
+    if(missing(maxlat)) {maxlat = 44.806227}
+    if(missing(minlon)) {minlon = -63.753582}
+    if(missing(maxlon)) {maxlon = -63.398581}
+    if(missing(dataset)) {dataset = "MODISA_L2_OC"}
+
     # Dates can be in format "YYYY" or "YYYY-MM-DD"
     minyear = substr(mindate, 1, 4) # Get min year value
     maxyear = substr(maxdate, 1, 4)
@@ -60,6 +68,7 @@ get_imglist_multi = function(dataset, minlat, maxlat, minlon, maxlon, mindate, m
     }
 
     yearlist = do.call(rbind, yearlist)
+    yearlist$`Cloud Cover` = as.numeric(yearlist$`Cloud Cover`)
     return(yearlist)
 
 }
@@ -78,6 +87,13 @@ get_imglist_multi = function(dataset, minlat, maxlat, minlon, maxlon, mindate, m
 #' @return Data.frame with metadata and URLs of files to download.
 #' @export
 get_imglist_l1 = function(sensor, minlat, maxlat, minlon, maxlon, mindate, maxdate) {
+    if(missing(mindate)) {mindate = 2022}
+    if(missing(maxdate)) {maxdate = 2022}
+    if(missing(minlat)) {minlat = 44.585138}
+    if(missing(maxlat)) {maxlat = 44.806227}
+    if(missing(minlon)) {minlon = -63.753582}
+    if(missing(maxlon)) {maxlon = -63.398581}
+    if(missing(sensor)) {sensor == "MODISA"}
     # if(sensor == "SEAWIFS") { dataset = "SEAWIFS_L2_OC"}
     if(sensor == "MODISA") {
         dataset = "MODISA_L2_OC"
@@ -103,7 +119,6 @@ get_imglist_l1 = function(sensor, minlat, maxlat, minlon, maxlon, mindate, maxda
         namelist$`Producer Granule ID` = paste0(substr(namelist$`Producer Granule ID`, 1, nchar(namelist$`Producer Granule ID`)-15), ".L1A_JPSS1.nc")
         namelist$`Online Access URLs` = paste0("https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/",namelist$`Producer Granule ID`)
     }
-
 
     return(namelist)
 }
