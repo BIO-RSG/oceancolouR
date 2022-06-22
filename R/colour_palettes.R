@@ -15,7 +15,7 @@
 #'
 #' @param n Number of colours to return
 #' @return A vector of hexadecimal colours (#RRGGBB)
-#' @example
+#' @examples
 #'
 #' thirtycols <- drywet(30)
 #'

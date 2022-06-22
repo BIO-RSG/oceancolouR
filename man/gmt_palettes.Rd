@@ -15,6 +15,16 @@ GMT Colour palettes
 \details{
 These are a few of the standard palettes included in GMT. See: https://docs.generic-mapping-tools.org/6.2/cookbook/cpts.html
 }
+\examples{
+
+thirtycols <- drywet(30)
+
+library(ggplot2)
+ggplot(data = reshape2::melt(volcano), aes(x = Var1, y = Var2, fill = value)) +
+geom_tile() +
+scale_fill_gradientn(colours = gmt_drywet(20))
+
+}
 \references{
 GMT 6: Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
 The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556-5564.

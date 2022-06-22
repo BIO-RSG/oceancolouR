@@ -86,14 +86,13 @@ get_imglist_multi = function(dataset, minlat, maxlat, minlon, maxlon, mindate, m
 #' @param maxdate Latest image as string of year or date (YYYY-MM-dd)
 #' @return Data.frame with metadata and URLs of files to download.
 #' @export
-get_imglist_l1 = function(sensor, minlat, maxlat, minlon, maxlon, mindate, maxdate) {
+get_imglist_l1 = function(sensor="MODISA", minlat, maxlat, minlon, maxlon, mindate, maxdate) {
     if(missing(mindate)) {mindate = 2022}
     if(missing(maxdate)) {maxdate = 2022}
     if(missing(minlat)) {minlat = 44.585138}
     if(missing(maxlat)) {maxlat = 44.806227}
     if(missing(minlon)) {minlon = -63.753582}
     if(missing(maxlon)) {maxlon = -63.398581}
-    if(missing(sensor)) {sensor == "MODISA"}
     # if(sensor == "SEAWIFS") { dataset = "SEAWIFS_L2_OC"}
     if(sensor == "MODISA") {
         dataset = "MODISA_L2_OC"
@@ -103,6 +102,7 @@ get_imglist_l1 = function(sensor, minlat, maxlat, minlon, maxlon, mindate, maxda
         dataset = "VIIRSJ1_L2_OC"
     } else {
         message("Sensor not in function")
+        return(NA)
     }
     namelist = get_imglist_multi(dataset, minlat = minlat, maxlat = maxlat, minlon = minlon, maxlon = maxlon, mindate = mindate, maxdate = maxdate)
     namelist$`Granule UR` = NULL

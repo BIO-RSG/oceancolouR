@@ -4,7 +4,15 @@
 \alias{get_imglist_l1}
 \title{Get L1A filenames}
 \usage{
-get_imglist_l1(sensor, minlat, maxlat, minlon, maxlon, mindate, maxdate)
+get_imglist_l1(
+  sensor = "MODISA",
+  minlat,
+  maxlat,
+  minlon,
+  maxlon,
+  mindate,
+  maxdate
+)
 }
 \arguments{
 \item{sensor}{Currently works for options "MODISA" and "SEAWIFS"}
