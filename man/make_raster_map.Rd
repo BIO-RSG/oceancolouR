@@ -9,6 +9,8 @@ make_raster_map(
   title = NULL,
   xlim = c(-95, -42),
   ylim = c(39, 82),
+  xlabs = NULL,
+  ylabs = NULL,
   col_limits = NULL,
   cm = colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
     "#FF7F00", "red", "#7F0000"))(100),
@@ -26,6 +28,10 @@ make_raster_map(
 \item{xlim}{Longitude limits}
 
 \item{ylim}{Latitude limits}
+
+\item{xlabs}{x-axis (longitude) labels to use. Set to NULL to let the function decide.}
+
+\item{ylabs}{y-axis (latitude) labels to use. Set to NULL to let the function decide.}
 
 \item{col_limits}{Color scale limits}
 

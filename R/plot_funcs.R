@@ -39,6 +39,8 @@ sinh_trans <- function() {
 #' @param title Optional title of the map
 #' @param xlim Longitude limits
 #' @param ylim Latitude limits
+#' @param xlabs x-axis (longitude) labels to use. Set to NULL to let the function decide.
+#' @param ylabs y-axis (latitude) labels to use. Set to NULL to let the function decide.
 #' @param col_limits Color scale limits
 #' @param cm Color scale
 #' @param set_extremes TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL
@@ -60,7 +62,7 @@ sinh_trans <- function() {
 #' make_raster_map(log10(tr),title=NULL)
 #'
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",map_alpha=0.8,nrow=1) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",map_alpha=0.8,nrow=1) {
     stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
     worldmap <- ggplot2::map_data("world")
     if (!is.null(col_limits)) {
@@ -97,6 +99,16 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),col_li
         guides(fill = guide_colorbar(ticks.colour = "black")) +
         colscale +
         ggtitle(title)
+    if (is.null(xlabs)) {
+        p <- p + scale_x_continuous(limits = xlim, expand = c(0, 0))
+    } else {
+        p <- p + scale_x_continuous(limits = xlim, breaks = xlabs, labels = xlabs, expand = c(0, 0))
+    }
+    if (is.null(ylabs)) {
+        p <- p + scale_y_continuous(limits = ylim, expand = c(0, 0))
+    } else {
+        p <- p + scale_y_continuous(limits = ylim, breaks = ylabs, labels = ylabs, expand = c(0, 0))
+    }
     if (class(rast)=="RasterStack") {
         p <- p + facet_wrap(~ variable, nrow=nrow)
     }
