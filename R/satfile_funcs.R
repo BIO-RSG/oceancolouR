@@ -126,7 +126,10 @@ get_imglist_l1 = function(sensor="MODISA", minlat, maxlat, minlon, maxlon, minda
 #' Download ocean colour files
 #'
 #' Download file lists from functions get_imglist_multi() and get_imglist_l1()
-#' Uses wget, and you need to have the OBPG .netrc credentials - see "Download Methods" here: https://oceancolor.gsfc.nasa.gov/data/download_methods/
+#' Uses wget (works on Mac, Linux, or Cygwin from Windows), and you need to have the OBPG .netrc credentials, i.e. you need to create an Earthdata account, and then type the following on the command line, replacing USERNAME and PASSWD with your own username and password:
+#'   echo "machine urs.earthdata.nasa.gov login USERNAME password PASSWD" > ~/.netrc ; > ~/.urs_cookies
+#'   chmod 0600 ~/.netrc
+#' See "Download Methods" here for more details: https://oceancolor.gsfc.nasa.gov/data/download_methods/
 #'
 #' @param filenames Filename to download
 #' @param urls URLs of files corresponding to filenames
