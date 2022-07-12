@@ -1,3 +1,155 @@
+#' Get L2 / L3 filenames
+#'
+#' Query the CMR Search site for files falling in a specific area. Most codes should work. A few useful ones:
+#' * MODISA_L2_OC (_IOP, _SST)
+#' * OLCIS3A_L2_EFR_OC (S3A_) (_ERR_) (_IOP, _OC_NRT, _IOP_NRT)
+#' * VIIRSN_L2_OC (VIIRSJ1_) (_IOP, _SST)
+#' * SEAWIFS_L2_OC (_IOP)
+#' * CZCS_L2_OC
+#' * MODISA_L3b_SST (_SST_NRT)
+#' * MODISA_L3b_NSST (_NSST_NRT)
+#' * MODISA_L3b_SST4 (_SST4_NRT)
+#' * MODISA_L3b_CHL (_CHL_NRT)
+#'
+#' @param dataset Code indicating what dataset: see https://cmr.earthdata.nasa.gov/search/site/collections/directory/OB_DAAC/gov.nasa.eosdis for full list
+#' @param minlat Minimum latitude (y)
+#' @param maxlat Maximum latitude (y)
+#' @param minlon Minimum longitude (x)
+#' @param maxlon Maximum longitude (x)
+#' @param mindate Earliest image as string of year or date (YYYY-MM-dd)
+#' @param maxdate Latest image as string of year or date (YYYY-MM-dd)
+#' @return Data.frame with metadata and URLs of files to download.
+#' @export
+get_imglist_multi = function(dataset, minlat, maxlat, minlon, maxlon, mindate, maxdate) {
+    if(missing(mindate)) {mindate = 2022}
+    if(missing(maxdate)) {maxdate = 2022}
+    if(missing(minlat)) {minlat = 44.585138}
+    if(missing(maxlat)) {maxlat = 44.806227}
+    if(missing(minlon)) {minlon = -63.753582}
+    if(missing(maxlon)) {maxlon = -63.398581}
+    if(missing(dataset)) {dataset = "MODISA_L2_OC"}
+
+    # Dates can be in format "YYYY" or "YYYY-MM-DD"
+    minyear = substr(mindate, 1, 4) # Get min year value
+    maxyear = substr(maxdate, 1, 4)
+    if(nchar(mindate) == 4) { mindate = paste0(mindate,"-01-01") } # If no month and day given, assume whole year
+    if(nchar(maxdate) == 4) { maxdate = paste0(maxdate,"-12-31") }
+    # Query CMR Search for files by year
+    yearlist = list()
+    cy = 1
+    # Loop by year
+    for (i in minyear:maxyear) {
+        pagenum = 1 # There are a limited number of results per page, so we loop through all pages available
+        while(pagenum > 0) {
+            print(paste(mindate, maxdate))
+            # Get files in date range and bounding box
+            url = paste0("https://cmr.earthdata.nasa.gov/search/granules.csv?provider=OB_DAAC&short_name=",dataset,"&bounding_box=",
+                         minlon,",",minlat,",",maxlon,",",maxlat,"&temporal=",mindate,",",maxdate,"&page_size=2000&page_num=", pagenum)
+            #print(url)
+            res = httr::GET(url)
+            data = (rawToChar(res$content))
+            data <- unlist(strsplit(data,"\n"))
+            # If there are results on the page, save to file
+            if (length(data) > 1) {
+                # Save to list
+                cols = unlist(strsplit(data[1],","))
+                test = strsplit(data[2:length(data)],",")
+                test2 = do.call(rbind, test)
+                t = as.data.frame(test2)
+                colnames(t) = cols[1:ncol(t)]
+                yearlist[[cy]] <- t
+                pagenum = pagenum+1
+            } else {
+                pagenum = 0
+            }
+            cat(pagenum)
+            cat("...")
+        }
+    }
+
+    yearlist = do.call(rbind, yearlist)
+    yearlist$`Cloud Cover` = as.numeric(yearlist$`Cloud Cover`)
+    return(yearlist)
+
+}
+
+#' Get L1A filenames
+#'
+#' Query the CMR Search site for files falling in a specific area. This currently converts the L2 names to L1 as the L1 files aren't fully listed on the CMR site.
+#'
+#' @param sensor Currently works for options "MODISA" and "SEAWIFS"
+#' @param minlat Minimum latitude (y)
+#' @param maxlat Maximum latitude (y)
+#' @param minlon Minimum longitude (x)
+#' @param maxlon Maximum longitude (x)
+#' @param mindate Earliest image as string of year or date (YYYY-MM-dd)
+#' @param maxdate Latest image as string of year or date (YYYY-MM-dd)
+#' @return Data.frame with metadata and URLs of files to download.
+#' @export
+get_imglist_l1 = function(sensor="MODISA", minlat, maxlat, minlon, maxlon, mindate, maxdate) {
+    if(missing(mindate)) {mindate = 2022}
+    if(missing(maxdate)) {maxdate = 2022}
+    if(missing(minlat)) {minlat = 44.585138}
+    if(missing(maxlat)) {maxlat = 44.806227}
+    if(missing(minlon)) {minlon = -63.753582}
+    if(missing(maxlon)) {maxlon = -63.398581}
+    # if(sensor == "SEAWIFS") { dataset = "SEAWIFS_L2_OC"}
+    if(sensor == "MODISA") {
+        dataset = "MODISA_L2_OC"
+    } else if(sensor == "VIIRSN") {
+        dataset = "VIIRSN_L2_OC"
+    } else if(sensor == "VIIRSJ") {
+        dataset = "VIIRSJ1_L2_OC"
+    } else {
+        message("Sensor not in function")
+        return(NA)
+    }
+    namelist = get_imglist_multi(dataset, minlat = minlat, maxlat = maxlat, minlon = minlon, maxlon = maxlon, mindate = mindate, maxdate = maxdate)
+    namelist$`Granule UR` = NULL
+    namelist$Size = NULL
+    if(dataset == "MODISA_L2_OC") {
+        namelist$`Producer Granule ID` = paste0(substr(namelist$`Producer Granule ID`, 1, nchar(namelist$`Producer Granule ID`)-13), ".L1A_LAC")
+        namelist$`Online Access URLs` = paste0("https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/",namelist$`Producer Granule ID`,".bz2")
+    # } else if(dataset == "SEAWIFS_L2_OC") {
+
+    } else if(dataset == "VIIRSN_L2_OC") {
+        namelist$`Producer Granule ID` = paste0(substr(namelist$`Producer Granule ID`, 1, nchar(namelist$`Producer Granule ID`)-14), ".L1A_SNPP.nc")
+        namelist$`Online Access URLs` = paste0("https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/",namelist$`Producer Granule ID`)
+    } else if(dataset == "VIIRSJ1_L2_OC") {
+        namelist$`Producer Granule ID` = paste0(substr(namelist$`Producer Granule ID`, 1, nchar(namelist$`Producer Granule ID`)-15), ".L1A_JPSS1.nc")
+        namelist$`Online Access URLs` = paste0("https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/",namelist$`Producer Granule ID`)
+    }
+
+    return(namelist)
+}
+
+#' Download ocean colour files
+#'
+#' Download file lists from functions get_imglist_multi() and get_imglist_l1()
+#' Uses wget, and you need to have the OBPG .netrc credentials - see "Download Methods" here: https://oceancolor.gsfc.nasa.gov/data/download_methods/
+#'
+#' @param filenames Filename to download
+#' @param urls URLs of files corresponding to filenames
+#' @return Data.frame with metadata and URLs of files to download.
+#' @examples
+#' filename = "A2003001162000.L2_LAC_OC.nc"
+#' url = "https://oceandata.sci.gsfc.nasa.gov/cmr/getfile/A2003001162000.L2_LAC_OC.nc"
+#' download_oc(filename, url)
+#' @export
+download_oc = function(filenames, urls) {
+    if(length(filenames) != length(urls)) {
+        print("Filenames not same length as URLs")
+    } else {
+        message(paste("Downloading",length(filenames)))
+        for(i in 1:length(urls)) {
+            dl_command = paste0("wget -q --show-progress --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --content-disposition ",urls[i])
+            system(dl_command)
+            # unzip_command = paste0("bunzip2 ",filenames[i],".bz2")
+            # system(unzip_command)
+        }
+    }
+}
+
 #' Read h5
 #'
 #' Read h5 level-3 binned file contents.
