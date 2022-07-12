@@ -101,7 +101,7 @@ separate_flags <- function(flags, which_bits) {
 #'
 #' @param file String, netCDF filename
 #' @param w,e,s,n Numeric values, west/east/south/north in decimal degrees
-#' @param var String, name of variable to check for percent coverage (full path to the variable within the netCDF, e.g. geophysical_variables/Rrs_555)
+#' @param var String, name of variable to check for percent coverage (full path to the variable within the netCDF, e.g. geophysical_data/Rrs_555)
 #' @param latvar String, full path and name of the latitude variable
 #' @param lonvar String, full path and name of the longitude variable
 #' @return Dataframe containing filename, number of valid pixels, total number of pixels, and percent coverage. If file can't be read, "try-error" is returned instead.
