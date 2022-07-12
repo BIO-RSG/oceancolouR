@@ -20,7 +20,7 @@ nc_image_stats(
 
 \item{w, e, s, n}{Numeric values, west/east/south/north in decimal degrees}
 
-\item{var}{String, name of variable to check for percent coverage (full path to the variable within the netCDF, e.g. geophysical_variables/Rrs_555)}
+\item{var}{String, name of variable to check for percent coverage (full path to the variable within the netCDF, e.g. geophysical_data/Rrs_555)}
 
 \item{latvar}{String, full path and name of the latitude variable}
 
