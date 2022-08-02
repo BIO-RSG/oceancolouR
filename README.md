@@ -1,8 +1,8 @@
 # oceancolouR <a href='https://github.com/BIO-RSG/oceancolouR/blob/master/README.md'><img src='man/figures/logoraw.png' align="right" height="139" /></a>
 
 
-This is a collection of frequently used functions for Ocean Colour Remote Sensing data processing and analysis using R.
-This package is in continuing development, but the following list is some (not all) of the functions included.
+This is a collection of frequently used R functions for Ocean Colour Remote Sensing data processing and analysis.
+This package is in continuing development, but the following list details some (not all) of the functions included.
 
 **Chlorophyll-a algorithms:**
 
@@ -42,36 +42,36 @@ vignette(topic="introduction", package="oceancolouR")
 
 ## Datasets
 
-There are numeric vectors included in the package, which give the bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA binned images, for the Pan-Canadian grid, Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence (approximate boundaries defined below in decimal degrees), at both 4km and 9km resolution.  
+There are numeric vectors of the coordinates used in NASA binned images subset to the Pan-Canadian grid including the Northwest Atlantic, Northeast Pacific and Gulf of Saint Lawrence (approximate boundaries defined below in decimal degrees). The bin numbers and their corresponding latitudes, longitudes, and bathymetry values are included at both 4km and 9km resolution.
 
-    * Pan-Canadian grid:        -147 to -41, 39 to 86  
-    * Northwest Atlantic:       -95 to -42, 39 to 82  
-    * Northeast Pacific:        -140 to -122, 46 to 60  
-    * Gulf of Saint Lawrence:   -75 to -49, 41 to 53  
+    * Pan-Canadian grid (pancan):      -147 to -41, 39 to 86  
+    * Northwest Atlantic (nwa):       -95 to -42, 39 to 82  
+    * Northeast Pacific (nep):        -140 to -122, 46 to 60  
+    * Gulf of Saint Lawrence (gosl):  -75 to -49, 41 to 53  
 
 Datasets can be loaded using the following command:  
 __data("*region_variable_resolution*")__  
 where:  
-    *region* is either *pancan*, *nwa*, *nep*, or *gosl*  
-    *variable* is either *bins*, *lats*, *lons*, or *bath*  
-    *resolution* is either *4km* or *9km*  
+    **region** is either *pancan*, *nwa*, *nep*, or *gosl*  
+    **variable** is either *bins*, *lats*, *lons*, or *bath*  
+    **resolution** is either *4km* or *9km*  
 
 ## References and links
 
 **OCx:**  
-O'Reilly, John & Maritorena, S. & Mitchell, B.G. & Siegel, David & Carder, Kendall & Garver, S.A. & Kahru, Mati & Mcclain, Charles. (1998). Ocean color chlorophyll algorithms for SeaWiFS. Journal of Geophysical Research. 103. 937-953.  
+O'Reilly, John & Maritorena, S. & Mitchell, B.G. & Siegel, David & Carder, Kendall & Garver, S.A. & Kahru, Mati & Mcclain, Charles. (1998). [Ocean color chlorophyll algorithms for SeaWiFS.](https://doi.org/10.1029/98JC02160) Journal of Geophysical Research. 103. 937-953.  10.1029/98JC02160.
 
 **GSM:**  
-Maritorena, Stephane & Siegel, David & Peterson, Alan. (2002). Optimization of a semianalytical ocean color model for global-scale application. Applied optics. 41. 2705-14. 10.1364/AO.41.002705.  
+Maritorena, Stephane & Siegel, David & Peterson, Alan. (2002). [Optimization of a semianalytical ocean color model for global-scale application.](https://doi.org/10.1364/AO.41.002705) Applied optics. 41. 2705-14. 10.1364/AO.41.002705.  
 
 **QAA:**  
-Lee, Zhongping & Carder, Kendall & Arnone, Robert. (2002). Deriving Inherent Optical Properties from Water Color: a Multiband Quasi-Analytical Algorithm for Optically Deep Waters. Applied optics. 41. 5755-72. 10.1364/AO.41.005755.  
+Lee, Zhongping & Carder, Kendall & Arnone, Robert. (2002). [Deriving Inherent Optical Properties from Water Color: a Multiband Quasi-Analytical Algorithm for Optically Deep Waters.](https://doi.org/10.1364/AO.41.005755) Applied optics. 41. 5755-72. 10.1364/AO.41.005755.  
 
 **OCI:**  
-Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). Chlorophyll a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference. Journal of Geophysical Research. 117. C01011. 10.1029/2011JC007395.  
+Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). [Chlorophyll a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference.](https://doi.org/10.1029/2011JC007395) Journal of Geophysical Research. 117. C01011. 10.1029/2011JC007395.  
 
 **EOF:**  
-Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis. Remote Sensing. 10. 10.3390/rs10020265.  
+Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). [Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis.](https://doi.org/10.3390/rs10020265) Remote Sensing. 10. 10.3390/rs10020265.  
 
 **Regional tuning for OCx (POLY4), GSM (GSM_GC, GSM_GS):**  
 Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
