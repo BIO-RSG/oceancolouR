@@ -152,3 +152,27 @@ get_ranges <- function(p) {
 pad0 <- function(s,len) {
     stringr::str_pad(s,width=len,side="left",pad="0")
 }
+
+
+#' Add a string to the end of each line in a file.
+#'
+#' This can be used to add a double space to the end of each line of an Rmarkdown file, which creates a new line.
+#'
+#' @param file_in Input filename
+#' @param file_out Output filename
+#' @param ch Character string to add to the end of each line
+#' @return TRUE if successful, FALSE if not
+#'
+#' @export
+add_char_to_textlines <- function(file_in, file_out, ch="  ") {
+    attempt <- try({
+        con <- file(file_in)
+        lines <- readLines(con)
+        close(con)
+        lines_new <- paste0(lines, ch)
+        con <- file(file_out)
+        writeLines(lines_new, con)
+        close(con)
+    }, silent=TRUE)
+    return(class(attempt)!="try-error")
+}
