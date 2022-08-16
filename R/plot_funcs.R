@@ -46,6 +46,8 @@ sinh_trans <- function() {
 #' @param set_extremes TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL
 #' @param na.value Color to use for NA values in raster
 #' @param map_alpha Transparency of landmasses on map, 0-1
+#' @param map_fill Colour of the landmasses in the map
+#' @param map_colour Colour of the outline of the landmasses in the map
 #' @param nrow Number of rows of plots, for raster stacks
 #' @return Raster or grid of rasters on maps with coastlines.
 #' @import ggplot2
@@ -62,7 +64,7 @@ sinh_trans <- function() {
 #' make_raster_map(log10(tr),title=NULL)
 #'
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",map_alpha=0.8,nrow=1) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",map_alpha=0.8,map_fill="white",map_colour="#7f7f7f",nrow=1) {
     stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
     worldmap <- ggplot2::map_data("world")
     if (!is.null(col_limits)) {
@@ -85,7 +87,7 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=
         geom_tile(aes(fill = value)) +
         geom_map(data = worldmap, map = worldmap,
                  aes(x = long, y = lat, group = group, map_id=region),
-                 fill = "white", colour = "#7f7f7f", size=0.5, alpha=map_alpha) +
+                 fill = map_fill, colour = map_colour, size=0.5, alpha=map_alpha) +
         scale_x_continuous(limits=xlim,expand=c(0,0)) +
         scale_y_continuous(limits=ylim,expand=c(0,0)) +
         coord_fixed(1.5) +

@@ -17,6 +17,8 @@ make_raster_map(
   set_extremes = FALSE,
   na.value = "transparent",
   map_alpha = 0.8,
+  map_fill = "white",
+  map_colour = "#7f7f7f",
   nrow = 1
 )
 }
@@ -42,6 +44,10 @@ make_raster_map(
 \item{na.value}{Color to use for NA values in raster}
 
 \item{map_alpha}{Transparency of landmasses on map, 0-1}
+
+\item{map_fill}{Colour of the landmasses in the map}
+
+\item{map_colour}{Colour of the outline of the landmasses in the map}
 
 \item{nrow}{Number of rows of plots, for raster stacks}
 }
