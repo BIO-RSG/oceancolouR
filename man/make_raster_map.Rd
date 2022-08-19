@@ -19,7 +19,8 @@ make_raster_map(
   map_alpha = 0.8,
   map_fill = "white",
   map_colour = "#7f7f7f",
-  nrow = 1
+  nrow = 1,
+  show_legend = TRUE
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ make_raster_map(
 \item{map_colour}{Colour of the outline of the landmasses in the map}
 
 \item{nrow}{Number of rows of plots, for raster stacks}
+
+\item{show_legend}{Display the raster legend next to the map?}
 }
 \value{
 Raster or grid of rasters on maps with coastlines.
