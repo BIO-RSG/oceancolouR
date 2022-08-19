@@ -16,6 +16,7 @@ make_raster_map(
     "#FF7F00", "red", "#7F0000"))(100),
   set_extremes = FALSE,
   na.value = "transparent",
+  rast_alpha = 1,
   map_alpha = 0.8,
   map_fill = "white",
   map_colour = "#7f7f7f",
@@ -43,6 +44,8 @@ make_raster_map(
 \item{set_extremes}{TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL}
 
 \item{na.value}{Color to use for NA values in raster}
+
+\item{rast_alpha}{Transparency of the raster on the map, 0-1}
 
 \item{map_alpha}{Transparency of landmasses on map, 0-1}
 
