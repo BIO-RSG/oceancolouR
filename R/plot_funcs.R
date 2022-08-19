@@ -85,7 +85,7 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=
         colscale <- scale_fill_gradientn(colours = cm, na.value=na.value)
     }
     p <- rasterVis::gplot(rast) +
-        geom_tile(aes(fill = value), show_legend=show_legend) +
+        geom_tile(aes(fill = value), show.legend=show_legend) +
         geom_map(data = worldmap, map = worldmap,
                  aes(x = long, y = lat, group = group, map_id=region),
                  fill = map_fill, colour = map_colour, size=0.5, alpha=map_alpha) +
