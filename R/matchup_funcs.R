@@ -90,19 +90,23 @@ get_closest_bins <- function(geo_df, bin_df, measure="geodesic", max_bins=100, r
 #' @param r Raster layer
 #' @param boxsize Size of box, must be an odd number in row, column order (i.e., 3 OR c(3,3) for a box 3 rows by 3 columns, c(3, 5) for box of 3 rows by 5 columns). '1' indicates just getting the matchup pixel
 #' @param rowcol A data frame with row and col of point. See example below
-#' @return Numeric vector of cell values and IDs
+#' @return Numeric vector of pixel values. (Will add cell numbers at some point)
 #' @examples
-#' Get row and col of your point
 #'
 #' library(raster)
 #' pt_x = -127.5
 #' pt_y = 49.5
 #' r = yourraster
+#'
+#' #Get row and col of your point
 #' xy = extract(r, y = cbind(pt_x, pt_y), cellnumbers=T, df=T)
 #' xy <- as.data.frame(rowColFromCell(s, cell = xy$cells))
+#'
+#' # Get pixel values in a 3x3 box around your point
 #' box_fun(r, 3, xy)
-#' Get a 3x5 box (3 rows by 5 columns) from the same location
-#' box_run(r, c(3,5, xy))
+#'
+#' #Get a 3x5 box (3 rows by 5 columns) from the same location
+#' box_fun(r, c(3,5), xy)
 #'
 #' @export
 box_fun <- function(r, boxsize, rowcol) {
@@ -116,6 +120,7 @@ box_fun <- function(r, boxsize, rowcol) {
         rowcol$cmax <- rowcol[,2] + ((boxsize[2]-1)/2)
         rowcol$cmin <- rowcol[,2] - ((boxsize[2]-1)/2)
         boxvals <- r[rowcol$rmin:rowcol$rmax, rowcol$cmin:rowcol$cmax]
+        return(boxvals)
         } else {
             message("Please enter odd-numbered box dimensions")
             break
