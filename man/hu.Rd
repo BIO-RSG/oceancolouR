@@ -4,7 +4,7 @@
 \alias{hu}
 \title{Hu chlorophyll-a algorithm}
 \usage{
-hu(rrs, wave, coefs)
+hu(rrs, wave, coefs = get_ci_coefs(2))
 }
 \arguments{
 \item{rrs}{Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres, ordered from blue to green to red), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention.}

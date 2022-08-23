@@ -197,7 +197,7 @@ get_ci_bands <- function(sensor) {
 #' plot(chl_raster)
 #'
 #' @export
-hu <- function(rrs, wave, coefs) {
+hu <- function(rrs, wave, coefs=get_ci_coefs(2)) {
 
     input_class <- class(rrs)[1]
 
