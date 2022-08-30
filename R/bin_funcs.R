@@ -178,3 +178,36 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
     return(mat)
 
 }
+
+
+
+#' Get bin, longitude, latitude
+#'
+#' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
+#'
+#' @param resolution Spatial resolution for binned grid (either 4km, 9km, or 111km)
+#' @return Dataframe with 3 columns: bin, longitude, latitude
+#' @export
+binlatlon <- function(resolution="4km") {
+
+    stopifnot(resolution %in% paste0(c(4,9,111),"km"))
+
+    nrows_all <- list("4km"=4320, "9km"=2160, "111km"=180)
+    nrows <- nrows_all[[resolution]]
+    latbins <- (seq(1:nrows)-0.5)*180/nrows - 90
+    numbins <- floor(2*nrows*cos(latbins*pi/180.0) + 0.5)
+    minlon <- -180
+    maxlon <- 180
+    londiff <- (maxlon - minlon) / numbins
+    lonbins <- lapply(1:length(numbins), function(i) {
+        diff <- londiff[i]
+        seq(from=(minlon+(diff/2)), to=(maxlon-(diff/2)), by=diff)
+    })
+    lonbins <- do.call(c, lonbins)
+    latbins <- rep(latbins, numbins)
+    return(data.frame(bin = 1:length(lonbins),
+                      longitude = lonbins,
+                      latitude = latbins,
+                      stringsAsFactors = FALSE))
+
+}
