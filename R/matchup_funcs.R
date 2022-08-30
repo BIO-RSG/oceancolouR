@@ -110,7 +110,6 @@ get_closest_bins <- function(geo_df, bin_df, measure="geodesic", max_bins=100, r
 #'
 #' @export
 box_fun <- function(r, boxsize, rowcol) {
-    require(raster)
     if (length(boxsize) == 1) {
         boxsize = c(boxsize, boxsize)
     }
@@ -121,8 +120,7 @@ box_fun <- function(r, boxsize, rowcol) {
         rowcol$cmin <- rowcol[,2] - ((boxsize[2]-1)/2)
         boxvals <- r[rowcol$rmin:rowcol$rmax, rowcol$cmin:rowcol$cmax]
         return(boxvals)
-        } else {
-            message("Please enter odd-numbered box dimensions")
-            break
-        }
+    } else {
+        stop("Please enter odd-numbered box dimensions")
+    }
 }

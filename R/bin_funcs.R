@@ -185,29 +185,55 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 #'
 #' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 #'
-#' @param resolution Spatial resolution for binned grid (either 4km, 9km, or 111km)
+#' @param resolution Spatial resolution for binned grid (either 1km, 4km, 9km, or 111km)
+#' @param lonlim Minimum and maximum longitude of the area of interest
+#' @param latlim Minimum and maximum latitude of the area of interest
 #' @return Dataframe with 3 columns: bin, longitude, latitude
 #' @export
-binlatlon <- function(resolution="4km") {
+binlatlon <- function(resolution="4km", lonlim=c(-180,180), latlim=c(-90,90)) {
 
     stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
 
-    nrows_all <- list("1km"=4320*4, "4km"=4320, "9km"=2160, "111km"=180)
+    # get number of rows, given a spatial resolution
+    nrows_all <- list("1km"=17280, "4km"=4320, "9km"=2160, "111km"=180)
     nrows <- nrows_all[[resolution]]
-    latbins <- (seq(1:nrows)-0.5)*180/nrows - 90
-    numbins <- floor(2*nrows*cos(latbins*pi/180.0) + 0.5)
+
+    # get the latitude for each row, and the number of bins per row
+    latitudes <- (seq(1:nrows)-0.5)*180/nrows - 90
+    bin_count <- floor(2*nrows*cos(latitudes*pi/180.0) + 0.5)
+    start_bins <- cumsum(bin_count)
+
+    # get the distance between each bin in each row
     minlon <- -180
     maxlon <- 180
-    londiff <- (maxlon - minlon) / numbins
-    lonbins <- lapply(1:length(numbins), function(i) {
+    londiff <- (maxlon - minlon) / bin_count
+
+    # subset to only the rows within the selected latitudes
+    lat_inds <- dplyr::between(latitudes, latlim[1], latlim[2])
+    latitudes <- latitudes[lat_inds]
+    bin_count <- bin_count[lat_inds]
+    londiff <- londiff[lat_inds]
+    lat_inds_range <- range(which(lat_inds))
+    start_bins <- start_bins[(lat_inds_range[1]-1):lat_inds_range[2]]
+    bin_nums <- (start_bins[1]+1):start_bins[length(start_bins)]
+
+    # get a vector of longitudes for each row
+    longitudes <- lapply(1:length(latitudes), function(i) {
         diff <- londiff[i]
         seq(from=(minlon+(diff/2)), to=(maxlon-(diff/2)), by=diff)
     })
-    lonbins <- do.call(c, lonbins)
-    latbins <- rep(latbins, numbins)
-    return(data.frame(bin = 1:length(lonbins),
-                      longitude = lonbins,
-                      latitude = latbins,
+    longitudes <- do.call(c, longitudes)
+
+    # expand latitude vector to the same length as the longitude vector,
+    # then subset to the selected longitudes
+    lon_inds <- dplyr::between(longitudes, lonlim[1], lonlim[2])
+    longitudes <- longitudes[lon_inds]
+    latitudes <- rep(latitudes, bin_count)[lon_inds]
+    bin_nums <- bin_nums[lon_inds]
+
+    return(data.frame(bin = bin_nums,
+                      longitude = longitudes,
+                      latitude = latitudes,
                       stringsAsFactors = FALSE))
 
 }

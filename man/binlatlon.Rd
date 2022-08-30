@@ -4,10 +4,14 @@
 \alias{binlatlon}
 \title{Get bin, longitude, latitude}
 \usage{
-binlatlon(resolution = "4km")
+binlatlon(resolution = "4km", lonlim = c(-180, 180), latlim = c(-90, 90))
 }
 \arguments{
-\item{resolution}{Spatial resolution for binned grid (either 4km, 9km, or 111km)}
+\item{resolution}{Spatial resolution for binned grid (either 1km, 4km, 9km, or 111km)}
+
+\item{lonlim}{Minimum and maximum longitude of the area of interest}
+
+\item{latlim}{Minimum and maximum latitude of the area of interest}
 }
 \value{
 Dataframe with 3 columns: bin, longitude, latitude
