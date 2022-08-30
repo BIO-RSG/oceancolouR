@@ -6,22 +6,24 @@ This package is in continuing development, but the following list details some (
 
 **Chlorophyll-a algorithms:**
 
+Frequently used chlorophyll-a algorithms have been added on an as-needed basis. Currently the following are implemented in oceancolouR for some sensors. Sensors available and tested here are MODIS-Aqua :blue_square: , SNPP-VIIRS :yellow_square:, SeaWiFS :green_square:, or sensor-independent :orange_square:
+
 * `gsm()`: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
-* `ocx()` : OCX algorithm for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. OCX coefficients can be optimized with `optimize_ocx_coefs()`
+* `ocx()` : :blue_square: :yellow_square: :green_square: OCX algorithm. OCX coefficients can be optimized with `optimize_ocx_coefs()`
 * `qaa()`: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
 * `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a  
-* `hu()` : Hu algorithm for MODIS-Aqua, SNPP-VIIRS and SeaWiFS  
-* `oci()` : OCI algorithm for MODIS-Aqua, SNPP-VIIRS and SeaWiFS. R implementation of NASA OBPG's chlor_a variable in OC (ocean colour) satellite images.  
+* `hu()` : :orange_square: Hu algorithm
+* `oci()` : :blue_square: :yellow_square: :green_square: OCI algorithm. R implementation of NASA [Ocean Biology Processing Group](https://oceancolor.gsfc.nasa.gov/)'s standard chlorophyll-a product in ocean colour satellite images. For information on standard equations for all sensors see the [`chlor_a`](https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/) data product page (and for Sentinel-3 OLCI see [here](https://forum.earthdata.nasa.gov/viewtopic.php?t=2370))
 
 
-**Other:** 
+**Other functions:** 
 
 * `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell, 2006)
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
 * `haversine()`: calculate haversine distance between two points
 * `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
-* `week8()`, `week8_date`: convert to/from standard 8-day week number and date
+* `week8()`, `week8_date()`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
 
 ## How to install
@@ -74,13 +76,13 @@ Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). [Chlorophyll a algorithms 
 Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). [Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis.](https://doi.org/10.3390/rs10020265) Remote Sensing. 10. 10.3390/rs10020265.  
 
 **Regional tuning for OCx (POLY4), GSM (GSM_GC, GSM_GS):**  
-Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
+Clay, S.; Pena, A.; DeTracey, B.; Devred, E. [Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans.](https://www.mdpi.com/2072-4292/11/22/2609/htm) Remote Sens. 2019, 11, 2609.  
 
 **Integerized Sinusoidal Binning Scheme:**  
 https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/  
 
 **In situ matchups and filtered mean:**
-Bailey, Sean & Werdell, Jeremy. (2006). A multi-sensor approach for the on-orbit validation of ocean color satellite data products. Remote Sensing of Environment. 102. 12-23. 10.1016/j.rse.2006.01.015.
+Bailey, Sean & Werdell, Jeremy. (2006). [A multi-sensor approach for the on-orbit validation of ocean color satellite data products.](https://www.sciencedirect.com/science/article/pii/S0034425706000472) Remote Sensing of Environment. 102. 12-23. 10.1016/j.rse.2006.01.015.
 
 
 
