@@ -190,9 +190,9 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 #' @export
 binlatlon <- function(resolution="4km") {
 
-    stopifnot(resolution %in% paste0(c(4,9,111),"km"))
+    stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
 
-    nrows_all <- list("4km"=4320, "9km"=2160, "111km"=180)
+    nrows_all <- list("1km"=4320*4, "4km"=4320, "9km"=2160, "111km"=180)
     nrows <- nrows_all[[resolution]]
     latbins <- (seq(1:nrows)-0.5)*180/nrows - 90
     numbins <- floor(2*nrows*cos(latbins*pi/180.0) + 0.5)
