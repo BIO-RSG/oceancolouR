@@ -4,7 +4,11 @@ export(add_char_to_textlines)
 export(add_matrices)
 export(asinh_trans)
 export(avg_columns)
+<<<<<<< HEAD
 export(binlatlon)
+=======
+export(box_fun)
+>>>>>>> 99a9cfd8f4428cb46c237d9f79c8c85a61b5dca5
 export(ci)
 export(collapse_window)
 export(conv_rrs_to_555)
