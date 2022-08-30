@@ -11,7 +11,7 @@ Frequently used chlorophyll-a algorithms have been added on an as-needed basis. 
 * `gsm()`: :blue_square::yellow_square::green_square: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
 * `ocx()` : :blue_square::yellow_square::green_square: OCX algorithm. OCX coefficients can be optimized with `optimize_ocx_coefs()`
 * `qaa()`: :green_square: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
-* `eof_chl()`: :green_square: EOF (empirical orthogonal function) method to calculate chlorophyll-a  
+* `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a (requires sensor and region-dependent training set as input)
 * `hu()` : :orange_square: Hu algorithm
 * `oci()` : :blue_square::yellow_square::green_square: OCI algorithm. R implementation of NASA [Ocean Biology Processing Group](https://oceancolor.gsfc.nasa.gov/)'s standard chlorophyll-a product in ocean colour satellite images. For information on standard equations for all sensors see the [`chlor_a`](https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/) data product page (and for Sentinel-3 OLCI see [here](https://forum.earthdata.nasa.gov/viewtopic.php?t=2370))
 
