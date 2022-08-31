@@ -6,10 +6,10 @@ This package is in continuing development, but the following list details some (
 
 **Chlorophyll-a algorithms:**
 
-Frequently used chlorophyll-a algorithms have been added on an as-needed basis. Currently the following are implemented in oceancolouR for some sensors. Sensors available and tested here are MODIS-Aqua :blue_square: , SNPP-VIIRS :yellow_square:, SeaWiFS :green_square:, or sensor-independent :orange_square:
+Frequently used chlorophyll-a algorithms have been added on an as-needed basis. Currently the following are implemented in oceancolouR for some sensors. Sensors available and tested here are MODIS-Aqua :blue_square: , SNPP-VIIRS :yellow_square:, SeaWiFS :green_square:, Landsat-8 OLI :black_large_square: , Sentinel-2 MSI :purple_square: , or sensor-independent :orange_square:
 
 * `gsm()`: :blue_square::yellow_square::green_square: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
-* `ocx()` : :blue_square::yellow_square::green_square: OCX algorithm. OCX coefficients can be optimized with `optimize_ocx_coefs()`
+* `ocx()` : :blue_square::yellow_square::green_square::black_large_square::purple_square: OCX algorithm. OCX coefficients can be optimized with `optimize_ocx_coefs()`
 * `qaa()`: :green_square: QAA algorithm (v6) to calculate chlorophyll-a as well as phytoplankton absorption coefficients
 * `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a (requires **sensor and region-dependent training set** as input)
 * `hu()` : :orange_square: Hu algorithm
