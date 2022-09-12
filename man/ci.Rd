@@ -31,7 +31,7 @@ rrs_blue <- rrs[,1]
 rrs_green <- rrs[,2]
 rrs_red <- rrs[,3]
 # get wavebands of selected sensor, and coefficients from the 2019 Hu paper
-wave <- get_ci_bands("modis")
+wave <- get_ci_bands("modisaqua")
 coefs <- get_ci_coefs(2)
 # if green waveband is not 555nm, convert green Rrs to Rrs at 555nm
 if (wave[2] != 555) {

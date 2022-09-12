@@ -7,7 +7,7 @@
 get_ocx_bands(sensor, use_443nm)
 }
 \arguments{
-\item{sensor}{String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)}
+\item{sensor}{String, either "modisaqua", "seawifs", or "viirssnpp"}
 
 \item{use_443nm}{Logical value, TRUE to make the 443nm band an option in the band ratio}
 }

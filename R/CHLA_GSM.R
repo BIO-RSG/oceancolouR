@@ -37,7 +37,7 @@ get_gs <- function(lambda) {
 #'
 #' gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019.
 #'
-#' @param sensor String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)
+#' @param sensor String, either "modisaqua", "seawifs", or "viirssnpp"
 #' @param region String, either "nwa", or "nep"
 #' @param gtype String, either "gc" or "gs" (see description below)
 #' @references
@@ -47,21 +47,21 @@ get_gs <- function(lambda) {
 #' @export
 get_gsm_IOPexps <- function(sensor, region, gtype) {
 
-    stopifnot(sensor %in% c("modis", "seawifs", "viirs"),
+    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp"),
               region %in% c("nwa", "nep"),
               gtype %in% c("gc", "gs"))
 
-    exps <- list("nwa"=list("modis"=list("gc"=c(0.5,0.038,0.8),
+    exps <- list("nwa"=list("modisaqua"=list("gc"=c(0.5,0.038,0.8),
                                          "gs"=c(0.5,0.036,0.75)),
                             "seawifs"=list("gc"=c(0.5,0.035,0.6),
                                            "gs"=c(0.5,0.034,0.525)),
-                            "viirs"=list("gc"=c(0.6,0.026,1.4),
+                            "viirssnpp"=list("gc"=c(0.6,0.026,1.4),
                                          "gs"=c(0.5,0.026,1.75))),
-                 "nep"=list("modis"=list("gc"=c(0.6,0.038,0.9),
+                 "nep"=list("modisaqua"=list("gc"=c(0.6,0.038,0.9),
                                          "gs"=c(0.6,0.036,0.75)),
                             "seawifs"=list("gc"=c(0.7,0.028,0.75),
                                            "gs"=c(0.65,0.026,0.65)),
-                            "viirs"=list("gc"=c(0.6,0.034,0.8),
+                            "viirssnpp"=list("gc"=c(0.6,0.034,0.8),
                                          "gs"=c(0.6,0.03,0.75))))
 
     return(as.numeric(exps[[region]][[sensor]][[gtype]]))
@@ -220,8 +220,8 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' # select wavelengths (these are the defaults for MODIS-Aqua)
 #' lambda <- c(412, 443, 469, 488, 531, 547, 555, 645, 667, 678)
 #'
-#' # tuned exponents for atlantic region, modis, GSM_GS (see Clay et al 2019 reference)
-#' tuned_exps <- get_gsm_IOPexps("modis", "nwa", "gs")
+#' # tuned exponents for atlantic region, modisaqua, GSM_GS (see Clay et al 2019 reference)
+#' tuned_exps <- get_gsm_IOPexps("modisaqua", "nwa", "gs")
 #' chl_exp <- tuned_exps[1]
 #' adg_exp <- tuned_exps[2]
 #' bbp_exp <- tuned_exps[3]

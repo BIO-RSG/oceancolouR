@@ -7,7 +7,7 @@
 get_gsm_IOPexps(sensor, region, gtype)
 }
 \arguments{
-\item{sensor}{String, either "modis", "seawifs", or "viirs" (note: "modis" is MODIS-Aqua, and "viirs" is VIIRS-SNPP)}
+\item{sensor}{String, either "modisaqua", "seawifs", or "viirssnpp"}
 
 \item{region}{String, either "nwa", or "nep"}
 

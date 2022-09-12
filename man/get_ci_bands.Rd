@@ -7,7 +7,7 @@
 get_ci_bands(sensor)
 }
 \arguments{
-\item{sensor}{String, either "modis" (for MODIS-Aqua), "seawifs", or "viirs" (for VIIRS-SNPP)}
+\item{sensor}{String, either modisaqua, seawifs, or viirssnpp}
 }
 \value{
 Numeric vector of wavebands for the selected sensor, to use in the color index and Hu algorithm.
