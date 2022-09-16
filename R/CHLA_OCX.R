@@ -439,7 +439,7 @@ ocx_sse <- function(params, insitu_chl, bandratio, alg_degree=4, reg_method=3) {
 #'     theme_bw()
 #' @export
 optimize_ocx_coefs <- function(data, alg_degree, params_guessed=c(a0 = 0.3, a1 = -3.8, a2 = -1, a3 = 1, a4 = 1), reg_method=3) {
-    params_fitted <- optim(params=params_guessed,
+    params_fitted <- optim(par=params_guessed,
                            fn=ocx_sse,
                            insitu_chl=data$x,
                            bandratio=data$y,
