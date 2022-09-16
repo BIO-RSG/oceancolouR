@@ -176,3 +176,19 @@ add_char_to_textlines <- function(file_in, file_out, ch="  ") {
     }, silent=TRUE)
     return(class(attempt)!="try-error")
 }
+
+
+#' Remove consecutive duplicate characters in a string
+#'
+#' @param x String
+#' @param ch Duplicated character to remove
+#' @return String with duplicates removed.
+#' @examples
+#' rm_dup("this_is_my__string", "_")
+#' rm_dup("this.is.my..string", ".")
+#'
+#' @export
+rm_dup <- function(x, ch) {
+    gsub(paste0("([",ch,"])\\1+"),"\\1", x)
+}
+
