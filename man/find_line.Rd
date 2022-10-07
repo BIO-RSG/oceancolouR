@@ -6,6 +6,15 @@
 \usage{
 find_line(x1, y1, x2, y2)
 }
+\arguments{
+\item{x1}{x coordinate of point 1}
+
+\item{y1}{y coordinate of point 1}
+
+\item{x2}{x coordinate of point 2}
+
+\item{y2}{y coordinate of point 2}
+}
 \value{
 Named list containing slope and intercept.
 }

@@ -19,3 +19,6 @@ Dataframe with 3 columns: bin, longitude, latitude
 \description{
 This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 }
+\details{
+WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+}

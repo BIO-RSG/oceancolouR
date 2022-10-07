@@ -185,6 +185,8 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 #'
 #' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 #'
+#' WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+#'
 #' @param resolution Spatial resolution for binned grid (either 1km, 4km, 9km, or 111km)
 #' @param lonlim Minimum and maximum longitude of the area of interest
 #' @param latlim Minimum and maximum latitude of the area of interest

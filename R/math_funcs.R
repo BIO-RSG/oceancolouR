@@ -19,10 +19,10 @@ shifted_gaussian <- function(tv, B0, beta=0, h, sigma, tmax) {
 #'
 #' Find slope and intercept of a line based on the coordinates of two points.
 #'
-#' @param x1
-#' @param y1
-#' @param x2
-#' @param y2
+#' @param x1 x coordinate of point 1
+#' @param y1 y coordinate of point 1
+#' @param x2 x coordinate of point 2
+#' @param y2 y coordinate of point 2
 #' @return Named list containing slope and intercept.
 #' @export
 find_line <- function(x1, y1, x2, y2) {
