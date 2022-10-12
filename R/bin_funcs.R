@@ -62,6 +62,7 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
     nrows_all <- nrows_all_res[[resolution]]
 
     # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southeast), and subset to the selected extent
+    lats <- ext[3:4]
     latitudes <- (seq(1:nrows_all) - 0.5) * 180/nrows_all - 90
     lat_inds <- which(dplyr::between(latitudes, lats[1], lats[2]))
 
