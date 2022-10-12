@@ -11,15 +11,21 @@ var_to_rast(
 )
 }
 \arguments{
-\item{df}{Dataframe with 2 columns: bin numbers, and variable values (note: the dataframe does not have to be in order of bin number).}
+\item{df}{Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).}
 
 \item{resolution}{String, either "4km" or "9km".}
 
-\item{ext}{Named vector containing the boundaries of the resulting grid.}
+\item{ext}{Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).}
 }
 \value{
-Global raster containing variable values.
+Raster containing the variable data.
 }
 \description{
-Create 2d grid of a variable, given a dataframe with 2 columns, one for bin numbers and one for variable values.
+Given a dataframe with 2 columns (bin number and variable), create the corresponding raster for visualization.
+}
+\details{
+As of 2022-10-12, this function combines the code from gen_start_bin() and gen_bin_grid() in order to speed it up by subsetting it by latitude.
+}
+\references{
+See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
 }

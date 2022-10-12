@@ -45,40 +45,70 @@ gen_bin_grid = function(start_num) {
 # From George White's primary production scripts.
 #' Generate raster of L3b data
 #'
-#' Create 2d grid of a variable, given a dataframe with 2 columns, one for bin numbers and one for variable values.
+#' Given a dataframe with 2 columns (bin number and variable), create the corresponding raster for visualization.
 #'
-#' @param df Dataframe with 2 columns: bin numbers, and variable values (note: the dataframe does not have to be in order of bin number).
+#' As of 2022-10-12, this function combines the code from gen_start_bin() and gen_bin_grid() in order to speed it up by subsetting it by latitude.
+#'
+#' @param df Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).
 #' @param resolution String, either "4km" or "9km".
-#' @param ext Named vector containing the boundaries of the resulting grid.
-#' @return Global raster containing variable values.
+#' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
+#' @references See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
+#' @return Raster containing the variable data.
 #' @export
 var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {
 
-    # create global grid of bin numbers at selected resolution
-    if (resolution=="4km") {
-        start_num <- gen_start_bin(4320)
-    } else if (resolution=="9km") {
-        start_num <- gen_start_bin(2160)
-    }
-    binGrid <- gen_bin_grid(start_num)
+    # get the number of rows on the global grid, given a spatial resolution
+    nrows_all_res <- list(`1km` = 17280, `4km` = 4320, `9km` = 2160, `111km` = 180)
+    nrows_all <- nrows_all_res[[resolution]]
 
-    # create blank global raster at selected resolution
-    nrows <- length(start_num)
-    data.rl <- raster::raster(nrows=nrows, ncols=(2*nrows))
+    # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southeast), and subset to the selected extent
+    latitudes <- (seq(1:nrows_all) - 0.5) * 180/nrows_all - 90
+    lat_inds <- which(dplyr::between(latitudes, lats[1], lats[2]))
 
-    # crop bin raster and blank raster to user-selected extent
+    # get number of columns for the global grid
+    ncol <- 2 * nrows_all
+
+    # subset number of rows based on selected extent
+    nrows <- length(lat_inds)
+    # add an extra index for subsetting vectors later (otherwise they'll be NA at the last index)
+    lat_inds <- c(lat_inds,max(lat_inds)+1)
+
+    # get the number of bins per row
+    bin_count <- floor(2 * nrows_all * cos(latitudes * pi/180) + 0.5)
+    # get the bin at the start of each row, and subset it to the selected extent
+    start_bin <- cumsum(c(1, bin_count[1:nrows_all - 1]))[lat_inds]
+
+    # create a blank raster for bins and for the variable
+    binGrid <- datGrid <- raster::raster(ncols=ncol, nrows=nrows, xmn=-180, xmx=180, ymn=lats[1], ymx=lats[2])
+
+    # fill the bin numbers in on each row
+    # note that to make the grid square, some bins are repeated instead of stretching them
+    bins <- integer(ncol * nrows)
+    dim(bins) <- c(nrows, ncol)
+    bins <- lapply(nrows:1, function(ilat) {
+        bb1 <- start_bin[ilat + 1]
+        bb0 <- start_bin[ilat]
+        bb0 + floor(seq(0, ncol-1) * (bb1-bb0)/ncol)
+    })
+    bins <- do.call(rbind, bins)
+
+    # put the bin numbers in the bin raster
+    raster::values(binGrid) = bins
+
+    # crop bin raster and blank raster to selected extent
     binGrid <- raster::crop(binGrid, raster::extent(ext))
-    data.rl <- raster::crop(data.rl, raster::extent(ext))
+    datGrid <- raster::crop(datGrid, raster::extent(ext))
 
     # create blank vector of appropriate length (starting bin number of last row + 3 for the 3 bins in the last row)
-    data.vc <- rep(NA, times=start_num[nrows]+3)
+    data.vc <- rep(NA, times = diff(range(bins,na.rm=TRUE)))
     # populate the chosen bin indices with data
-    data.vc[df[,1]] <- as.numeric(df[,2])
+    min_bins <- min(bins,na.rm=TRUE)
+    data.vc[df[, 1]-min_bins+1] <- as.numeric(df[, 2])
     # populate the blank raster layer
-    raster::values(data.rl) <- data.vc[raster::getValues(binGrid)]
-    names(data.rl) <- colnames(df)[2]
+    raster::values(datGrid) <- data.vc[raster::getValues(binGrid)-min_bins+1]
+    names(datGrid) <- colnames(df)[2]
 
-    return(data.rl)
+    return(datGrid)
 
 }
 
