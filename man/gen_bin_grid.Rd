@@ -20,3 +20,6 @@ Global raster containing bin numbers.
 \description{
 This generates a raster of bin numbers for the selected extent and resolution.
 }
+\details{
+WARNING: Ideally this should return the same set of bins as binlatlon() (just in a different format), but this function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
+}

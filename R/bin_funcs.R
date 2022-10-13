@@ -19,6 +19,8 @@ gen_start_bin = function(nrows=4320) {
 #'
 #' This generates a raster of bin numbers for the selected extent and resolution.
 #'
+#' WARNING: Ideally this should return the same set of bins as binlatlon() (just in a different format), but this function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
+#'
 #' @param resolution String, either "1km", "4km", "9km", or "111km".
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @return Global raster containing bin numbers.
@@ -200,7 +202,9 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 #'
 #' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 #'
-#' WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+#' WARNING 1: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+#'
+#' WARNING 2: Ideally this should return the same set of bins as gen_bin_grid() (just in a different format), but the latter function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
 #'
 #' @param resolution Spatial resolution for binned grid (either 1km, 4km, 9km, or 111km)
 #' @param lonlim Minimum and maximum longitude of the area of interest
