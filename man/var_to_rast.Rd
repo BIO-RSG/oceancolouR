@@ -26,6 +26,11 @@ Given a dataframe with 2 columns (bin number and variable), create the correspon
 \details{
 As of 2022-10-12, this function combines the code from gen_start_bin() and gen_bin_grid() in order to speed it up by subsetting it by latitude.
 }
+\examples{
+# make a bathymetry raster for the Northwest Atlantic
+var_to_rast(df = get_bins(region="nwa",variables=c("bin","bathymetry")),
+            ext = c(lon_bounds$NWA, lat_bounds$NWA))
+}
 \references{
 See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
 }

@@ -10,7 +10,7 @@
 gen_start_bin = function(nrows=4320) {
     latbins = (seq(1:nrows)-0.5)*180/nrows - 90
     numbins = floor(2*nrows*cos(latbins*pi/180.0) + 0.5)
-    return(cumsum(c(1,numbins[1:nrows-1])))
+    return(cumsum(c(1,numbins[1:nrows-1]))) # note this is the same as cumsum(c(1,numbins[1:(nrows-1)]))
 }
 
 
@@ -31,8 +31,8 @@ gen_bin_grid = function(start_num) {
     bins = integer(ncol*nrow)
     dim(bins) = c(nrow, ncol)
     for (ilat in 1:nrow) {
-        bb1 = start_num[ilat+1]
-        bb0 = start_num[ilat]
+        bb1 = snum[ilat+1]
+        bb0 = snum[ilat]
         nb = bb1 - bb0
         bins[1+nrow-ilat,] = bb0 + floor(seq(0, ncol-1)*nb/ncol)
     }
@@ -53,6 +53,10 @@ gen_bin_grid = function(start_num) {
 #' @param resolution String, either "4km" or "9km".
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @references See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
+#' @examples
+#' # make a bathymetry raster for the Northwest Atlantic
+#' var_to_rast(df = get_bins(region="nwa",variables=c("bin","bathymetry")),
+#'             ext = c(lon_bounds$NWA, lat_bounds$NWA))
 #' @return Raster containing the variable data.
 #' @export
 var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {
@@ -74,10 +78,9 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
     # add an extra index for subsetting vectors later (otherwise they'll be NA at the last index)
     lat_inds <- c(lat_inds,max(lat_inds)+1)
 
-    # get the number of bins per row
-    bin_count <- floor(2 * nrows_all * cos(latitudes * pi/180) + 0.5)
     # get the bin at the start of each row, and subset it to the selected extent
-    start_bin <- cumsum(c(1, bin_count[1:nrows_all - 1]))[lat_inds]
+    start_bin <- gen_start_bin(nrows_all)
+    start_bin <- c(start_bin, start_bin[nrows_all]+3)[lat_inds]
 
     # create a blank raster for bins and for the variable
     binGrid <- datGrid <- raster::raster(ncols=ncol, nrows=nrows, xmn=-180, xmx=180, ymn=lats[1], ymx=lats[2])
