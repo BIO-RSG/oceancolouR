@@ -29,7 +29,7 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
     # get the number of rows on the global grid, given a spatial resolution
     nrows_all_res <- list(`1km` = 17280, `4km` = 4320, `9km` = 2160, `111km` = 180)
     nrows_all <- nrows_all_res[[resolution]]
-    # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southeast), and subset to the selected extent
+    # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southwest), and subset to the selected extent
     latitudes <- (seq(1:nrows_all) - 0.5) * 180/nrows_all - 90
     lat_inds <- which(dplyr::between(latitudes, latlim[1], latlim[2]))
     # get number of columns for the global grid
@@ -218,28 +218,27 @@ binlatlon <- function(resolution="4km", lonlim=c(-180,180), latlim=c(-90,90)) {
     # get the latitude for each row, and the number of bins per row
     latitudes <- (seq(1:nrows_all)-0.5)*180/nrows_all - 90
     bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
-    # start_bins <- cumsum(bin_count)
-    start_bin <- gen_start_bin(nrows_all)
-    start_bin <- c(start_bin, start_bin[nrows_all]+3)
+    start_bins <- gen_start_bin(nrows_all)
+    start_bins <- c(start_bins, start_bins[nrows_all]+3)
 
     # get the distance between each bin in each row
-    minlon <- -180
-    maxlon <- 180
-    londiff <- (maxlon - minlon) / bin_count
+    londiff <- 360 / bin_count
 
     # subset to only the rows within the selected latitudes
     lat_inds <- dplyr::between(latitudes, latlim[1], latlim[2])
     latitudes <- latitudes[lat_inds]
     bin_count <- bin_count[lat_inds]
     londiff <- londiff[lat_inds]
-    lat_inds_range <- range(which(lat_inds))
-    start_bins <- start_bins[(lat_inds_range[1]-1):lat_inds_range[2]]
-    bin_nums <- (start_bins[1]+1):start_bins[length(start_bins)]
+    start_bins <- start_bins[lat_inds]
+
+    # get a vector of bin numbers over this range
+    lis <- sum(lat_inds)
+    bin_nums <- start_bins[1]:(start_bins[lis]+bin_count[lis]-1)
 
     # get a vector of longitudes for each row
     longitudes <- lapply(1:length(latitudes), function(i) {
         diff <- londiff[i]
-        seq(from=(minlon+(diff/2)), to=(maxlon-(diff/2)), by=diff)
+        seq(from=(-180+(diff/2)), to=(180-(diff/2)), by=diff)
     })
     longitudes <- do.call(c, longitudes)
 
