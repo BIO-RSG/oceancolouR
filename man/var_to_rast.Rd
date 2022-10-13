@@ -13,7 +13,7 @@ var_to_rast(
 \arguments{
 \item{df}{Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).}
 
-\item{resolution}{String, either "4km" or "9km".}
+\item{resolution}{String, either "1km", "4km", "9km", or "111km".}
 
 \item{ext}{Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).}
 }
@@ -22,9 +22,6 @@ Raster containing the variable data.
 }
 \description{
 Given a dataframe with 2 columns (bin number and variable), create the corresponding raster for visualization.
-}
-\details{
-As of 2022-10-12, this function combines the code from gen_start_bin() and gen_bin_grid() in order to speed it up by subsetting it by latitude.
 }
 \examples{
 # make a bathymetry raster for the Northwest Atlantic
