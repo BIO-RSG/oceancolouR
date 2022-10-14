@@ -251,9 +251,11 @@ filtered_mean <- function(var) {
     filtered_mean <- mean(var[valid_ind])
     filtered_sd <- sd(var[valid_ind])
     coef_of_variation <- filtered_sd/filtered_mean
+    numgood = length(!is.na(var[valid_ind]))
     return(data.frame(filtered_mean=filtered_mean,
                 filtered_sd=filtered_sd,
-                coef_of_variation=coef_of_variation))
+                coef_of_variation=coef_of_variation,
+                num_pix=numgood))
 }
 
 
