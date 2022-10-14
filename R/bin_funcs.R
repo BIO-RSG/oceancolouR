@@ -27,6 +27,7 @@ gen_start_bin = function(nrows=4320) {
 #' @export
 gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {
     stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
+    lonlim <- ext[1:2]
     latlim <- ext[3:4]
     # get the number of rows on the global grid, given a spatial resolution
     nrows_all_res <- list(`1km` = 17280, `4km` = 4320, `9km` = 2160, `111km` = 180)
@@ -43,27 +44,28 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
     # get the bin at the start of each row, and subset it to the selected extent
     start_bin <- gen_start_bin(nrows_all)
     start_bin <- c(start_bin, start_bin[nrows_all]+3)[lat_inds]
-    # create a blank raster for bins and for the variable
-    binGrid <- raster::raster(ncols=ncol, nrows=nrows,
-                              xmn=-180, xmx=180, ymn=latlim[1], ymx=latlim[2])
     # fill the bin numbers in on each row
     # note that to make the grid square, some bins are repeated instead of stretching them
     # e.g. if the grid were 900 pixels wide and a given row had 300 bins, each
     #      bin would be repeated 3 times
-    bins <- integer(ncol * nrows)
-    dim(bins) <- c(nrows, ncol)
     bins <- lapply(nrows:1, function(ilat) {
         bb1 <- start_bin[ilat + 1]
         bb0 <- start_bin[ilat]
         bb0 + floor(seq(0, ncol-1) * (bb1-bb0)/ncol)
     })
     bins <- do.call(rbind, bins)
-    # put the bin numbers in the bin raster
-    raster::values(binGrid) = bins
-    binGrid <- raster::crop(binGrid, raster::extent(ext))
+    # get the longitudinal differences between the bins in the longest possible row
+    londiff <- 360 / ncol
+    longitudes <- seq(from=(-180+(londiff/2)), to=(180-(londiff/2)), by=londiff)
+    # subset bin matrix by longitude
+    lon_inds <- dplyr::between(longitudes, lonlim[1], lonlim[2])
+    bins <- bins[,lon_inds]
+    # convert bin matrix to raster
+    binGrid <- raster::raster(ncols=ncol(bins), nrows=nrow(bins),
+                              xmn=lonlim[1], xmx=lonlim[2], ymn=latlim[1], ymx=latlim[2])
+    raster::values(binGrid) <- bins
     return(binGrid)
 }
-
 
 
 # From George White's primary production scripts.
@@ -197,6 +199,7 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
     return(mat)
 
 }
+
 
 #' Get bin number, longitude, latitude
 #'
