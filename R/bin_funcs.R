@@ -48,6 +48,8 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
                               xmn=-180, xmx=180, ymn=latlim[1], ymx=latlim[2])
     # fill the bin numbers in on each row
     # note that to make the grid square, some bins are repeated instead of stretching them
+    # e.g. if the grid were 900 pixels wide and a given row had 300 bins, each
+    #      bin would be repeated 3 times
     bins <- integer(ncol * nrows)
     dim(bins) <- c(nrows, ncol)
     bins <- lapply(nrows:1, function(ilat) {
@@ -196,17 +198,15 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 
 }
 
-
-
-#' Get bin, longitude, latitude
+#' Get bin number, longitude, latitude
 #'
-#' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
+#' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (1km, 4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 #'
 #' WARNING 1: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
 #'
-#' WARNING 2: Ideally this should return the same set of bins as gen_bin_grid() (just in a different format), but the latter function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
+#' WARNING 2: Ideally this should return the same set of bins as gen_bin_grid() (just in a different format), but the latter function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
 #'
-#' @param resolution Spatial resolution for binned grid (either 1km, 4km, 9km, or 111km)
+#' @param resolution String, spatial resolution for binned grid (either "1km", "4km", "9km", or "111km")
 #' @param lonlim Minimum and maximum longitude of the area of interest
 #' @param latlim Minimum and maximum latitude of the area of interest
 #' @return Dataframe with 3 columns: bin, longitude, latitude
@@ -221,26 +221,24 @@ binlatlon <- function(resolution="4km", lonlim=c(-180,180), latlim=c(-90,90)) {
 
     # get the latitude for each row, and the number of bins per row
     latitudes <- (seq(1:nrows_all)-0.5)*180/nrows_all - 90
-    bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
-    start_bins <- gen_start_bin(nrows_all)
-    start_bins <- c(start_bins, start_bins[nrows_all]+3)
-
-    # get the distance between each bin in each row
-    londiff <- 360 / bin_count
+    start_bin <- gen_start_bin(nrows_all)
+    start_bin <- c(start_bin, start_bin[nrows_all]+3)
 
     # subset to only the rows within the selected latitudes
     lat_inds <- dplyr::between(latitudes, latlim[1], latlim[2])
     latitudes <- latitudes[lat_inds]
-    bin_count <- bin_count[lat_inds]
-    londiff <- londiff[lat_inds]
-    start_bins <- start_bins[lat_inds]
+    start_bin <- start_bin[lat_inds]
+
+    # get the distance between each bin in each row
+    bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
+    londiff <- 360 / bin_count
 
     # get a vector of bin numbers over this range
     lis <- sum(lat_inds)
-    bin_nums <- start_bins[1]:(start_bins[lis]+bin_count[lis]-1)
+    bin_nums <- start_bin[1]:(start_bin[lis]+bin_count[lis]-1)
 
     # get a vector of longitudes for each row
-    longitudes <- lapply(1:length(latitudes), function(i) {
+    longitudes <- lapply(length(latitudes):1, function(i) {
         diff <- londiff[i]
         seq(from=(-180+(diff/2)), to=(180-(diff/2)), by=diff)
     })
