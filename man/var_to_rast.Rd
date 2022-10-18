@@ -7,7 +7,8 @@
 var_to_rast(
   df,
   resolution = "4km",
-  ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86)
+  ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86),
+  rast = TRUE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ var_to_rast(
 \item{resolution}{String, either "1km", "4km", "9km", or "111km".}
 
 \item{ext}{Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).}
+
+\item{rast}{TRUE/FALSE, should the resulting bin matrix be converted to raster?}
 }
 \value{
 Raster containing the variable data.

@@ -17,15 +17,16 @@ gen_start_bin = function(nrows=4320) {
 # From George White's primary production scripts.
 #' Generate bin grid
 #'
-#' This generates a raster of bin numbers for the selected extent and resolution.
+#' This generates a matrix or raster of bin numbers for the selected extent and resolution.
 #'
 #' WARNING: Ideally this should return the same set of bins as binlatlon() (just in a different format), but this function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
 #'
 #' @param resolution String, either "1km", "4km", "9km", or "111km".
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
+#' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
 #' @return Global raster containing bin numbers.
 #' @export
-gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {
+gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
     stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
     lonlim <- ext[1:2]
     latlim <- ext[3:4]
@@ -60,11 +61,14 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
     # subset bin matrix by longitude
     lon_inds <- dplyr::between(longitudes, lonlim[1], lonlim[2])
     bins <- bins[,lon_inds]
-    # convert bin matrix to raster
-    binGrid <- raster::raster(ncols=ncol(bins), nrows=nrow(bins),
-                              xmn=lonlim[1], xmx=lonlim[2], ymn=latlim[1], ymx=latlim[2])
-    raster::values(binGrid) <- bins
-    return(binGrid)
+    if (rast) {
+        # convert bin matrix to raster
+        binGrid <- raster::raster(ncols=ncol(bins), nrows=nrow(bins),
+                                  xmn=lonlim[1], xmx=lonlim[2], ymn=latlim[1], ymx=latlim[2])
+        raster::values(binGrid) <- bins
+        bins <- binGrid
+    }
+    return(bins)
 }
 
 
@@ -76,6 +80,7 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
 #' @param df Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).
 #' @param resolution String, either "1km", "4km", "9km", or "111km".
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
+#' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
 #' @references See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
 #' @examples
 #' # make a bathymetry raster for the Northwest Atlantic
@@ -83,23 +88,23 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
 #'             ext = c(lon_bounds$NWA, lat_bounds$NWA))
 #' @return Raster containing the variable data.
 #' @export
-var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)) {
+var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
     stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
-    # create a bin grid for the selected extent
-    binGrid <- gen_bin_grid(resolution=resolution, ext=ext)
-    # create corresponding blank raster for the data
-    datGrid <- raster::raster(ncols=ncol(binGrid),
-                              nrows=nrow(binGrid),
-                              ext=raster::extent(binGrid))
-    bin_range <- c(raster::minValue(binGrid), raster::maxValue(binGrid))
-    min_bin <- bin_range[1]
-    # create blank vector of appropriate length (number of unique bins in the raster)
-    data.vc <- rep(NA, times = diff(bin_range))
-    # populate the chosen bin indices with data
-    data.vc[df[,1]-min_bin+1] <- as.numeric(df[,2])
-    # populate the blank raster layer
-    raster::values(datGrid) <- data.vc[raster::getValues(binGrid)-min_bin+1]
-    names(datGrid) <- colnames(df)[2]
+    # create a bin grid for the selected latitudinal extent
+    binGrid <- gen_bin_grid(resolution=resolution, ext=ext, rast=FALSE)
+    binGrid_vec <- c(binGrid)
+    newmat <- rep(NA, length(binGrid_vec))
+    df_bins <- df$bin
+    newmat[binGrid_vec %in% df_bins] <- df[[2]][match(binGrid_vec, df_bins, nomatch = 0)]
+    datGrid <- matrix(newmat, nrow=nrow(binGrid))
+    # convert bin matrix to raster
+    if (rast) {
+        datrast <- raster::raster(ncols=ncol(datGrid), nrows=nrow(datGrid),
+                                  xmn=ext[1], xmx=ext[2], ymn=ext[3], ymx=ext[4])
+        raster::values(datrast) <- datGrid
+        datGrid <- datrast
+        names(datGrid) <- colnames(df)[2]
+    }
     return(datGrid)
 }
 
@@ -224,17 +229,19 @@ binlatlon <- function(resolution="4km", lonlim=c(-180,180), latlim=c(-90,90)) {
 
     # get the latitude for each row, and the number of bins per row
     latitudes <- (seq(1:nrows_all)-0.5)*180/nrows_all - 90
+    bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
     start_bin <- gen_start_bin(nrows_all)
     start_bin <- c(start_bin, start_bin[nrows_all]+3)
+
+    # get the distance between each bin in each row
+    londiff <- 360 / bin_count
 
     # subset to only the rows within the selected latitudes
     lat_inds <- dplyr::between(latitudes, latlim[1], latlim[2])
     latitudes <- latitudes[lat_inds]
+    bin_count <- bin_count[lat_inds]
+    londiff <- londiff[lat_inds]
     start_bin <- start_bin[lat_inds]
-
-    # get the distance between each bin in each row
-    bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
-    londiff <- 360 / bin_count
 
     # get a vector of bin numbers over this range
     lis <- sum(lat_inds)
