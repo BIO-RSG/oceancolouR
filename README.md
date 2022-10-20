@@ -1,4 +1,4 @@
-# oceancolouR <img src='man/figures/logoraw.png' align="right" height="139" />
+# oceancolouR <a href='https://github.com/BIO-RSG/oceancolouR/blob/master/README.md'><img src='man/figures/logoraw.png' align="right" height="139" /></a>
 
 
 This is a collection of frequently used R functions for Ocean Colour Remote Sensing data processing and analysis.
