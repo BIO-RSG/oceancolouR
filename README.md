@@ -25,7 +25,7 @@ Frequently used chlorophyll-a algorithms have been added on an as-needed basis. 
 * `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
 * `week8()`, `week8_date()`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
-* `binlatlon()`: calculate NASA L3bin numbers, latitudes and longitudes for 1km, 4km, 9km and 111km bin sizes
+* `binlatlon()`: calculate NASA L3bin numbers, latitudes and longitudes for various spatial resolutions (see `?gen_nrows` for list of accepted spatial resolution strings)  
 
 ## How to install
 
