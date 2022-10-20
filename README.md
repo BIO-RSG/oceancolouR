@@ -1,4 +1,4 @@
-# oceancolouR <a href='https://github.com/BIO-RSG/oceancolouR/blob/master/README.md'><img src='man/figures/logoraw.png' align="right" height="139" /></a>
+# oceancolouR <img src='man/figures/logoraw.png' align="right" height="139" />
 
 
 This is a collection of frequently used R functions for Ocean Colour Remote Sensing data processing and analysis.
@@ -16,7 +16,7 @@ Frequently used chlorophyll-a algorithms have been added on an as-needed basis. 
 * `oci()` : :blue_square::yellow_square::green_square: OCI algorithm. R implementation of NASA [Ocean Biology Processing Group](https://oceancolor.gsfc.nasa.gov/)'s standard chlorophyll-a product in ocean colour satellite images. For information on standard equations for all sensors see the [`chlor_a`](https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/) data product page (and for Sentinel-3 OLCI see [here](https://forum.earthdata.nasa.gov/viewtopic.php?t=2370))
 
 
-**Other functions:** 
+**Other functions:**  
 
 * `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell, 2006)
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
