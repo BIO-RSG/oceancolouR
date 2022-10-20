@@ -2,19 +2,19 @@
 #'
 #' This generates the number of rows on the global grid of level-3 binned (L3b) data for a given spatial resolution. For example: For 4km resolution data, 4320 rows; for 9km resolution, 2160 rows
 #'
-#' HH: 50m (currently unavailable)
-#' HQ: 100m (currently unavailable)
-#' Q: 250m
-#' H: 0.5km
-#' 1: 1.1km
-#' 2: 2.3km
-#' 4: 4.6km
-#' 9: 9.2km
-#' 18: 18.5km
-#' 36: 36km
-#' QD: 0.25 degree (currently unavailable)
-#' HD: 0.5 degree
-#' 1D: 1 degree
+#' - HH: 50m (currently unavailable)
+#' - HQ: 100m (currently unavailable)
+#' - Q: 250m
+#' - H: 0.5km
+#' - 1: 1.1km
+#' - 2: 2.3km
+#' - 4: 4.6km
+#' - 9: 9.2km
+#' - 18: 18.5km
+#' - 36: 36km
+#' - QD: 0.25 degree (currently unavailable)
+#' - HD: 0.5 degree
+#' - 1D: 1 degree
 #'
 #' @param resolution String representing the spatial resolution (see details for list of accepted strings, e.g. "Q" for 250m or "4" for 4.6km)
 #' @return Single numeric value, the number of rows
