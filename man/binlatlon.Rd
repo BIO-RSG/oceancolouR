@@ -4,23 +4,28 @@
 \alias{binlatlon}
 \title{Get bin number, longitude, latitude}
 \usage{
-binlatlon(resolution = "4km", lonlim = c(-180, 180), latlim = c(-90, 90))
+binlatlon(
+  resolution = "4",
+  lonlim = c(-180, 180),
+  latlim = c(-90, 90),
+  max_bins = 5e+07
+)
 }
 \arguments{
-\item{resolution}{String, spatial resolution for binned grid (either "1km", "4km", "9km", or "111km")}
+\item{resolution}{String indicating spatial resolution, see ?gen_nrows for list of accepted strings}
 
 \item{lonlim}{Minimum and maximum longitude of the area of interest}
 
 \item{latlim}{Minimum and maximum latitude of the area of interest}
+
+\item{max_bins}{Maximum number of bins that can be generated between the selected latitudes. This is to prevent overloading memory with the higher-resolution grids (e.g. 250m, 1km)}
 }
 \value{
-Dataframe with 3 columns: bin, longitude, latitude
+Dataframe with 3 columns: bin number, longitude, latitude
 }
 \description{
-This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (1km, 4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
+This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution, using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 }
 \details{
-WARNING 1: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
-
-WARNING 2: Ideally this should return the same set of bins as gen_bin_grid() (just in a different format), but the latter function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
+WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
 }

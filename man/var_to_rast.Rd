@@ -6,7 +6,7 @@
 \usage{
 var_to_rast(
   df,
-  resolution = "4km",
+  resolution = "4",
   ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86),
   rast = TRUE
 )
@@ -14,7 +14,7 @@ var_to_rast(
 \arguments{
 \item{df}{Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).}
 
-\item{resolution}{String, either "1km", "4km", "9km", or "111km".}
+\item{resolution}{String indicating spatial resolution, see ?gen_nrows for list of accepted strings.}
 
 \item{ext}{Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).}
 

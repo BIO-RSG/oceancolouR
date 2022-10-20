@@ -1,3 +1,47 @@
+#' Get number of rows on L3b global grid for a given resolution
+#'
+#' This generates the number of rows on the global grid of level-3 binned (L3b) data for a given spatial resolution. For example: For 4km resolution data, 4320 rows; for 9km resolution, 2160 rows
+#'
+#' HH: 50m (currently unavailable)
+#' HQ: 100m (currently unavailable)
+#' Q: 250m
+#' H: 0.5km
+#' 1: 1.1km
+#' 2: 2.3km
+#' 4: 4.6km
+#' 9: 9.2km
+#' 18: 18.5km
+#' 36: 36km
+#' QD: 0.25 degree (currently unavailable)
+#' HD: 0.5 degree
+#' 1D: 1 degree
+#'
+#' @param resolution String representing the spatial resolution (see details for list of accepted strings, e.g. "Q" for 250m or "4" for 4.6km)
+#' @return Single numeric value, the number of rows
+#' @references
+#' https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
+#' https://oceancolor.gsfc.nasa.gov/docs/ocssw/
+#'
+#' @export
+gen_nrows <- function(resolution) {
+    nrows_all_res <- list(#"HH" = 50m
+                          #"HQ" = 100m
+                          "Q" = 69120,
+                          "H" = 34560,
+                          "1" = 17280,
+                          "2" = 8640,
+                          "4" = 4320,
+                          "9" = 2160,
+                          "18" = 1080,
+                          "36" = 540,
+                          #"QD" = 0.25 degree
+                          "HD" = 360,
+                          "1D" = 180)
+    resolution <- as.character(resolution)
+    stopifnot(resolution %in% names(nrows_all_res))
+    return(nrows_all_res[[resolution]])
+}
+
 # From George White's primary production scripts.
 #' Generate start bin vector
 #'
@@ -19,20 +63,16 @@ gen_start_bin = function(nrows=4320) {
 #'
 #' This generates a matrix or raster of bin numbers for the selected extent and resolution.
 #'
-#' WARNING: Ideally this should return the same set of bins as binlatlon() (just in a different format), but this function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
-#'
-#' @param resolution String, either "1km", "4km", "9km", or "111km".
+#' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
 #' @return Global raster containing bin numbers.
 #' @export
-gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
-    stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
+gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
     lonlim <- ext[1:2]
     latlim <- ext[3:4]
     # get the number of rows on the global grid, given a spatial resolution
-    nrows_all_res <- list(`1km` = 17280, `4km` = 4320, `9km` = 2160, `111km` = 180)
-    nrows_all <- nrows_all_res[[resolution]]
+    nrows_all <- gen_nrows(resolution)
     # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southwest), and subset to the selected extent
     latitudes <- (seq(1:nrows_all) - 0.5) * 180/nrows_all - 90
     lat_inds <- which(dplyr::between(latitudes, latlim[1], latlim[2]))
@@ -78,7 +118,7 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
 #' Given a dataframe with 2 columns (bin number and variable), create the corresponding raster for visualization.
 #'
 #' @param df Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).
-#' @param resolution String, either "1km", "4km", "9km", or "111km".
+#' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
 #' @references See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
@@ -88,8 +128,7 @@ gen_bin_grid = function(resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=8
 #'             ext = c(lon_bounds$NWA, lat_bounds$NWA))
 #' @return Raster containing the variable data.
 #' @export
-var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
-    stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
+var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
     # create a bin grid for the selected latitudinal extent
     binGrid <- gen_bin_grid(resolution=resolution, ext=ext, rast=FALSE)
     binGrid_vec <- c(binGrid)
@@ -110,7 +149,7 @@ var_to_rast <- function(df, resolution="4km", ext=c(xmn=-147, xmx=-41, ymn=39, y
 
 #' Get bin info at 4km and 9km resolution
 #'
-#' Get corresponding bin number, latitude, longitude and depth for Pan-Canadian Grid or subregions
+#' Get corresponding bin number, latitude, longitude and depth for Pan-Canadian Grid or subregions. These are vectors of bin/lat/lon/bathymetry that have already been generated for easier access.
 #'
 #' @param region String, either "pancan", "nwa", "nep", or "gosl"
 #' @param resolution String, either "4km" or "9km".
@@ -162,8 +201,9 @@ get_bins <- function(region = "pancan", resolution = "4km", variables = "all") {
 #'
 #' @export
 plot_pancan <- function(vec, region="pancan", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=NULL) {
+    stopifnot(resolution %in% c("4km", "9km"))
     bins <- (function(v) get(data(list=v, package="oceancolouR", envir = new.env())))(paste0(region,"_bins_",resolution))
-    rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=resolution, ext=ext)
+    rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=gsub("km","",resolution), ext=ext)
     p <- make_raster_map(rast,xlim=ext[1:2],ylim=ext[3:4],col_limits=limits)
     return(p)
 }
@@ -208,24 +248,20 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 
 #' Get bin number, longitude, latitude
 #'
-#' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution (1km, 4.64km, 9.28km, or 111km), using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
+#' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution, using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 #'
-#' WARNING 1: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+#' WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
 #'
-#' WARNING 2: Ideally this should return the same set of bins as gen_bin_grid() (just in a different format), but the latter function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
-#'
-#' @param resolution String, spatial resolution for binned grid (either "1km", "4km", "9km", or "111km")
+#' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings
 #' @param lonlim Minimum and maximum longitude of the area of interest
 #' @param latlim Minimum and maximum latitude of the area of interest
-#' @return Dataframe with 3 columns: bin, longitude, latitude
+#' @param max_bins Maximum number of bins that can be generated between the selected latitudes. This is to prevent overloading memory with the higher-resolution grids (e.g. 250m, 1km)
+#' @return Dataframe with 3 columns: bin number, longitude, latitude
 #' @export
-binlatlon <- function(resolution="4km", lonlim=c(-180,180), latlim=c(-90,90)) {
-
-    stopifnot(resolution %in% paste0(c(1,4,9,111),"km"))
+binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_bins=50000000) {
 
     # get number of rows, given a spatial resolution
-    nrows_all_res <- list("1km"=17280, "4km"=4320, "9km"=2160, "111km"=180)
-    nrows_all <- nrows_all_res[[resolution]]
+    nrows_all <- gen_nrows(resolution)
 
     # get the latitude for each row, and the number of bins per row
     latitudes <- (seq(1:nrows_all)-0.5)*180/nrows_all - 90
@@ -242,6 +278,10 @@ binlatlon <- function(resolution="4km", lonlim=c(-180,180), latlim=c(-90,90)) {
     bin_count <- bin_count[lat_inds]
     londiff <- londiff[lat_inds]
     start_bin <- start_bin[lat_inds]
+    # stop if this will result in too many bins
+    if (diff(range(start_bin)) > max_bins) {
+        stop("ERROR: This will generate a dataframe for ",diff(range(start_bin))," bins. Please reduce the size of your region. You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
+    }
 
     # get a vector of bin numbers over this range
     lis <- sum(lat_inds)

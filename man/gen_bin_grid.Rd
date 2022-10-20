@@ -5,13 +5,13 @@
 \title{Generate bin grid}
 \usage{
 gen_bin_grid(
-  resolution = "4km",
+  resolution = "4",
   ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86),
   rast = TRUE
 )
 }
 \arguments{
-\item{resolution}{String, either "1km", "4km", "9km", or "111km".}
+\item{resolution}{String indicating spatial resolution, see ?gen_nrows for list of accepted strings.}
 
 \item{ext}{Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).}
 
@@ -22,7 +22,4 @@ Global raster containing bin numbers.
 }
 \description{
 This generates a matrix or raster of bin numbers for the selected extent and resolution.
-}
-\details{
-WARNING: Ideally this should return the same set of bins as binlatlon() (just in a different format), but this function uses raster::crop() to subset it by longitude, and the result is that a couple bins might be cropped off the left and right sides if you're using 1km resolution. binlatlon() uses dplyr::between to subset by longitude and does not lose those bins along the side. This is only known to affect 1km and 9km resolution.
 }

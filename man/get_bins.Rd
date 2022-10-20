@@ -17,7 +17,7 @@ get_bins(region = "pancan", resolution = "4km", variables = "all")
 Data frame with columns of bin, longitude, latitude, bathymetry
 }
 \description{
-Get corresponding bin number, latitude, longitude and depth for Pan-Canadian Grid or subregions
+Get corresponding bin number, latitude, longitude and depth for Pan-Canadian Grid or subregions. These are vectors of bin/lat/lon/bathymetry that have already been generated for easier access.
 }
 \examples{
 library(dplyr)
