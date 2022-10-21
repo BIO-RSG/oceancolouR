@@ -63,6 +63,12 @@ gen_start_bin = function(nrows=4320) {
 #'
 #' This generates a matrix or raster of bin numbers for the selected extent and resolution.
 #'
+#' This regular 2D grid based on bin numbers is formed like so:
+#'
+#' For the selected spatial resolution, the number of latitudinal rows is calculated, and the number of matrix columns is double that value (this is the number of bins in the row at the equator). The number of unique bins per row is then calculated (e.g. 3 at the pole, 9 in the row below it, ...). Since the binning scheme aims to make each bin approximately equal area on the globe, this means that for each row, the unique bins take up an equal number of pixels. E.g. if your grid is 9000 pixels wide and you have 3000 unique bins in a row, each bin in that row should be repeated 3 times.
+#'
+#' LATITUDE AND LONGITUDE ARE AT THE CENTER OF THE BIN.
+#'
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
@@ -251,6 +257,8 @@ avg_columns <- function(mat, dlist=NULL, year=NULL, composite="8day") {
 #' This creates a dataframe containing the bin number, longitude, and latitudes for the full globe, for a given resolution, using the Integerized Sinusoidal Binning Scheme used by NASA OBPG for their level-3 binned satellite files (e.g. MODIS-Aqua). More info here: https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
 #'
 #' WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+#'
+#' LATITUDE AND LONGITUDE ARE AT THE CENTER OF THE BIN.
 #'
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings
 #' @param lonlim Minimum and maximum longitude of the area of interest

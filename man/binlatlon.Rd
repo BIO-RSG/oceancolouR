@@ -28,4 +28,6 @@ This creates a dataframe containing the bin number, longitude, and latitudes for
 }
 \details{
 WARNING: This retrieves ALL bins, over both land and water. The pre-made bin vectors for pancan/nwa/nep/gosl regions that are retrieved by the get_bins() function only include bins over water.
+
+LATITUDE AND LONGITUDE ARE AT THE CENTER OF THE BIN.
 }
