@@ -72,9 +72,10 @@ gen_start_bin = function(nrows=4320) {
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
+#' @param max_bins Maximum grid size (total number of pixels) that can be generated between the selected latitudes. This is to prevent overloading memory with the higher-resolution grids (e.g. 250m, 1km)
 #' @return Global raster containing bin numbers.
 #' @export
-gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
+gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE, max_bins=50000000) {
     # get the number of rows on the global grid, given a spatial resolution
     nrows_all <- gen_nrows(resolution)
     # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southwest), and subset to the selected extent
@@ -82,6 +83,11 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
     lat_inds <- which(dplyr::between(latitudes, ext[3], ext[4]))
     # get number of columns for the global grid
     ncol <- 2 * nrows_all
+    # stop if this will result in too many bins
+    total_bins <- nrows_all*ncol
+    if (total_bins > max_bins) {
+        stop("ERROR: This will generate a grid containing ",total_bins," bins. Please reduce the distance between your latitude limits (longitude limit adjustments make no difference here, the full rows must be created first before subsetting). You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
+    }
     # subset number of rows based on selected extent
     nrows <- length(lat_inds)
     # add an extra index for subsetting vectors later (otherwise they'll be NA at the last index)
@@ -289,8 +295,9 @@ binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_
     last_bin <- tail(start_bin,1) + tail(bin_count,1) - 1
 
     # stop if this will result in too many bins
-    if ((last_bin-first_bin) > max_bins) {
-        stop("ERROR: This will generate a dataframe for ",diff(range(start_bin))," bins. Please reduce the size of your region. You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
+    total_bins <- last_bin-first_bin
+    if (total_bins > max_bins) {
+        stop("ERROR: This will generate a grid containing ",total_bins," bins. Please reduce the distance between your latitude limits (longitude limit adjustments make no difference here, the full rows must be created first before subsetting). You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
     }
 
     # get a vector of bin numbers over this range
