@@ -75,13 +75,11 @@ gen_start_bin = function(nrows=4320) {
 #' @return Global raster containing bin numbers.
 #' @export
 gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
-    lonlim <- ext[1:2]
-    latlim <- ext[3:4]
     # get the number of rows on the global grid, given a spatial resolution
     nrows_all <- gen_nrows(resolution)
     # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southwest), and subset to the selected extent
     latitudes <- (seq(1:nrows_all) - 0.5) * 180/nrows_all - 90
-    lat_inds <- which(dplyr::between(latitudes, latlim[1], latlim[2]))
+    lat_inds <- which(dplyr::between(latitudes, ext[3], ext[4]))
     # get number of columns for the global grid
     ncol <- 2 * nrows_all
     # subset number of rows based on selected extent
@@ -105,12 +103,12 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
     londiff <- 360 / ncol
     longitudes <- seq(from=(-180+(londiff/2)), to=(180-(londiff/2)), by=londiff)
     # subset bin matrix by longitude
-    lon_inds <- dplyr::between(longitudes, lonlim[1], lonlim[2])
+    lon_inds <- dplyr::between(longitudes, ext[1], ext[2])
     bins <- bins[,lon_inds]
     if (rast) {
         # convert bin matrix to raster
         binGrid <- raster::raster(ncols=ncol(bins), nrows=nrow(bins),
-                                  xmn=lonlim[1], xmx=lonlim[2], ymn=latlim[1], ymx=latlim[2])
+                                  xmn=ext[1], xmx=ext[2], ymn=ext[3], ymx=ext[4])
         raster::values(binGrid) <- bins
         bins <- binGrid
     }
@@ -286,24 +284,27 @@ binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_
     bin_count <- bin_count[lat_inds]
     londiff <- londiff[lat_inds]
     start_bin <- start_bin[lat_inds]
+
+    first_bin <- start_bin[1]
+    last_bin <- tail(start_bin,1) + tail(bin_count,1) - 1
+
     # stop if this will result in too many bins
-    if (diff(range(start_bin)) > max_bins) {
+    if ((last_bin-first_bin) > max_bins) {
         stop("ERROR: This will generate a dataframe for ",diff(range(start_bin))," bins. Please reduce the size of your region. You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
     }
 
     # get a vector of bin numbers over this range
-    lis <- sum(lat_inds)
-    bin_nums <- start_bin[1]:(start_bin[lis]+bin_count[lis]-1)
+    bin_nums <- first_bin:last_bin
 
     # get a vector of longitudes for each row
-    longitudes <- lapply(length(latitudes):1, function(i) {
+    longitudes <- lapply(1:length(latitudes), function(i) {
         diff <- londiff[i]
         seq(from=(-180+(diff/2)), to=(180-(diff/2)), by=diff)
     })
     longitudes <- do.call(c, longitudes)
 
     # expand latitude vector to the same length as the longitude vector,
-    # then subset to the selected longitudes
+    # and subset to the selected longitudes
     lon_inds <- dplyr::between(longitudes, lonlim[1], lonlim[2])
     longitudes <- longitudes[lon_inds]
     latitudes <- rep(latitudes, bin_count)[lon_inds]
