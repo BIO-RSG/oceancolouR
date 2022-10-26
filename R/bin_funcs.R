@@ -279,7 +279,6 @@ binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_
     latitudes <- (seq(1:nrows_all)-0.5)*180/nrows_all - 90
     bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
     start_bin <- gen_start_bin(nrows_all)
-    start_bin <- c(start_bin, start_bin[nrows_all]+3)
 
     # get the distance between each bin in each row
     londiff <- 360 / bin_count
