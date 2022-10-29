@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin_funcs.R
 \name{gen_bin_grid}
 \alias{gen_bin_grid}
-\title{Generate bin grid}
+\title{Generate bin grid for viewing}
 \usage{
 gen_bin_grid(
   resolution = "4",
@@ -24,7 +24,7 @@ gen_bin_grid(
 Global raster containing bin numbers.
 }
 \description{
-This generates a matrix or raster of bin numbers for the selected extent and resolution.
+This generates a matrix or raster of bin numbers for the selected extent and resolution, ONLY FOR VISUALIZATION - DO NOT USE FOR STATS.
 }
 \details{
 This regular 2D grid based on bin numbers is formed like so:

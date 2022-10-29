@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin_funcs.R
 \name{var_to_rast}
 \alias{var_to_rast}
-\title{Generate raster of L3b data}
+\title{Generate 2D grid of L3b data for viewing}
 \usage{
 var_to_rast(
   df,
@@ -24,7 +24,7 @@ var_to_rast(
 Raster containing the variable data.
 }
 \description{
-Given a dataframe with 2 columns (bin number and variable), create the corresponding raster for visualization.
+Given a dataframe with 2 columns (bin number and variable), create a 2D matrix or raster FOR VISUALIZATION ONLY, NOT TO BE USED FOR STATS.
 }
 \examples{
 # make a bathymetry raster for the Northwest Atlantic
