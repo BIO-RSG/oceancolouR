@@ -273,20 +273,15 @@ binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_
     # get number of rows, given a spatial resolution
     nrows_all <- gen_nrows(resolution)
 
-    # get the latitude for each row, and the number of bins per row
+    # get the latitude for each row, and subset them to selected extent
     latitudes <- (seq(1:nrows_all)-0.5)*180/nrows_all - 90
-    bin_count <- floor(2*nrows_all*cos(latitudes*pi/180.0) + 0.5)
-    start_bin <- gen_start_bin(nrows_all)
-
-    # get the distance between each bin in each row
-    londiff <- 360 / bin_count
-
-    # subset to only the rows within the selected latitudes
     lat_inds <- dplyr::between(latitudes, latlim[1], latlim[2])
     latitudes <- latitudes[lat_inds]
-    bin_count <- bin_count[lat_inds]
-    londiff <- londiff[lat_inds]
-    start_bin <- start_bin[lat_inds]
+
+    # get the start bin for each row and the number of bins per row, and subset them to selected extent
+    start_bin <- gen_start_bin(nrows_all)[lat_inds]
+    bin_count <- diff(start_bin)
+    bin_count <- c(bin_count,bin_count[1])[lat_inds]
 
     first_bin <- start_bin[1]
     last_bin <- tail(start_bin,1) + tail(bin_count,1) - 1
@@ -296,6 +291,9 @@ binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_
     if (total_bins > max_bins) {
         stop("ERROR: This will generate a grid containing ",total_bins," bins. Please reduce the distance between your latitude limits (longitude limit adjustments make no difference here, the full rows must be created first before subsetting). You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
     }
+
+    # get the distance between each bin in each row
+    londiff <- 360 / bin_count
 
     # get a vector of bin numbers over this range
     bin_nums <- first_bin:last_bin
