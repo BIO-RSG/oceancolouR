@@ -90,11 +90,12 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
     }
     # subset number of rows based on selected extent
     nrows <- length(lat_inds)
-    # get the bin at the start of each row, and subset it to the selected extent
-    start_bin <- gen_start_bin(nrows_all)[lat_inds]
-    # get the number of bins in each row, and subset it to the selected extent
+    # get the bin at the start of each row and the number of bins per row, and subset them to the selected extent
+    start_bin <- gen_start_bin(nrows_all)
     bin_count <- diff(start_bin)
-    bin_count <- c(bin_count,bin_count[1])[lat_inds]
+    bin_count <- c(bin_count,bin_count[1])
+    start_bin <- start_bin[lat_inds]
+    bin_count <- bin_count[lat_inds]
     # fill the bin numbers in on each row
     # note that to make the grid square, some bins are repeated instead of stretching them
     # e.g. if the grid were 900 pixels wide and a given row had 300 bins, each
@@ -278,10 +279,12 @@ binlatlon <- function(resolution="4", lonlim=c(-180,180), latlim=c(-90,90), max_
     lat_inds <- dplyr::between(latitudes, latlim[1], latlim[2])
     latitudes <- latitudes[lat_inds]
 
-    # get the start bin for each row and the number of bins per row, and subset them to selected extent
-    start_bin <- gen_start_bin(nrows_all)[lat_inds]
+    # get the bin at the start of each row and the number of bins per row, and subset them to the selected extent
+    start_bin <- gen_start_bin(nrows_all)
     bin_count <- diff(start_bin)
-    bin_count <- c(bin_count,bin_count[1])[lat_inds]
+    bin_count <- c(bin_count,bin_count[1])
+    start_bin <- start_bin[lat_inds]
+    bin_count <- bin_count[lat_inds]
 
     first_bin <- start_bin[1]
     last_bin <- tail(start_bin,1) + tail(bin_count,1) - 1
