@@ -59,9 +59,9 @@ gen_start_bin = function(nrows=4320) {
 
 
 # From George White's primary production scripts.
-#' Generate bin grid
+#' Generate bin grid for viewing
 #'
-#' This generates a matrix or raster of bin numbers for the selected extent and resolution.
+#' This generates a matrix or raster of bin numbers for the selected extent and resolution, ONLY FOR VISUALIZATION - DO NOT USE FOR STATS.
 #'
 #' This regular 2D grid based on bin numbers is formed like so:
 #'
@@ -90,19 +90,17 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
     }
     # subset number of rows based on selected extent
     nrows <- length(lat_inds)
-    # add an extra index for subsetting vectors later (otherwise they'll be NA at the last index)
-    lat_inds <- c(lat_inds,max(lat_inds)+1)
     # get the bin at the start of each row, and subset it to the selected extent
-    start_bin <- gen_start_bin(nrows_all)
-    start_bin <- c(start_bin, start_bin[nrows_all]+3)[lat_inds]
+    start_bin <- gen_start_bin(nrows_all)[lat_inds]
+    # get the number of bins in each row, and subset it to the selected extent
+    bin_count <- diff(start_bin)
+    bin_count <- c(bin_count,bin_count[1])[lat_inds]
     # fill the bin numbers in on each row
     # note that to make the grid square, some bins are repeated instead of stretching them
     # e.g. if the grid were 900 pixels wide and a given row had 300 bins, each
     #      bin would be repeated 3 times
     bins <- lapply(nrows:1, function(ilat) {
-        bb1 <- start_bin[ilat + 1]
-        bb0 <- start_bin[ilat]
-        bb0 + floor(seq(0, ncol-1) * (bb1-bb0)/ncol)
+        start_bin[ilat] + floor(seq(0, ncol-1) * bin_count[ilat]/ncol)
     })
     bins <- do.call(rbind, bins)
     # get the longitudinal differences between the bins in the longest possible row
@@ -123,9 +121,9 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
 
 
 # From George White's primary production scripts.
-#' Generate raster of L3b data
+#' Generate 2D grid of L3b data for viewing
 #'
-#' Given a dataframe with 2 columns (bin number and variable), create the corresponding raster for visualization.
+#' Given a dataframe with 2 columns (bin number and variable), create a 2D matrix or raster FOR VISUALIZATION ONLY, NOT TO BE USED FOR STATS.
 #'
 #' @param df Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
