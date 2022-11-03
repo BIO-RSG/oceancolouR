@@ -35,8 +35,10 @@ knitr::opts_chunk$set(
 <details>
 <summary>Working with L3b files</summary>
 * `get_bins()`: retrieve the bin numbers with corresponding longitude, latitude and bathymetry for the Pan-Canadian grid and sub-regions
-* `gen_start_bin()`: given a resolution (4km or 9km), generate bin numbers at the start of the row on the global grid  
-* `gen_bin_grid()`: given a resolution (4km or 9km), generate a global grid of bin numbers  
+* `gen_nrows()`: given a spatial resolution, get the number of rows on the global binned grid (see `?gen_nrows` for a list of spatial resolution codes)  
+* `gen_start_bin()`: given a spatial resolution, generate bin numbers at the start of the row on the global grid  
+* `binlatlon()`: given a spatial resolution and lat/lon boundaries, generate a dataframe containing bin number and corresponding latitude and longitude  
+* `gen_bin_grid()`: given a spatial resolution and lat/lon boundaries, generate a 2d regular map grid of bin numbers  
 * `var_to_rast()`: given a dataframe with column1=bin number and column2=variable, plot the variable on a raster map  
 * `plot_pancan()`: given a vector of data from a panCanadian L3b data file, plot the variable on a raster map with coastlines  
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format  
@@ -99,12 +101,28 @@ Now load the package:
 
 ```{r}
 library(oceancolouR)
+
+# and some extras for plotting
+library(ggplot2)
+library(patchwork)
 ```
 
 
 ## L3BIN Data
 
-At level 3, pixels are assigned to a static location on the earth surface ("bin"). Included are numeric vectors which give bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA level-3 daily binned images at 4km and 9km resolution. These cover the Pan-Canadian grid and selected subregions (Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence) with approximate latitude and longitude boundaries:  
+At level 3, pixels are assigned to a static location on the earth surface ("bin"). Bins are approximately equal area and are based on a sinusoidal projection. More info [here](https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/).  
+
+Functions described here are as follows:  
+
+- `get_bins()`
+- `read_h5_L3b()`
+- `binlatlon()`
+- `var_to_rast()`
+- `gen_bin_grid()`
+
+### get_bins()
+
+ Included are numeric vectors which give bin numbers and their corresponding latitudes, longitudes, and bathymetry values for NASA level-3 daily binned images at 4km and 9km resolution. These cover the Pan-Canadian grid and selected subregions (Northwest Atlantic, Northeast Pacific, and the Gulf of Saint Lawrence) with approximate latitude and longitude boundaries:  
 
     * Pan-Canadian grid ("pancan"):        -147 to -41, 39 to 86  
     * Northwest Atlantic ("nwa"):       -95 to -42, 39 to 82  
@@ -119,9 +137,45 @@ These datasets can be loaded using the `get_bins()` function where:
 
 For example:  
 
-`bindata <- get_bins()` returns bin numbers with corresponding latitude, longitude and bathymetry for the Pan-Canadian grid at 4km resolution
+`bindata <- get_bins()` returns bin numbers with corresponding latitude, longitude and bathymetry for the Pan-Canadian grid at 4km resolution.  
 
-`bindata <- get_bins(region = "nwa", resolution = "9km", variables = c("bin","bathymetry"))` returns the bin numbers and corresponding bathymetry for the Northwest Atlantic at 9km resolution.
+`bindata <- get_bins(region = "nwa", resolution = "9km", variables = c("bin","bathymetry"))` returns the bin numbers and corresponding bathymetry for the Northwest Atlantic at 9km resolution.  
+
+### read_h5_l3b()
+
+For reading NASA L3b files, you can use the `read_h5_l3b()` function. L3b files are in *hierarchical* netCDF format, which can't be read into R using `ncdf4` and similar packages, but can be read with the `hdf5r` package. `read_h5_l3b()` is simply a wrapper function to return a list containing file contents, variable data, and bin data.  
+
+### binlatlon()
+
+As mentioned above, the bin numbers, coordinates, and bathymetry for Canada and surrounding regions are provided in premade vectors that can be accessed by `get_bins()`. Due to the size of the global grid, only Canadian water bins are provided. For regions of interest in other areas, you can use
+`binlatlon()` to generate a dataframe of bins and corresponding coordinates for a given spatial resolution within your region boundaries. These can be joined to the data values for each bin in your level 3 data file, and used for statistics, modelling, etc.  
+
+A couple of things to note:  
+
+- `binlatlon()` generates ALL pixels over both land and water, which could leave you with a significant number of land bins that would increase object or file size. There are various land masks available that could be used to remove land or ocean bins, for instance the [land mask developed by Mikelsons et al (2021)]( https://data.mendeley.com/datasets/9r93m9s7cw/1).  
+- **This function assigns coordinates to the center of the bin.**  
+
+### var_to_rast() and gen_bin_grid()
+
+As binned data are not on a regular grid, the functions `var_to_rast()` and `gen_bin_grid()` are provided to assign binned data to a regular grid **FOR VISUALIZATION ONLY**.  
+
+`gen_bin_grid()` generates a regular grid of bin numbers for a region by repeating each bin in a row *approximately* the same number of times in order to fill all the pixels of the global grid in that row (e.g. if a row has 3000 bins and the global grid has 9000 columns, then each bin will be repeated 3 times). A vector of longitudes across the whole grid (e.g. 9000 pixels in this example) is used to subset the grid to columns within the selected longitude bounds.  
+
+`var_to_rast()` takes a dataframe containing a column of bin numbers and data values, and assigns the values to the grid from `gen_bin_grid()` based on bin number.  
+
+**As with binlatlon(), gen_bin_grid() assign coordinates to the center of the bin.**  
+
+**WARNING:**  
+
+`binlatlon()` and `gen_bin_grid()` do NOT return an identical set of unique bins if they're subsetted by longitude (subsetting by latitude is not affected). This is due to the irregular horizontal spacing of bins. After subsetting by longitude, the "edges" of the `binlatlon()` grid are irregular (see figure below, left panel). When `gen_bin_grid()` repeats the bins across a row and crops the image at a column of pixels, the irregular bin spacing leads to extra bin numbers at the edge in some rows, or losing bins at the edges of other rows.  
+
+```{r echo = FALSE, out.width="100%"}
+knitr::include_graphics("binlatlon_vs_genbingrid_boundaries.png")
+```
+
+This figure shows the same set of bins at 1-degree resolution. On the left, a set of bins (outlined in blue) from `binlatlon()` are plotted on a map with a sinusoidal projection, and the dashed orange lines show the boundaries of the region. On the right, the same bins are plotted as they're generated by
+`gen_bin_grid()`, with each pixel outlined in blue. The dashed orange vertical lines in the right panel show where `gen_bin_grid()` crops the image. Transparent pixels represent the area containing bins that are generated by *both* `binlatlon()` and `gen_bin_grid()`. Filled pink pixels represent the outermost bin in each row for the selected region, which is retrieved by `gen_bin_grid()` but *NOT* by `binlatlon()` since the center of the bin is outside the longitude bounds. Note that as you go farther north, there are fewer bins per row and so each bin is repeated across more pixels in order to fill the grid horizontally. Black pixels in the lower right corner represent bins retrieved by `binlatlon()` but *NOT* by `gen_bin_grid()`.  
+
 
 ### Other Info
 
@@ -140,6 +194,7 @@ Other reference info includes `all_lambda`, a list of wavebands (in nanometres) 
 ```{r}
 str(all_lambda)
 ```
+
 
 ## Examples
 
@@ -213,8 +268,6 @@ best_alg_coefs <- optimize_ocx_coefs(data = df, alg_degree = alg_degree)
 # calculate ocx with the optimal coefficients
 chl_ocx_new <- ocx(rrs=rrs, blues=wavebands$blues, green=wavebands$green, coefs=best_alg_coefs)
 # plot the results
-library(ggplot2)
-library(patchwork)
 plotfun <- function(df, y) {
   tmp_lm <- lmodel2::lmodel2(log10(y) ~ log10(x), data=df)$regression.results[3,2:3]
   ggplot(df, aes(x=x,y=y)) +
@@ -415,7 +468,6 @@ ggplot(chl_df, aes(x=In_situ_chl, y=Satellite_chl, color=Algorithm)) +
 ```
 
 
-
 #### References
 
 **OCx:**  
@@ -435,6 +487,9 @@ Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018
 
 **Regional tuning for OCx (POLY4), GSM (GSM_GC, GSM_GS):**  
 Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
+
+**Integerized Sinusoidal Binning Scheme:**  
+https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/  
 
 
 <br><br>
