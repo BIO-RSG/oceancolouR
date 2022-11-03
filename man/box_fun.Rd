@@ -19,6 +19,9 @@ Numeric vector of pixel values. (Will add cell numbers at some point)
 \description{
 Give a row and column number, then get all pixels surrounding it in a box (and planning to add ability to do a radius)
 }
+\details{
+If your rowcol is at the edge of a grid, the edge of your selected box will be cropped.
+}
 \examples{
 
 library(raster)
