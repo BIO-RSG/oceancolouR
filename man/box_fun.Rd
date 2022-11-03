@@ -4,23 +4,22 @@
 \alias{box_fun}
 \title{Extract a matchup box from a raster}
 \usage{
-box_fun(r, boxsize, rowcol)
+box_fun(r, boxsize, rowcol, pad = TRUE)
 }
 \arguments{
-\item{r}{Raster layer}
+\item{r}{Raster layer or matrix}
 
 \item{boxsize}{Size of box, must be an odd number in row, column order (i.e., 3 OR c(3,3) for a box 3 rows by 3 columns, c(3, 5) for box of 3 rows by 5 columns). '1' indicates just getting the matchup pixel}
 
 \item{rowcol}{A data frame with row and col of point. See example below}
+
+\item{pad}{TRUE/FALSE, for matrix r only: If rowcol is at the edge of r, should the function return a box with extra NA cells padding the edges (or just cut it off at the edge)?}
 }
 \value{
 Numeric vector of pixel values. (Will add cell numbers at some point)
 }
 \description{
 Give a row and column number, then get all pixels surrounding it in a box (and planning to add ability to do a radius)
-}
-\details{
-If your rowcol is at the edge of a grid, the edge of your selected box will be cropped.
 }
 \examples{
 

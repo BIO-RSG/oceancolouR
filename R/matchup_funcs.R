@@ -88,11 +88,10 @@ get_closest_bins <- function(geo_df, bin_df, measure="geodesic", max_bins=100, r
 #'
 #' Give a row and column number, then get all pixels surrounding it in a box (and planning to add ability to do a radius)
 #'
-#' If your rowcol is at the edge of a grid, the edge of your selected box will be cropped.
-#'
-#' @param r Raster layer
+#' @param r Raster layer or matrix
 #' @param boxsize Size of box, must be an odd number in row, column order (i.e., 3 OR c(3,3) for a box 3 rows by 3 columns, c(3, 5) for box of 3 rows by 5 columns). '1' indicates just getting the matchup pixel
 #' @param rowcol A data frame with row and col of point. See example below
+#' @param pad TRUE/FALSE, for matrix r only: If rowcol is at the edge of r, should the function return a box with extra NA cells padding the edges (or just cut it off at the edge)?
 #' @return Numeric vector of pixel values. (Will add cell numbers at some point)
 #' @examples
 #'
@@ -112,17 +111,28 @@ get_closest_bins <- function(geo_df, bin_df, measure="geodesic", max_bins=100, r
 #' box_fun(r, c(3,5), xy)
 #'
 #' @export
-box_fun <- function(r, boxsize, rowcol) {
+box_fun <- function(r, boxsize, rowcol, pad=FALSE) {
     if (length(boxsize) == 1) {
         boxsize = c(boxsize, boxsize)
     }
-    rdim <- dim(r)
     if ((boxsize[1] %% 2 == 1) && (boxsize[2] %% 2 == 1)) {
-        rowcol$rmax <- min(rowcol[,1] + ((boxsize[1]-1)/2), dim(r)[1])
-        rowcol$rmin <- max(rowcol[,1] - ((boxsize[1]-1)/2), 1)
-        rowcol$cmax <- min(rowcol[,2] + ((boxsize[2]-1)/2), dim(r)[2])
-        rowcol$cmin <- max(rowcol[,2] - ((boxsize[2]-1)/2), 1)
+        half_boxrow <- (boxsize[1]-1)/2
+        half_boxcol <- (boxsize[2]-1)/2
+        rowcol$rmax <- min(rowcol[,1] + half_boxrow, dim(r)[1])
+        rowcol$rmin <- max(rowcol[,1] - half_boxrow, 1)
+        rowcol$cmax <- min(rowcol[,2] + half_boxcol, dim(r)[2])
+        rowcol$cmin <- max(rowcol[,2] - half_boxcol, 1)
         boxvals <- r[rowcol$rmin:rowcol$rmax, rowcol$cmin:rowcol$cmax]
+        # if rowcol is at the edge and you want to add padding to fix window size
+        if (pad & is.matrix(r) & !all(dim(boxvals)==boxsize)) {
+            blank_mat <- matrix(nrow=boxsize[1],ncol=boxsize[2])
+            row_start <- half_boxrow-(rowcol$row-rowcol$rmin)+1
+            col_start <- half_boxcol-(rowcol$col-rowcol$cmin)+1
+            rows <- row_start:(row_start+nrow(boxvals)-1)
+            cols <- col_start:(col_start+ncol(boxvals)-1)
+            blank_mat[rows, cols] <- boxvals
+            boxvals <- blank_mat
+        }
         return(boxvals)
     } else {
         stop("Please enter odd-numbered box dimensions")
