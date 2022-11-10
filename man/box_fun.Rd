@@ -4,7 +4,7 @@
 \alias{box_fun}
 \title{Extract a matchup box from a raster}
 \usage{
-box_fun(r, boxsize, rowcol, pad = TRUE)
+box_fun(r, boxsize, rowcol, pad = FALSE)
 }
 \arguments{
 \item{r}{Raster layer or matrix}

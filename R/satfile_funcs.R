@@ -281,3 +281,51 @@ nc_image_stats <- function(file, w, e, s, n, var="geophysical_data/Rrs_555", lat
     data.frame(file=file, nbvalpxl=nbvalpxl, nbpxltot=nbpxltot, perccov=perccov,
                stringsAsFactors = FALSE)
 }
+
+
+#' Extract the edges of a matrix
+#'
+#' Get the edge values of a matrix, starting at the top left and moving clockwise.
+#'
+#' @param mat Matrix
+#' @return Vector of edge values
+#' @export
+get_edges <- function(mat) {
+    nrm <- nrow(mat)
+    ncm <- ncol(mat)
+    betweenrows <- 2:(nrm-1)
+    edges <- c(mat[1,],
+               mat[betweenrows,ncm],
+               rev(mat[nrm,]),
+               rev(mat[betweenrows,1]))
+    return(edges)
+}
+
+
+#' Plot satellite swath boundary
+#'
+#' @param lon,lat 2D numeric matrices, same size, containing the coordinates for the corresponding matrix containing the satellite data
+#' @param color Color of the swath boundary
+#' @param size Width of the swath outline
+#' @param mapfill Color of the continents on the map
+#' @param mapcolor Color of the outlines of countries on the map
+#' @param mapalpha Transparency of the continents on the map
+#' @return Map with a polygon showing the satellite swath boundary
+#' @examples
+#' # load the coordinate data from an example GCOM-C SGLI satellite file
+#' data("example03_GC1SG1_201801031430Q31808_L2SG_IWPRK_3000")
+#' str(longitude)
+#' str(latitude)
+#' plot_swath(lon=longitude, lat=latitude)
+#' @export
+plot_swath <- function(lon, lat, color="red", size=2, mapfill="darkgreen", mapcolor="#444444", mapalpha=0.5) {
+    worldmap <- rnaturalearth::ne_countries(scale="small", returnclass="sf")
+    df <- data.frame(lat=get_edges(lat), lon=get_edges(lon))
+    p <- ggplot2::ggplot() +
+        ggplot2::geom_sf(data=worldmap, fill=mapfill, color=mapcolor, alpha=mapalpha) +
+        ggplot2::geom_polygon(data=df, ggplot2::aes(x=lon, y=lat), fill=NA, color=color, size=size) +
+        ggplot2::theme_bw() +
+        ggplot2::theme(axis.title=ggplot2::element_blank())
+    return(p)
+}
+

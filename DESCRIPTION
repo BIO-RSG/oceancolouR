@@ -32,7 +32,8 @@ Imports:
     geodist,
     rasterVis,
     rgdal,
-    ncdf4
+    ncdf4,
+    rnaturalearth
 Suggests: 
     knitr,
     rmarkdown
