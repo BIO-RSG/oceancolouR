@@ -2,17 +2,18 @@
 % Please edit documentation in R/statistics.R
 \name{get_lm_stats}
 \alias{get_lm_stats}
-\title{Create a dataframe of statistics for a model object}
+\title{Get model object results}
 \usage{
-get_lm_stats(modelobject)
+get_lm_stats(modelobject, method = "OLS")
 }
 \arguments{
-\item{modelobject}{Object of class lm}
+\item{modelobject}{Object of class lm or lmodel2}
+
+\item{method}{For lmodel2 only, regression method: either "OLS", "MA", or "SMA", see ?lmodel2 for details}
 }
 \value{
-Dataframe of statistics
+List containing coefficients in the first place and a dataframe of model statistics in the second place
 }
 \description{
-Given a linear model object created with lm(), retrieve a dataframe with the
-coefficients, Rsquared, p-value, number of observations, and RMSE.
+Given a linear model object created with lm() or lmodel2(), retrieve the coefficients (intercept and slope) and a dataframe of simple statistics.
 }

@@ -93,20 +93,30 @@ lmp <- function (modelobject) {
 }
 
 
-#' Create a dataframe of statistics for a model object
+#' Get model object results
 #'
-#' Given a linear model object created with lm(), retrieve a dataframe with the
-#' coefficients, Rsquared, p-value, number of observations, and RMSE.
+#' Given a linear model object created with lm() or lmodel2(), retrieve the coefficients (intercept and slope) and a dataframe of simple statistics.
 #'
-#' @param modelobject Object of class lm
-#' @return Dataframe of statistics
+#' @param modelobject Object of class lm or lmodel2
+#' @param method For lmodel2 only, regression method: either "OLS", "MA", or "SMA", see ?lmodel2 for details
+#' @return List containing coefficients in the first place and a dataframe of model statistics in the second place
 #' @export
-get_lm_stats <- function(modelobject) {
-    coefs <- summary(modelobject)$coefficients
-    stats <- data.frame(Rsquared = summary(modelobject)$r.squared,
-                        pvalue = lmp(modelobject),
-                        num_obs = nobs(modelobject),
-                        RMSE = sqrt(mean(modelobject$residuals^2)),
-                        stringsAsFactors = FALSE)
+get_lm_stats <- function(modelobject, method="OLS") {
+    if (class(modelobject)=="lm") {
+        coefs <- summary(modelobject)$coefficients
+        stats <- data.frame(Rsquared = summary(modelobject)$r.squared,
+                            pvalue = lmp(modelobject),
+                            num_obs = nobs(modelobject),
+                            RMSE = sqrt(mean(modelobject$residuals^2)),
+                            stringsAsFactors = FALSE)
+    } else if (class(modelobject)=="lmodel2") {
+        coefs <- modelobject$regression.results
+        coefs <- coefs[coefs$Method==method,c("Intercept","Slope")]
+        stats <- data.frame(Rsquared = modelobject$rsquare,
+                            pvalue = ifelse(method=="SMA",NA,modelobject$P.param),
+                            num_obs = modelobject$n,
+                            stringsAsFactors = FALSE)
+    }
     return(list(coefs=coefs, stats=stats))
 }
+

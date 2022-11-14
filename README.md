@@ -26,6 +26,7 @@ Frequently used chlorophyll-a algorithms have been added on an as-needed basis. 
 * `week8()`, `week8_date()`: convert to/from standard 8-day week number and date
 * `days_vector()`: list julian days for a given year/month
 * `binlatlon()`: calculate NASA L3bin numbers, latitudes and longitudes for various spatial resolutions (see `?gen_nrows` for list of accepted spatial resolution strings)  
+* `plot_swath()`: quickly plot the boundary of a satellite swath to see where it's located on the global map  
 
 ## How to install
 

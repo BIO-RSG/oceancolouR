@@ -67,6 +67,7 @@ knitr::opts_chunk$set(
 * `days_vector()`: list julian days for a given year/month  
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame  
 * `haversine()`: calculate haversine distance between two points  
+* `plot_swath()`: quickly plot the boundary of a satellite swath (e.g. a level-2 satellite file containing the 2D matrix of a single scan from a satellite sensor) to see where it's located on the global map  
 </details><br>
 
 ## Disclaimer
