@@ -2,18 +2,18 @@
 % Please edit documentation in R/satfile_funcs.R
 \name{read_h5_L3b}
 \alias{read_h5_L3b}
-\title{Read h5}
+\title{Read NASA OBPG level-3 binned file contents}
 \usage{
-read_h5_L3b(h5_file, var_name)
+read_h5_L3b(h5_file, var_name = NULL)
 }
 \arguments{
-\item{h5_file}{String, h5 filename.}
+\item{h5_file}{String, h5 filename}
 
-\item{var_name}{String, name of variable to extract (example: "chlor_a").}
+\item{var_name}{Character vector, names of variable(s) to extract (example: "level-3_binned_data/chlor_a"). If left NULL, all dataset variables will be returned.}
 }
 \value{
-List containing the contents of the file, attributes, selected variable, bin list, and bin index.
+List containing a dataframe summarizing the contents of the file, global attributes, and data from selected variables and their attributes.
 }
 \description{
-Read h5 level-3 binned file contents.
+Note that NASA OBPG L3b file formats are hierarchical netCDF (.nc). Currently netCDF cannot read these, but the hdf5r library can. This function is just a wrapper for a few useful functions in that library, returning the main file contents in a more familiar format.
 }

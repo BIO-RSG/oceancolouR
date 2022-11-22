@@ -157,30 +157,66 @@ download_oc = function(filenames, urls) {
     }
 }
 
-#' Read h5
-#'
-#' Read h5 level-3 binned file contents.
-#'
-#' @param h5_file String, h5 filename.
-#' @param var_name String, name of variable to extract (example: "chlor_a").
-#' @return List containing the contents of the file, attributes, selected variable, bin list, and bin index.
-#' @export
-read_h5_L3b <- function(h5_file, var_name) {
 
+#' Get list of variable names, dimensions, and datatypes from an h5 file
+#'
+#' @param h5_file String, h5 filename
+#' @return List containing variable names, their dimensions, and datatypes
+#' @export
+read_h5_l3b_names <- function(h5_file) {
     h5 <- hdf5r::H5File$new(h5_file, mode="r")
     h5_ls <- h5$ls(recursive=TRUE) # view contents
-    h5_att <- hdf5r::h5attributes(h5)
-    output_var <- h5[[paste0("level-3_binned_data/", var_name)]][]
-    bin_list <- h5[["level-3_binned_data/BinList"]][]
-    BinIndex <- h5[["level-3_binned_data/BinIndex"]][]
     h5$close_all()
+    ind <- h5_ls$obj_type=="H5I_DATASET"
+    h5_ls <- h5_ls[ind,]
+    var_names <- h5_ls$name
+    var_dims <- h5_ls$dataset.dims
+    var_types <- h5_ls$dataset.type_class
+    return(list(names=var_names,
+                dims=var_dims,
+                dtypes=var_types))
+}
 
-    return(list(h5_ls = h5_ls,
-                h5_att = h5_att,
-                output_var = output_var,
-                bin_list = bin_list,
-                BinIndex = BinIndex))
 
+#' Read NASA OBPG level-3 binned file contents
+#'
+#' Note that NASA OBPG L3b file formats are hierarchical netCDF (.nc). Currently netCDF cannot read these, but the hdf5r library can. This function is just a wrapper for a few useful functions in that library, returning the main file contents in a more familiar format.
+#'
+#' @param h5_file String, h5 filename
+#' @param var_name Character vector, names of variable(s) to extract (example: "level-3_binned_data/chlor_a"). If left NULL, all dataset variables will be returned.
+#' @return List containing a dataframe summarizing the contents of the file, global attributes, and data from selected variables and their attributes.
+#' @export
+read_h5_L3b <- function(h5_file, var_name=NULL) {
+    h5 <- hdf5r::H5File$new(h5_file, mode="r")
+    h5_ls <- h5$ls(recursive=TRUE) # view contents
+    h5_global_attrs <- hdf5r::h5attributes(h5)
+    h5_names <- h5_ls$name[h5_ls$obj_type=="H5I_DATASET"]
+    if (is.null(var_name)) {
+        var_name <- h5_names
+    } else {
+        # check if selected variables are present in the file
+        vars_ind <- var_name %in% h5_names
+        present_vars <- var_name[vars_ind]
+        missing_vars <- var_name[!vars_ind]
+        if (length(present_vars)==0) {
+            stop("None of the selected variables are present in the file.")
+        }
+        if (length(missing_vars) > 0) {
+            warning("Missing variables: ", paste0(missing_vars,collapse=","))
+        }
+        var_name <- present_vars
+    }
+    h5_vars <- lapply(var_name, function(d) {
+        tmpv <- h5[[d]]
+        tmpa <- hdf5r::h5attributes(tmpv)
+        tmpv <- tmpv$read()
+        return(list(data=tmpv, attributes=tmpa))
+    })
+    names(h5_vars) <- var_name
+    h5$close_all()
+    return(list(h5_summary = h5_ls,
+                h5_global_attrs = h5_global_attrs,
+                h5_data = h5_vars))
 }
 
 
@@ -328,4 +364,3 @@ plot_swath <- function(lon, lat, color="red", size=2, mapfill="darkgreen", mapco
         ggplot2::theme(axis.title=ggplot2::element_blank())
     return(p)
 }
-
