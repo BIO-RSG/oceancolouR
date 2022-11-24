@@ -8,7 +8,8 @@ var_to_rast(
   df,
   resolution = "4",
   ext = c(xmn = -147, xmx = -41, ymn = 39, ymx = 86),
-  rast = TRUE
+  rast = TRUE,
+  max_bins = 5e+07
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ var_to_rast(
 \item{ext}{Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).}
 
 \item{rast}{TRUE/FALSE, should the resulting bin matrix be converted to raster?}
+
+\item{max_bins}{Maximum grid size (total number of pixels) that can be generated between the selected latitudes. This is to prevent overloading memory with the higher-resolution grids (e.g. 250m, 1km)}
 }
 \value{
 Raster containing the variable data.

@@ -161,6 +161,7 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
+#' @param max_bins Maximum grid size (total number of pixels) that can be generated between the selected latitudes. This is to prevent overloading memory with the higher-resolution grids (e.g. 250m, 1km)
 #' @references See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
 #' @examples
 #' # make a bathymetry raster for the Northwest Atlantic
@@ -168,9 +169,9 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
 #'             ext = c(lon_bounds$NWA, lat_bounds$NWA))
 #' @return Raster containing the variable data.
 #' @export
-var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE) {
+var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE, max_bins=50000000) {
     # create a bin grid for the selected latitudinal extent
-    binGrid <- gen_bin_grid(resolution=resolution, ext=ext, rast=FALSE)
+    binGrid <- gen_bin_grid(resolution=resolution, ext=ext, rast=FALSE, max_bins=max_bins)
     binGrid_vec <- c(binGrid)
     newmat <- rep(NA, length(binGrid_vec))
     df_bins <- df$bin
