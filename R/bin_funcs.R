@@ -42,6 +42,37 @@ gen_nrows <- function(resolution) {
     return(nrows_all_res[[resolution]])
 }
 
+
+#' Given L3b data resolution code, get distance
+#'
+#' For a given spatial resolution code (see ?gen_nrows), get equivalent distance in km and degrees at the equator (i.e. assuming 1 degree = 111km).
+#'
+#' @param resolution String representing the spatial resolution (see ?gen_nrows for list of accepted strings, e.g. "Q" for 250m or "4" for 4.6km)
+#' @return List with the distance in degrees and km for the selected resolution code
+#' @references
+#' https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/
+#'
+#' @export
+res_code_to_dist <- function(resolution) {
+    dists <- list(#"HH" = list(deg=0.0004504505, km=0.05)
+                #"HQ" = list(deg=0.0009009009, km=0.1)
+                "Q" = list(deg=0.002252252, km=0.25),
+                "H" = list(deg=0.004504505, km=0.5),
+                "1" = list(deg=0.00990991, km=1.1),
+                "2" = list(deg=0.02072072, km=2.3),
+                "4" = list(deg=0.0418018, km=4.64),
+                "9" = list(deg=0.08288288, km=9.2),
+                "18" = list(deg=0.1666667, km=18.5),
+                "36" = list(deg=0.3243243, km=36),
+                #"QD" = list(deg=0.25, km=27.75)
+                "HD" = list(deg=0.5, km=55.5),
+                "1D" = list(deg=1, km=111))
+    resolution <- as.character(resolution)
+    stopifnot(resolution %in% names(dists))
+    return(dists[[resolution]])
+}
+
+
 # From George White's primary production scripts.
 #' Generate start bin vector
 #'
