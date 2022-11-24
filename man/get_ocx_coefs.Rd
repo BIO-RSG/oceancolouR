@@ -11,7 +11,7 @@ get_ocx_coefs(sensor, region = "global", alg = "ocx")
 
 \item{region}{String, either "global" (for ocx algorithms), or "nwa" or "nep" (for ocx or poly1 to poly4)}
 
-\item{alg}{String, either "poly1", "poly2", "poly3", "poly4", "ocx", "oc2", "oc3", or "oc4"}
+\item{alg}{String, either "poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx", "oc2", "oc3", or "oc4"}
 }
 \value{
 Numeric vector of polynomial coefficients, from the coefficient on the lowest degree term to highest degree.
@@ -25,4 +25,6 @@ Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
 
 Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 https://www.mdpi.com/2072-4292/11/22/2609
+
+poly4v2 is the same as poly4, but was tuned with more HPLC in situ data (2002-2021), and with adjusted matchup criteria (satellite pass within 12 hours of sampling, 5x5 matrix around matching pixel, at least 13 valid pixels required in 5x5 matrix).
 }

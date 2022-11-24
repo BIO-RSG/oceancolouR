@@ -5,28 +5,30 @@
 #'
 #' @param sensor String, either modisaqua, seawifs, viirssnpp, landsat8, or sentinel2
 #' @param region String, either "global" (for ocx algorithms), or "nwa" or "nep" (for ocx or poly1 to poly4)
-#' @param alg String, either "poly1", "poly2", "poly3", "poly4", "ocx", "oc2", "oc3", or "oc4"
+#' @param alg String, either "poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx", "oc2", "oc3", or "oc4"
 #' @references
 #' Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
 #'
 #' Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 #' https://www.mdpi.com/2072-4292/11/22/2609
 #'
+#' poly4v2 is the same as poly4, but was tuned with more HPLC in situ data (2002-2021), and with adjusted matchup criteria (satellite pass within 12 hours of sampling, 5x5 matrix around matching pixel, at least 13 valid pixels required in 5x5 matrix).
+#'
 #' @return Numeric vector of polynomial coefficients, from the coefficient on the lowest degree term to highest degree.
 #' @export
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 
     stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2"),
-              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "ocx","oc2","oc3","oc4"))))
+              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4"))))
 
     # Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
     # "ocx" refers to those that are
-    nasa_coefs <- list("modisaqua" = list("oc3" = c(0.2424,-2.7423,1.8017,0.0015,-1.228),
+    nasa_coefs <- list("modisaqua" = list("oc3" = c(0.26294, -2.64669, 1.28364, 1.08209, -1.76828),
                                       "oc2" = c(0.2500,-2.4752,1.4061,-2.8233,0.5405)),
-                      "seawifs" = list("oc4" = c(0.3272,-2.994,2.7218,-1.2259,-0.5683),
+                      "seawifs" = list("oc4" = c(0.32814, -3.20725, 3.22969, -1.36769, -0.81739),
                                        "oc3" = c(0.2515,-2.3798,1.5823,-0.6372,-0.5692),
                                        "oc2" = c(0.2511,-2.0853,1.5035,-3.1747,0.3383)),
-                      "viirssnpp" = list("oc3" = c(0.2228,-2.4683,1.5867,-0.4275,-0.7768)),
+                      "viirssnpp" = list("oc3" = c(0.23548, -2.63001, 1.65498, 0.16117, -1.37247)),
                       "landsat8" = list("oc3" = c(0.2412,-2.0546,1.1776,-0.5538,-0.4570),
                                         "oc2" = c(0.1977,-1.8117,1.9743,-2.5635,-0.7218))
                       )
@@ -41,7 +43,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
     nwa_coefs <- list("modisaqua"=list("poly1" = c(0.36695,-3.27757),
                                   "poly2" = c(0.37539,-3.12409,-0.75408),
                                   "poly3" = c(0.37657,-3.26173,-0.60435,1.1404),
-                                  "poly4" = c(0.37925,-3.28487,-0.7583,1.49122,0.8002)),
+                                  "poly4" = c(0.37925,-3.28487,-0.7583,1.49122,0.8002),
+                                  "poly4v2" = c(0.5253559,-3.7782959,-1.0720230,1.0313581,1.2641929)),
                      "seawifs"=list("poly1" = c(0.51664,-3.84589),
                                     "poly2" = c(0.51424,-3.59265,-0.95058),
                                     "poly3" = c(0.52039,-3.75269,-0.92392,1.71524),
