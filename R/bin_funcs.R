@@ -111,16 +111,20 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
     nrows_all <- gen_nrows(resolution)
     # get a vector of latitudes from -90 to 90 degrees (note: latitudes and bins here start in the southwest), and subset to the selected extent
     latitudes <- (seq(1:nrows_all) - 0.5) * 180/nrows_all - 90
-    lat_inds <- which(dplyr::between(latitudes, ext[3], ext[4]))
+    lat_inds <- dplyr::between(latitudes, ext[3], ext[4])
     # get number of columns for the global grid
     ncol <- 2 * nrows_all
+    # get the longitudinal differences between the bins in the longest possible row to use for subsetting
+    londiff <- 360 / ncol
+    longitudes <- seq(from=(-180+(londiff/2)), to=(180-(londiff/2)), by=londiff)
+    lon_inds <- dplyr::between(longitudes, ext[1], ext[2])
     # stop if this will result in too many bins
-    total_bins <- nrows_all*ncol
+    total_bins <- sum(lat_inds)*sum(lon_inds)
     if (total_bins > max_bins) {
         stop("ERROR: This will generate a grid containing ",total_bins," bins. Please reduce the distance between your latitude limits (longitude limit adjustments make no difference here, the full rows must be created first before subsetting). You can also try adjusting the max_bins argument to allow this, but proceed with caution as this can use a lot of memory and crash your session.")
     }
     # subset number of rows based on selected extent
-    nrows <- length(lat_inds)
+    nrows <- sum(lat_inds)
     # get the bin at the start of each row and the number of bins per row, and subset them to the selected extent
     start_bin <- gen_start_bin(nrows_all)
     bin_count <- diff(start_bin)
@@ -131,16 +135,11 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
     # note that to make the grid square, some bins are repeated instead of stretching them
     # e.g. if the grid were 900 pixels wide and a given row had 300 bins, each
     #      bin would be repeated 3 times
+    ncol_seq <- seq(0, ncol-1)[lon_inds]
     bins <- lapply(nrows:1, function(ilat) {
-        start_bin[ilat] + floor(seq(0, ncol-1) * bin_count[ilat]/ncol)
+        start_bin[ilat] + floor(ncol_seq * bin_count[ilat]/ncol)
     })
     bins <- do.call(rbind, bins)
-    # get the longitudinal differences between the bins in the longest possible row
-    londiff <- 360 / ncol
-    longitudes <- seq(from=(-180+(londiff/2)), to=(180-(londiff/2)), by=londiff)
-    # subset bin matrix by longitude
-    lon_inds <- dplyr::between(longitudes, ext[1], ext[2])
-    bins <- bins[,lon_inds]
     if (rast) {
         # convert bin matrix to raster
         binGrid <- raster::raster(ncols=ncol(bins), nrows=nrow(bins),
