@@ -3,7 +3,7 @@
 #' Library of existing optimized coefficients for the polynomial band ratio algorithm.
 #' "ocx" returns the coefficients of the global ocean colour algorithm used by NASA (as of Nov 2020) for the selected sensor. "poly1" to "poly4" return the regionally-optimized coefficients for polynomial algorithms of degrees 1 to 4 for the selected sensor, for the two available regions: nwa (Northwest Atlantic) or nep (Northeast Pacific).
 #'
-#' @param sensor String, either modisaqua, seawifs, viirssnpp, landsat8, or sentinel2
+#' @param sensor String, either modisaqua, seawifs, viirssnpp, landsat8, sentinel2, or olci
 #' @param region String, either "global" (for ocx algorithms), or "nwa" or "nep" (for ocx or poly1 to poly4)
 #' @param alg String, either "poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx", "oc2", "oc3", or "oc4"
 #' @references
@@ -30,15 +30,16 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                        "oc2" = c(0.2511,-2.0853,1.5035,-3.1747,0.3383)),
                       "viirssnpp" = list("oc3" = c(0.23548, -2.63001, 1.65498, 0.16117, -1.37247)),
                       "landsat8" = list("oc3" = c(0.2412,-2.0546,1.1776,-0.5538,-0.4570),
-                                        "oc2" = c(0.1977,-1.8117,1.9743,-2.5635,-0.7218))
-                      )
+                                        "oc2" = c(0.1977,-1.8117,1.9743,-2.5635,-0.7218)),
+                      "olci" = list("oc4" = c(0.4254,-3.21679,2.86907,-0.62628,-1.09333)))
     # Subset of the NASA coefs that are default for "ocx"
     standard_coefs <- list("modisaqua" = list("ocx" = nasa_coefs$modisaqua$oc3),
                            "seawifs" = list("ocx" = nasa_coefs$seawifs$oc4),
                            "viirssnpp" = list("ocx" = nasa_coefs$viirssnpp$oc3),
                            "landsat8" = list("ocx" = nasa_coefs$landsat8$oc3),
                            # Assuming S2 is the same as L8 for now:
-                           "sentinel2" = list("ocx" = nasa_coefs$landsat8$oc3))
+                           "sentinel2" = list("ocx" = nasa_coefs$landsat8$oc3),
+                           "olci" = list("ocx" = nasa_coefs$olci$oc4))
     # Coefficients parameterized for some sensors in the Northwest Atlantic Ocean
     nwa_coefs <- list("modisaqua"=list("poly1" = c(0.36695,-3.27757),
                                   "poly2" = c(0.37539,-3.12409,-0.75408),
@@ -76,7 +77,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                                 standard_coefs$seawifs),
                                   "landsat8" = c(nasa_coefs$landsat8,
                                                  standard_coefs$landsat8),
-                                  "sentinel2" = c(standard_coefs$sentinel2)),
+                                  "sentinel2" = c(standard_coefs$sentinel2),
+                                  "olci" = c(standard_coefs$olci)),
                   "nwa" = list("modisaqua" = c(nasa_coefs$modisaqua,
                                            standard_coefs$modisaqua,
                                            nwa_coefs$modisaqua),
@@ -117,7 +119,7 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 #'
 #' Given a sensor name, get the wavebands typically used in the OCX algorithm.
 #'
-#' @param sensor String, either "modisaqua", "seawifs", or "viirssnpp"
+#' @param sensor String, either modisaqua, seawifs, viirssnpp, landsat8, or olci
 #' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
 #' @return Named list of 2 character vectors, one for "green" waveband(s) and one for "blue"
 #' @export
@@ -127,12 +129,15 @@ get_ocx_bands <- function(sensor, use_443nm) {
     all_blues <- list("modisaqua"=c("Rrs_443","Rrs_488"),
                       "seawifs"=c("Rrs_443","Rrs_490","Rrs_510"),
                       "viirssnpp"=c("Rrs_443","Rrs_486"),
-                      "landsat8"=c("Rrs_443","Rrs_482"))
+                      "landsat8"=c("Rrs_443","Rrs_482"),
+                      "olci"=c("Rrs_443","Rrs_490","Rrs_510"))
     # Green Rrs wavelengths used in band ratio algorithms
+    # algorithm for viirssnpp uses 550, not 551
     all_greens <- list("modisaqua"="Rrs_547",
                        "seawifs"="Rrs_555",
                        "viirssnpp"="Rrs_551",
-                       "landsat8"="Rrs_561") # algorithm for viirssnpp uses 550, not 551
+                       "landsat8"="Rrs_561",
+                       "olci"="Rrs_560")
 
     blues <- all_blues[[sensor]]
     green <- all_greens[[sensor]]

@@ -7,7 +7,7 @@
 get_ocx_coefs(sensor, region = "global", alg = "ocx")
 }
 \arguments{
-\item{sensor}{String, either modisaqua, seawifs, viirssnpp, landsat8, or sentinel2}
+\item{sensor}{String, either modisaqua, seawifs, viirssnpp, landsat8, sentinel2, or olci}
 
 \item{region}{String, either "global" (for ocx algorithms), or "nwa" or "nep" (for ocx or poly1 to poly4)}
 
