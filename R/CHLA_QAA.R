@@ -9,6 +9,7 @@
 #' Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry 1997 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt), Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
 #' @param rrs Remote sensing reflectances above sea level, numeric vector
 #' @param lambda Wavelengths corresponding to rrs, numeric vector
+#' @param coefs Coefficients used in the model, default are those used for SeaWiFS
 #' @param aw_all Named list of water absorption coefficients (names must be same as lambda)
 #' @param bbw_all Named list of water backscattering coefficients (names must be same as lambda)
 #' @param aphstar_all Named list of specific absorption coefficients (i.e. absorption per unit chlorophyll-a, names must be same as lambda)
@@ -57,7 +58,7 @@
 #' cat("\nchl:\n")
 #' print(chl)
 #' @export
-qaa <- function(rrs, lambda,
+qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
                 aw_all = list('410'=0.00473000,'412'=0.00455056,'443'=0.00706914,
                               '469'=0.01043260,'486'=0.01392170,'488'=0.01451670,
                               '490'=0.01500000,'510'=0.03250000,'531'=0.04391530,
@@ -92,8 +93,6 @@ qaa <- function(rrs, lambda,
     original_wvs <- c(412,443,490,555,670)
     # Index of the user-selected wavelengths closest to each of the original wavelengths listed above
     wvs <- as.numeric(sapply(1:length(original_wvs), function(i) {which.min(abs(original_wvs[i]-lambda))}))
-    # Coefficients used for SeaWiFS (default to these for any sensor)
-    acoefs <- c(-1.146,-1.366,-0.469)
 
     # Subset Rrs and other variables based on selected wavelengths.
     temp_rrs <- rrs[wvs]
@@ -134,7 +133,7 @@ qaa <- function(rrs, lambda,
         numer <- temp_rrs[2] + temp_rrs[3]
         denom <- temp_rrs[4] + 5 * temp_rrs[5]*temp_rrs[5]/temp_rrs[3]
         aux <- log10(numer/denom)
-        rho <- acoefs[1] + acoefs[2]*aux + acoefs[3] * aux^2
+        rho <- coefs[1] + coefs[2]*aux + coefs[3] * aux^2
         aref <- temp_aw[4] + 10^rho
 
         # STEP 3

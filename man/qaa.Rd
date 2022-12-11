@@ -7,6 +7,7 @@
 qaa(
   rrs,
   lambda,
+  coefs = c(-1.146, -1.366, -0.469),
   aw_all = list(`410` = 0.00473, `412` = 0.00455056, `443` = 0.00706914, `469` =
     0.0104326, `486` = 0.0139217, `488` = 0.0145167, `490` = 0.015, `510` = 0.0325, `531`
     = 0.0439153, `547` = 0.0531686, `551` = 0.0577925, `555` = 0.0596, `645` = 0.325,
@@ -27,6 +28,8 @@ qaa(
 \item{rrs}{Remote sensing reflectances above sea level, numeric vector}
 
 \item{lambda}{Wavelengths corresponding to rrs, numeric vector}
+
+\item{coefs}{Coefficients used in the model, default are those used for SeaWiFS}
 
 \item{aw_all}{Named list of water absorption coefficients (names must be same as lambda)}
 
