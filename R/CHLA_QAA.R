@@ -7,9 +7,11 @@
 #' Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
 #'
 #' Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry 1997 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt), Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
-#' @param rrs Remote sensing reflectances above sea level, numeric vector
+#' @param rrs Remote sensing reflectances above sea level, numeric matrix with column names matching the wavebands in lambda with "Rrs_" prefixes (e.g. if lambda=c(443,490) then rrs column names are c("Rrs_443","Rrs_490"))
 #' @param lambda Wavelengths corresponding to rrs, numeric vector
-#' @param coefs Coefficients used in the model, default are those used for SeaWiFS
+#' @param c1 First coefficient used in the model, default are those used for SeaWiFS
+#' @param c2 Second coefficient
+#' @param c3 Third coefficient
 #' @param aw_all Named list of water absorption coefficients (names must be same as lambda)
 #' @param bbw_all Named list of water backscattering coefficients (names must be same as lambda)
 #' @param aphstar_all Named list of specific absorption coefficients (i.e. absorption per unit chlorophyll-a, names must be same as lambda)
@@ -58,7 +60,7 @@
 #' cat("\nchl:\n")
 #' print(chl)
 #' @export
-qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
+qaa <- function(rrs, lambda, c1=-1.146, c2=-1.366, c3=-0.469,
                 aw_all = list('410'=0.00473000,'412'=0.00455056,'443'=0.00706914,
                               '469'=0.01043260,'486'=0.01392170,'488'=0.01451670,
                               '490'=0.01500000,'510'=0.03250000,'531'=0.04391530,
@@ -78,76 +80,72 @@ qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
                                    '645'=0.008966522,'667'=0.019877564,'670'=0.022861409,
                                    '671'=0.023645549,'678'=0.024389358)) {
 
+    # SeaWiFS wavelengths used in the original code (nm)
+    original_wvs <- c(412,443,490,555,670)
+    # From lambda, extract wavelengths closest to the original wavelengths
+    lambda <- lambda[sapply(original_wvs, function(x) which.min(abs(x-lambda)))]
+
     # subset aw, bbw, and aphstar vectors to the values corresponding to the
     # wavelengths you selected.
     aw <- as.numeric(aw_all[names(aw_all) %in% as.character(lambda)])
     bbw <- as.numeric(bbw_all[names(bbw_all) %in% as.character(lambda)])
     aphstar <- as.numeric(aphstar_all[names(aphstar_all) %in% lambda])
 
-    # Coefficients for the model
+    # More coefficients for the model
     g0 <- 0.089 # 0.0949
     g1 <- 0.1245 # 0.0794
     S <- 0.015 # 0.018
 
-    # SeaWiFS wavelengths used in the original code (nm)
-    original_wvs <- c(412,443,490,555,670)
-    # Index of the user-selected wavelengths closest to each of the original wavelengths listed above
-    wvs <- as.numeric(sapply(1:length(original_wvs), function(i) {which.min(abs(original_wvs[i]-lambda))}))
-
     # Subset Rrs and other variables based on selected wavelengths.
-    temp_rrs <- rrs[wvs]
+    rrs <- rrs[,paste0("Rrs_",wvs)]
     # Only use records where rrs for all wavelengths is finite
-    if (sum(!is.finite(temp_rrs)) > 0) {
+    if (sum(!is.finite(rrs)) > 0) {
         cat("Error: missing Rrs values\n")
         return(list(wvs_used=NA,aph=NA,chl=NA))
     }
-    temp_lambda <- lambda[wvs]
-    temp_aw <- aw[wvs]
-    temp_bbw <- bbw[wvs]
-    temp_aphstar <- aphstar[wvs]
 
     # Convert rrs to below sea level.
-    temp_rrs <- temp_rrs / (0.52 + 1.7*temp_rrs)
+    rrs <- rrs / (0.52 + 1.7*rrs)
 
 
     # QAA STEPS
     #*******************************************************************
 
     # STEP 1
-    u <- (sqrt(g0*g0 + 4 * g1 * temp_rrs) - g0)/(2*g1)
+    u <- (sqrt(g0*g0 + 4 * g1 * rrs) - g0)/(2*g1)
 
     # STEP 2
     # If the 5th wavelength is >= 0.0015, use 670nm; if not, use 555nm and
     # change calculations slightly because of high absorption coefficients
-    if (temp_rrs[5] >= 0.0015) {
+    if (rrs[5] >= 0.0015) {
 
-        wvlref <- temp_lambda[5]
-        aref <- temp_aw[5] + 0.39*((temp_rrs[5]/(temp_rrs[3] + temp_rrs[2]))^1.14)
+        wvlref <- lambda[5]
+        aref <- aw[5] + 0.39*((rrs[5]/(rrs[3] + rrs[2]))^1.14)
 
         # STEP 3
-        bbpref <- u[5] * aref / (1 - u[5]) - temp_bbw[5]
+        bbpref <- u[5] * aref / (1 - u[5]) - bbw[5]
 
     } else {
 
-        wvlref <- temp_lambda[4]
-        numer <- temp_rrs[2] + temp_rrs[3]
-        denom <- temp_rrs[4] + 5 * temp_rrs[5]*temp_rrs[5]/temp_rrs[3]
+        wvlref <- lambda[4]
+        numer <- rrs[2] + rrs[3]
+        denom <- rrs[4] + 5 * rrs[5]*rrs[5]/rrs[3]
         aux <- log10(numer/denom)
-        rho <- coefs[1] + coefs[2]*aux + coefs[3] * aux^2
-        aref <- temp_aw[4] + 10^rho
+        rho <- c1 + c2*aux + c3 * aux^2
+        aref <- aw[4] + 10^rho
 
         # STEP 3
-        bbpref <- u[4] * aref / (1 - u[4]) - temp_bbw[4]
+        bbpref <- u[4] * aref / (1 - u[4]) - bbw[4]
 
     }
 
     # STEP 4
-    rat <- temp_rrs[2]/temp_rrs[4]
+    rat <- rrs[2]/rrs[4]
     Y <- 2.0*(1 - 1.2 * exp(-0.9 * rat))
 
     # STEP 5
-    temp_lambda_ref <- rep(wvlref,length(temp_lambda))
-    bb <- bbpref * (temp_lambda_ref/temp_lambda)^Y + temp_bbw
+    temp_lambda_ref <- rep(wvlref,length(lambda))
+    bb <- bbpref * (temp_lambda_ref/lambda)^Y + bbw
 
     # STEP 6
     a <- ( (1 - u) * bb) / u
@@ -155,7 +153,7 @@ qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
     # Decomposition of absorption into aph, adg
 
     # STEP 7
-    rat <- temp_rrs[2]/temp_rrs[4]
+    rat <- rrs[2]/rrs[4]
     symbol <- 0.74 + 0.2 / (0.8 + rat)
 
     # STEP 8
@@ -165,10 +163,10 @@ qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
     # STEP 9
     denom <- zeta - symbol
     dif1 <- a[1] - symbol * a[2]
-    dif2 <- temp_aw[1] - symbol * temp_aw[2]
+    dif2 <- aw[1] - symbol * aw[2]
     ag440 <- (dif1 - dif2) / denom
-    adg <- ag440 * exp( Sr * (temp_lambda[2] - temp_lambda))
-    aph <- a - adg - temp_aw
+    adg <- ag440 * exp( Sr * (lambda[2] - lambda))
+    aph <- a - adg - aw
 
 
     # CHECK APH (make sure it's within acceptable range)
@@ -179,7 +177,7 @@ qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
 
     # aph proportion of total absorption should be between 0.15 and 0.6
     if ((x1 < 0.15 | x1 > 0.6) & is.finite(x1)) {
-        x1 <- -0.8 + 1.4 * (a[2] - temp_aw[2])/(a[1] - temp_aw[1])
+        x1 <- -0.8 + 1.4 * (a[2] - aw[2])/(a[1] - aw[1])
     }
     # if it's still outside the range, set it to the boundary
     if (x1 < 0.15) {x1 <- 0.15
@@ -189,13 +187,13 @@ qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
     aph[2] <- a[2] * x1
 
     # get the corrected reference value
-    ag440 <- a[2] - aph[2] - temp_aw[2]
+    ag440 <- a[2] - aph[2] - aw[2]
 
     # use it to correct the rest of adg
-    adg <- ag440 * exp( Sr * (temp_lambda[2] - temp_lambda))
+    adg <- ag440 * exp( Sr * (lambda[2] - lambda))
 
     # use that to correct the rest of aph
-    aph <- a - adg - temp_aw
+    aph <- a - adg - aw
 
 
     # COMPUTE CHL BASED ON APH, EXCLUDING NA
@@ -204,9 +202,9 @@ qaa <- function(rrs, lambda, coefs=c(-1.146,-1.366,-0.469),
     # Choose which of the original wavelengths to use when calculating chl
     aph_wvs <- c(1:5)
     # Calculate chl using the median of aph/aphstar for these wavelengths
-    chl <- median(aph[aph_wvs]/temp_aphstar[aph_wvs], na.rm=TRUE)
+    chl <- median(aph[aph_wvs]/aphstar[aph_wvs], na.rm=TRUE)
 
-    return(list(wvs_used = temp_lambda,
+    return(list(wvs_used = lambda,
                 aph = aph,
                 chl = chl))
 
