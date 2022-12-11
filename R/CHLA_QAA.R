@@ -7,7 +7,7 @@
 #' Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
 #'
 #' Sources for default aw_all, bbw_all, and aphstar_all, respectively: Pope and Fry 1997 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt), Smith and Baker 1981 (https://oceancolor.gsfc.nasa.gov/docs/rsr/water_coef.txt, this does not account for salinity effects on backscattering like the values in Zhang 2009), and DFO cruise records containing aph and chlorophyll-a values which were converted to aphstar by mean(aph/chl).
-#' @param rrs Remote sensing reflectances above sea level, numeric matrix with column names matching the wavebands in lambda with "Rrs_" prefixes (e.g. if lambda=c(443,490) then rrs column names are c("Rrs_443","Rrs_490"))
+#' @param rrs Remote sensing reflectances above sea level, numeric vector with names matching the wavebands in lambda with "Rrs_" prefixes (e.g. if lambda=c(443,490) then rrs names are c("Rrs_443","Rrs_490"))
 #' @param lambda Wavelengths corresponding to rrs, numeric vector
 #' @param c1 First coefficient used in the model, default are those used for SeaWiFS
 #' @param c2 Second coefficient
@@ -97,7 +97,7 @@ qaa <- function(rrs, lambda, c1=-1.146, c2=-1.366, c3=-0.469,
     S <- 0.015 # 0.018
 
     # Subset Rrs and other variables based on selected wavelengths.
-    rrs <- rrs[,paste0("Rrs_",lambda)]
+    rrs <- rrs[paste0("Rrs_",lambda)]
     # Only use records where rrs for all wavelengths is finite
     if (sum(!is.finite(rrs)) > 0) {
         cat("Error: missing Rrs values\n")

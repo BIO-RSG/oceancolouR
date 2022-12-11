@@ -27,7 +27,7 @@ qaa(
 )
 }
 \arguments{
-\item{rrs}{Remote sensing reflectances above sea level, numeric matrix with column names matching the wavebands in lambda with "Rrs_" prefixes (e.g. if lambda=c(443,490) then rrs column names are c("Rrs_443","Rrs_490"))}
+\item{rrs}{Remote sensing reflectances above sea level, numeric vector with names matching the wavebands in lambda with "Rrs_" prefixes (e.g. if lambda=c(443,490) then rrs names are c("Rrs_443","Rrs_490"))}
 
 \item{lambda}{Wavelengths corresponding to rrs, numeric vector}
 
