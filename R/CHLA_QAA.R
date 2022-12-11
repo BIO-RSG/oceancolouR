@@ -97,7 +97,7 @@ qaa <- function(rrs, lambda, c1=-1.146, c2=-1.366, c3=-0.469,
     S <- 0.015 # 0.018
 
     # Subset Rrs and other variables based on selected wavelengths.
-    rrs <- rrs[,paste0("Rrs_",wvs)]
+    rrs <- rrs[,paste0("Rrs_",lambda)]
     # Only use records where rrs for all wavelengths is finite
     if (sum(!is.finite(rrs)) > 0) {
         cat("Error: missing Rrs values\n")
