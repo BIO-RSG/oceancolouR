@@ -18,7 +18,7 @@
 #' @export
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 
-    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2"),
+    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2", "olci"),
               ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4"))))
 
     # Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
