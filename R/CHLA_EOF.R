@@ -80,8 +80,16 @@ eof_chl <- function(rrs, training_set) {
     # get names of rrs in training set
     tset_rrsnames <- sort(colnames(training_set)[grepl("Rrs_[0-9]{3}$", colnames(training_set))])
 
-    # make sure rrs are in order in the training set
+    # extract rrs and chla columns from training set, and make sure they're in order
     training_set <- dplyr::select(training_set, all_of(c(tset_rrsnames, "chla")))
+    # make sure all training data are valid and >0
+    training_set <- training_set[rowSums(as.matrix(training_set)>0,na.rm=TRUE)==ncol(training_set),]
+    nrow_tset <- nrow(training_set)
+    if (nrow_tset==0) {
+        stop("No valid training data in training_set. All Rrs and chla must be >0")
+    } else if (nrow_tset < 30) {
+        warning(paste("Only",nrow_tset,"valid data points in the training set (Rrs and chla must be >0)."))
+    }
 
     # format input rrs
     if (input_class=="data.frame") {
@@ -105,22 +113,19 @@ eof_chl <- function(rrs, training_set) {
     full_eof_chl <- rep(NA, nrow(rrs))
 
     # get valid indices for rrs and training set
-    tmp_mat <- as.matrix(rrs)
-    valid_ind <- apply(is.finite(tmp_mat) & tmp_mat > 0, 1, FUN=sum)==ncol(tmp_mat)
-    rrs <- dplyr::filter(rrs, valid_ind)
+    rrs_mat <- as.matrix(rrs)
+    valid_ind <- rowSums(is.finite(rrs_mat) & rrs_mat > 0) == ncol(rrs_mat)
+    rrs <- rrs[valid_ind,]
 
-    # combine rrs and training sets, and reduce to valid indices
+    # combine rrs and training sets
     all <- log10(dplyr::bind_rows(rrs, dplyr::select(training_set, -chla)))
-    tmp_mat <- as.matrix(all)
-    valid_ind_all <- apply(is.finite(tmp_mat), 1, FUN=sum)==ncol(tmp_mat)
-    all <- dplyr::filter(all, valid_ind_all)
-
-    # get the row indices of the training set
-    i <- (nrow(rrs)+1):nrow(all)
 
     # perform PCA on the logged rrs columns and retrieve the scores
     my_pca <- princomp(all)
     sc <- data.frame(my_pca$scores)
+
+    # get the row indices of the training set
+    i <- (nrow(rrs)+1):nrow(all)
 
     # create a dataframe with the training set in situ chla and pca scores of the corresponding rrs
     df_chl <- data.frame(chl = as.numeric(training_set$chla), sc = sc[i,])
