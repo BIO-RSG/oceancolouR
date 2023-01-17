@@ -4,10 +4,10 @@
 \alias{gen_start_bin}
 \title{Generate start bin vector}
 \usage{
-gen_start_bin(nrows = 4320)
+gen_start_bin(nrows = gen_nrows("4"))
 }
 \arguments{
-\item{nrows}{Number of rows in the resulting global raster of bin numbers.}
+\item{nrows}{Number of rows in the resulting global raster of bin numbers. See ?gen_nrows to generate the appropriate number of rows for your selected resolution.}
 }
 \value{
 Numeric vector of starting bins.

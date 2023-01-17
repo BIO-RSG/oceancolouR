@@ -79,10 +79,10 @@ res_code_to_dist <- function(resolution) {
 #' This generates a vector of bin numbers at the start of each row on a global grid, given the number of rows.
 #' Example: For 4km resolution, 4320 rows; for 9km resolution, 2160 rows
 #'
-#' @param nrows Number of rows in the resulting global raster of bin numbers.
+#' @param nrows Number of rows in the resulting global raster of bin numbers. See ?gen_nrows to generate the appropriate number of rows for your selected resolution.
 #' @return Numeric vector of starting bins.
 #' @export
-gen_start_bin = function(nrows=4320) {
+gen_start_bin = function(nrows=gen_nrows("4")) {
     latbins = (seq(1:nrows)-0.5)*180/nrows - 90
     numbins = floor(2*nrows*cos(latbins*pi/180.0) + 0.5)
     return(cumsum(c(1,numbins[1:nrows-1]))) # note this is the same as cumsum(c(1,numbins[1:(nrows-1)]))
