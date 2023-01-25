@@ -51,6 +51,7 @@ sinh_trans <- function() {
 #' @param map_colour Colour of the outline of the landmasses in the map
 #' @param nrow Number of rows of plots, for raster stacks
 #' @param show_legend Display the raster legend next to the map?
+#' @param ... Extra arguments to scale_fill_gradientn()
 #' @return Raster or grid of rasters on maps with coastlines.
 #' @import ggplot2
 #' @examples
@@ -66,7 +67,7 @@ sinh_trans <- function() {
 #' make_raster_map(log10(tr),title=NULL)
 #'
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="white",map_colour="#7f7f7f",nrow=1,show_legend=TRUE) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="white",map_colour="#7f7f7f",nrow=1,show_legend=TRUE,...) {
     stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
     worldmap <- ggplot2::map_data("world")
     if (!is.null(col_limits)) {
@@ -81,9 +82,9 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=
                 rast <- raster::stack(rast)
             }
         }
-        colscale <- scale_fill_gradientn(colours = cm, limits=col_limits, na.value=na.value)
+        colscale <- scale_fill_gradientn(colours = cm, limits=col_limits, na.value=na.value, ...)
     } else {
-        colscale <- scale_fill_gradientn(colours = cm, na.value=na.value)
+        colscale <- scale_fill_gradientn(colours = cm, na.value=na.value, ...)
     }
     p <- rasterVis::gplot(rast) +
         geom_tile(aes(fill = value), show.legend=show_legend, alpha=rast_alpha) +
