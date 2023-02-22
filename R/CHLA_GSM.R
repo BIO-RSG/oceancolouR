@@ -35,11 +35,11 @@ get_gs <- function(lambda) {
 #'
 #' region="global" for the standard exponents, "nwa" (Northwest Atlantic) or "nep" (Northeast Pacific) for the regionally-tuned exponents used in Clay et al 2019.
 #'
-#' gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019.
+#' gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019. "gsv2" refers to the re-optimized coefficients using the R2022.0 reprocessing.
 #'
-#' @param sensor String, either "modisaqua", "seawifs", or "viirssnpp"
+#' @param sensor String, either "modisaqua", "seawifs", "viirssnpp", or "olci"
 #' @param region String, either "nwa", or "nep"
-#' @param gtype String, either "gc" or "gs" (see description below)
+#' @param gtype String, either "gc", "gs", or "gsv2" (see description below)
 #' @references
 #' Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
 #' https://www.mdpi.com/2072-4292/11/22/2609
@@ -47,16 +47,20 @@ get_gs <- function(lambda) {
 #' @export
 get_gsm_IOPexps <- function(sensor, region, gtype) {
 
-    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp"),
+    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "olci"),
               region %in% c("nwa", "nep"),
-              gtype %in% c("gc", "gs"))
+              gtype %in% c("gc", "gs", "gsv2"))
 
     exps <- list("nwa"=list("modisaqua"=list("gc"=c(0.5,0.038,0.8),
-                                         "gs"=c(0.5,0.036,0.75)),
+                                         "gs"=c(0.5,0.036,0.75),
+                                         "gsv2"=c(0.447424475,0.029787807,0.813871834)),
                             "seawifs"=list("gc"=c(0.5,0.035,0.6),
-                                           "gs"=c(0.5,0.034,0.525)),
+                                           "gs"=c(0.5,0.034,0.525),
+                                           "gsv2"=c(0.487986154,0.034473545,0.571016089)),
                             "viirssnpp"=list("gc"=c(0.6,0.026,1.4),
-                                         "gs"=c(0.5,0.026,1.75))),
+                                         "gs"=c(0.5,0.026,1.75),
+                                         "gsv2"=c(0.483961381,0.023038133,1.821948237)),
+                            "olci"=list("gs"=c(0.711749398,0.026033124,0.744068039))),
                  "nep"=list("modisaqua"=list("gc"=c(0.6,0.038,0.9),
                                          "gs"=c(0.6,0.036,0.75)),
                             "seawifs"=list("gc"=c(0.7,0.028,0.75),

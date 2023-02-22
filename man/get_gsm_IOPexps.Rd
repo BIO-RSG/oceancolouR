@@ -7,11 +7,11 @@
 get_gsm_IOPexps(sensor, region, gtype)
 }
 \arguments{
-\item{sensor}{String, either "modisaqua", "seawifs", or "viirssnpp"}
+\item{sensor}{String, either "modisaqua", "seawifs", "viirssnpp", or "olci"}
 
 \item{region}{String, either "nwa", or "nep"}
 
-\item{gtype}{String, either "gc" or "gs" (see description below)}
+\item{gtype}{String, either "gc", "gs", or "gsv2" (see description below)}
 }
 \value{
 Numeric vector of exponents used on the IOPs in the algorithm, in this order: chl, adg, bbp
@@ -22,7 +22,7 @@ Library of existing optimized exponents for the Garver-Siegel-Maritorena algorit
 \details{
 region="global" for the standard exponents, "nwa" (Northwest Atlantic) or "nep" (Northeast Pacific) for the regionally-tuned exponents used in Clay et al 2019.
 
-gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019.
+gtype="gc" for the exponents that were tuned using the g coefficients that are constant across wavebands, "gs" for those tuned using the spectrally-dependent g coefficients described in Clay et al 2019. "gsv2" refers to the re-optimized coefficients using the R2022.0 reprocessing.
 }
 \references{
 Clay, S.; Peña, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.
