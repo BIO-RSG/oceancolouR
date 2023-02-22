@@ -191,7 +191,7 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' @param adg_exp Numeric value, exponent on the adg term (default = globally-tuned exponent)
 #' @param bbp_exp Numeric value, exponent on the bbp term (default = globally-tuned exponent)
 #' @param chl_exp Numeric value, exponent on the chl term (default = globally-tuned exponent)
-#' @param gtype String, either "gs" or "gc" to indicate the type of g coefficients to use (see details).
+#' @param gtype String, either "gs" or "gc" to indicate the type of g coefficients to use (see details). Note that if using gsv2 coefficients, this must be set to "gs".
 #' @param aw Numeric vector of water absorption coefficients corresponding to lambda
 #' @param bbw Numeric vector of water backscattering coefficients corresponding to lambda
 #' @param aphstar Numeric vector of specific absorption coefficients corresponding to lambda (i.e. absorption per unit chlorophyll-a)

@@ -30,7 +30,7 @@ gsm(
 
 \item{chl_exp}{Numeric value, exponent on the chl term (default = globally-tuned exponent)}
 
-\item{gtype}{String, either "gs" or "gc" to indicate the type of g coefficients to use (see details).}
+\item{gtype}{String, either "gs" or "gc" to indicate the type of g coefficients to use (see details). Note that if using gsv2 coefficients, this must be set to "gs".}
 
 \item{aw}{Numeric vector of water absorption coefficients corresponding to lambda}
 
