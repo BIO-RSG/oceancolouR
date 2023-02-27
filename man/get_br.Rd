@@ -21,3 +21,6 @@ Named list of two vectors: rrs_ocx (the band ratio values), and ratio_used (stri
 \description{
 Given a matrix of Rrs (remote sensing reflectances) with column names, and the blue and green wavebands to use, calculate the band ratios.
 }
+\details{
+Slightly negative Rrs are allowed according to the rules used by NASA OBPG: The shortest blue band used in the model must be > -0.001, and if there are 2 possible blue bands used in the model, the one with the lowest value must be > -0.001.
+}

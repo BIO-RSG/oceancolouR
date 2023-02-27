@@ -157,6 +157,8 @@ get_ocx_bands <- function(sensor, use_443nm) {
 #'
 #' Given a matrix of Rrs (remote sensing reflectances) with column names, and the blue and green wavebands to use, calculate the band ratios.
 #'
+#' Slightly negative Rrs are allowed according to the rules used by NASA OBPG: The shortest blue band used in the model must be > -0.001, and if there are 2 possible blue bands used in the model, the one with the lowest value must be > -0.001.
+#'
 #' @param rrs Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres). Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
 #' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
