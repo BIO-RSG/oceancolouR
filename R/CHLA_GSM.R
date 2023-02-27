@@ -177,13 +177,13 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #'
 #' Compute the inherent optical properties (IOPs) of the water (adg443, bbp443, chla) using the GSM (Garver-Siegel-Maritorena) semi-analytical algorithm. Adg443 = absorption of colored detrital and dissolved organic materials at 443nm, bbp443 = backscattering of particulate matter at 443nm, chla = chlorophyll-a.
 #'
-#' This code was originally written for SeaWiFS using wavelengths 412, 443, 490, 555, and 670nm. If other sensors/wavelengths are used, the function will choose the wavelengths closest to the wavelengths listed above.
-#'
 #' Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
 #'
 #' Options for g coefficients include "gs" (spectrally-dependent) or "gc" (constant). For gc, the model is quadratic and uses the coefficients in eq. 2 in Gordon et al 1988 (g1=0.0949, g2=0.0794). For gs, the coefficients vary spectrally, and the exponent is also allowed to vary spectrally so the model is no longer perfectly quadratic.
 #'
-#' Acceptable range of IOPs defined as: 0 <= chla <= 64, 0.0001 <= adg443 <= 2, 0.0001 <= bbp443 <= 0.1
+#' Acceptable range of IOPs defined as: 0 <= chla <= 64, 0.0001 <= adg443 <= 2, 0.0001 <= bbp443 <= 0.1. Boundaries can be set within the nls() function if you use the "port" algorithm (see ?nls for details). If they are not set, the function will simply return the optimized IOPs and mark them as "invalid", leaving it up to the user to discard them.
+#'
+#' If a record has NA Rrs in any wavebands (lambda), it will not be fitted. Negative values are allowed in the code, but you should remove extremely negative values from your Rrs manually beforehand, and treat slightly negative values (e.g. -0.001, which might appear in the shortest and longest bands) with caution.
 #'
 #' @param rrs Remote sensing reflectances below sea level, numeric vector, MUST be ordered from shortest wavelength to longest
 #' @param lambda Wavelengths corresponding to rrs, numeric vector, MUST be in same order as rrs
@@ -195,6 +195,7 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' @param aw Numeric vector of water absorption coefficients corresponding to lambda
 #' @param bbw Numeric vector of water backscattering coefficients corresponding to lambda
 #' @param aphstar Numeric vector of specific absorption coefficients corresponding to lambda (i.e. absorption per unit chlorophyll-a)
+#' @param ... Extra arguments to nls (see ?nls for details)
 #' @references
 #' Maritorena, Stéphane & Siegel, David & Peterson, Alan. (2002). Optimization of a semianalytical ocean color model for global-scale application. Applied optics. 41. 2705-14. 10.1364/AO.41.002705.
 #' https://www.researchgate.net/publication/11345370_Optimization_of_a_semianalytical_ocean_color_model_for_global-scale_application
@@ -243,7 +244,7 @@ gsm_model <- function(A, g1, g2, g3, aw, bbw, chl_exp, aphstar, adgstar, bbpstar
 #' @export
 gsm <- function(rrs, lambda, iop3=c(0.01, 0.03, 0.019),
                 adg_exp=0.02061, bbp_exp=1.03373, chl_exp=1, gtype="gs",
-                aw=get_aw(lambda), bbw=get_bbw(lambda), aphstar=get_aphstar(lambda)) {
+                aw=get_aw(lambda), bbw=get_bbw(lambda), aphstar=get_aphstar(lambda), ...) {
 
     # If the Rrs for any wavelengths are NA, skip this match.
     if (any(is.na(rrs))) {return(c(NA,NA,NA,T))}
@@ -278,12 +279,10 @@ gsm <- function(rrs, lambda, iop3=c(0.01, 0.03, 0.019),
     # Tips for error catching with nls: https://stackoverflow.com/questions/2963729/r-catching-errors-in-nls
     gsm.nls <- NULL
     while (is.null(gsm.nls)) {
-        try({gsm.nls <- nls(model,data=data.list,trace=F,start=list(iop3=iop3),
-                            weights=weights,algorithm='default',na.action=na.omit,
-                            control=nls.control(tol=1e-05),max_iters=30)},silent=T)
-        if (sum(iop3)==0) {break}
-        iop3 <- mapply(function(x,y) {sample(seq(x,y,by=0.00001),1)}, x=(iop3 - 0.001), y=iop3)
-        iop3[iop3 < 0] <- 0 # IOPs must be positive
+        try({gsm.nls <- nls(model, data=data.list, trace=FALSE, start=list(iop3=iop3), weights=weights, na.action=na.omit, ...)}, silent=T)
+        if (sum(iop3)==0) break
+        # randomly sample a new set of IOPs below the initial guesses
+        iop3 <- mapply(function(x,y) {sample(seq(x,y,length.out=100),1)}, x=pmax(0,iop3-0.01), y=iop3)
     }
 
     # Retrieve the results from the fitted model, if it exists
@@ -293,8 +292,6 @@ gsm <- function(rrs, lambda, iop3=c(0.01, 0.03, 0.019),
     } else {
         # Get the coefficients from the fit
         iop3 <- as.numeric(coef(gsm.nls))
-        # # Maritorena et al (2002) correction factor for bias - NO LONGER IN USE (used in 2019 paper).
-        # iop3[2] <- iop3[2] * 0.754188
         # If they're outside the generally accepted range, set invalid = TRUE
         invalid <- FALSE
         if (iop3[1] < 0.01 | iop3[1] > 64.0 |

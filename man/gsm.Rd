@@ -14,7 +14,8 @@ gsm(
   gtype = "gs",
   aw = get_aw(lambda),
   bbw = get_bbw(lambda),
-  aphstar = get_aphstar(lambda)
+  aphstar = get_aphstar(lambda),
+  ...
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ gsm(
 \item{bbw}{Numeric vector of water backscattering coefficients corresponding to lambda}
 
 \item{aphstar}{Numeric vector of specific absorption coefficients corresponding to lambda (i.e. absorption per unit chlorophyll-a)}
+
+\item{...}{Extra arguments to nls (see ?nls for details)}
 }
 \value{
 Named vector containing IOPs (chl, adg443, bbp443, in that order), and a value named "invalid" that is either 0 or 1 (1 indicates that at least one of the IOPs is outside the acceptable range, defined in the details section).
@@ -45,13 +48,13 @@ Named vector containing IOPs (chl, adg443, bbp443, in that order), and a value n
 Compute the inherent optical properties (IOPs) of the water (adg443, bbp443, chla) using the GSM (Garver-Siegel-Maritorena) semi-analytical algorithm. Adg443 = absorption of colored detrital and dissolved organic materials at 443nm, bbp443 = backscattering of particulate matter at 443nm, chla = chlorophyll-a.
 }
 \details{
-This code was originally written for SeaWiFS using wavelengths 412, 443, 490, 555, and 670nm. If other sensors/wavelengths are used, the function will choose the wavelengths closest to the wavelengths listed above.
-
 Wavelengths/lambda typically used for each sensor: 412,443,469,488,531,547,555,645,667,678 (MODIS), 412,443,490,510,555,670 (SeaWiFS), 410,443,486,551,671 (VIIRS).
 
 Options for g coefficients include "gs" (spectrally-dependent) or "gc" (constant). For gc, the model is quadratic and uses the coefficients in eq. 2 in Gordon et al 1988 (g1=0.0949, g2=0.0794). For gs, the coefficients vary spectrally, and the exponent is also allowed to vary spectrally so the model is no longer perfectly quadratic.
 
-Acceptable range of IOPs defined as: 0 <= chla <= 64, 0.0001 <= adg443 <= 2, 0.0001 <= bbp443 <= 0.1
+Acceptable range of IOPs defined as: 0 <= chla <= 64, 0.0001 <= adg443 <= 2, 0.0001 <= bbp443 <= 0.1. Boundaries can be set within the nls() function if you use the "port" algorithm (see ?nls for details). If they are not set, the function will simply return the optimized IOPs and mark them as "invalid", leaving it up to the user to discard them.
+
+If a record has NA Rrs in any wavebands (lambda), it will not be fitted. Negative values are allowed in the code, but you should remove extremely negative values from your Rrs manually beforehand, and treat slightly negative values (e.g. -0.001, which might appear in the shortest and longest bands) with caution.
 }
 \examples{
 # create a matrix of MODIS-Aqua rrs values for testing
