@@ -101,7 +101,7 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=
               legend.margin=margin(0,0,0,0),
               legend.box.margin=margin(-10,0,-10,-10),
               plot.title=element_text(hjust=0.5)) +
-        guides(fill = guide_colorbar(ticks.colour = "black")) +
+        guides(fill = guide_legend(ticks.colour = "black")) +
         colscale +
         ggtitle(title)
     if (is.null(xlabs)) {
