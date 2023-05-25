@@ -90,13 +90,9 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=
         geom_tile(aes(fill = value), show.legend=show_legend, alpha=rast_alpha) +
         geom_map(data = worldmap, map = worldmap,
                  aes(x = long, y = lat, group = group, map_id=region),
-                 fill = map_fill, colour = map_colour, size=0.5, alpha=map_alpha) +
-        scale_x_continuous(limits=xlim,expand=c(0,0)) +
-        scale_y_continuous(limits=ylim,expand=c(0,0)) +
-        coord_fixed(1.5) +
+                 fill = map_fill, colour = map_colour, linewidth=0.5, alpha=map_alpha) +
         theme_bw() +
-        theme(axis.title.x=element_blank(),
-              axis.title.y=element_blank(),
+        theme(axis.title=element_blank(),
               legend.title=element_blank(),
               legend.margin=margin(0,0,0,0),
               legend.box.margin=margin(-10,0,-10,-10),
