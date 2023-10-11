@@ -145,24 +145,32 @@ days_vector <- function(year, month=NULL, week=NULL) {
 #'
 #' Given a date object, get the name of the season.
 #'
-#' Feb-Apr = Spring,
-#' May-Jul = Summer,
-#' Aug-Oct = Fall,
-#' Nov-Feb = Winter
+#' There are 3 different options for separating seasons:
+#' Version 1: Astronomical system (e.g. Spring = March 20th - June 20th)
+#' Version 2: Each season is 3 months, Spring is March-May
+#' Version 3: Each season is 3 months, Spring is Feb-April
 #'
 #' @param date Date object
+#' @param version Number (1, 2, or 3) - system to use to separate seasons (see Details)
 #' @return String (either Spring, Summer, Fall, or Winter)
 #' @export
-get_season <- function(date) {
-    stopifnot(class(date)=="Date")
+get_season <- function(date, version=1) {
+    stopifnot(class(date)=="Date" & version %in% 1:3)
     month <- lubridate::month(date)
-    if (month %in% 2:4) {
-        return("Spring")
-    } else if (month %in% 5:7) {
-        return("Summer")
-    } else if (month %in% 8:10) {
-        return("Fall")
-    } else if (month %in% c(1,11,12)) {
-        return("Winter")
+    season <- NA
+    if (version==1) {
+        year <- lubridate::year(date)
+        season <- ifelse(date < lubridate::as_date(paste0(year,"0320"),format="%Y%m%d"), "Winter",
+                         ifelse(date < lubridate::as_date(paste0(year,"0621"),format="%Y%m%d"), "Spring",
+                                ifelse(date < lubridate::as_date(paste0(year,"0922"),format="%Y%m%d"), "Summer", "Fall")))
+    } else if (version==2) {
+        season <- ifelse(month %in% 3:5, "Spring",
+                         ifelse(month %in% 6:8, "Summer",
+                                ifelse(month %in% 9:11, "Fall", "Winter")))
+    } else if (version==3) {
+        season <- ifelse(month %in% 2:4, "Spring",
+                         ifelse(month %in% 5:7, "Summer",
+                                ifelse(month %in% 8:10, "Fall", "Winter")))
     }
+    return(season)
 }

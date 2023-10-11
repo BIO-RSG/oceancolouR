@@ -24,12 +24,12 @@ gen_bin_grid(
 Global raster containing bin numbers.
 }
 \description{
-This generates a matrix or raster of bin numbers for the selected extent and resolution, ONLY FOR VISUALIZATION - DO NOT USE FOR STATS.
+(ONLY FOR VISUALIZATION - DO NOT USE FOR STATS) This generates a matrix or raster of bin numbers for the selected extent and resolution. User can then assign bin data values to the grid based on their bin number. The result is an APPROXIMATE Plate-Carée (Equidistant Cylindrical) projection of the bin data.
 }
 \details{
 This regular 2D grid based on bin numbers is formed like so:
 
-For the selected spatial resolution, the number of latitudinal rows is calculated, and the number of matrix columns is double that value (this is the number of bins in the row at the equator). The number of unique bins per row is then calculated (e.g. 3 at the pole, 9 in the row below it, ...). Since the binning scheme aims to make each bin approximately equal area on the globe, this means that for each row, the unique bins take up an equal number of pixels. E.g. if your grid is 9000 pixels wide and you have 3000 unique bins in a row, each bin in that row should be repeated 3 times.
+For the selected spatial resolution, the number of latitudinal rows is calculated, and the number of matrix columns is double that value (this is the number of bins in the row at the equator). The number of unique bins per row is then calculated (e.g. 3 at the pole, 9 in the row below it, ...). Since the binning scheme aims to make each bin approximately equal area on the globe, this means that for each row, the unique bins take up an equal number of pixels. E.g. if your grid is 9000 pixels wide and you have 3000 unique bins in a row, each bin in that row should be repeated 3 times. Note: It's not an exact Plate-Carée projection because if the number of bins in a row is not a factor of the number of pixels across the row (i.e. the bins can't be spaced evenly across the row), instead of allowing fractions of bins across some pixels, this function simply forces it to the nearest integer for code simplicity and speed. For example if a row has 2 bins and needs to spread them evenly over 5 pixels, in a Plate-Carée projection they should each spread over 2.5 pixels, but in this function, one of the bins would repeat twice and the other would repeat three times.
 
 LATITUDE AND LONGITUDE ARE AT THE CENTER OF THE BIN.
 }

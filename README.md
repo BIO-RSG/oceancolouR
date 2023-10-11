@@ -71,6 +71,8 @@ Maritorena, Stephane & Siegel, David & Peterson, Alan. (2002). [Optimization of 
 **OCI:**  
 Hu, Chuanmin & Lee, Zhongping & Franz, Bryan. (2012). [Chlorophyll a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference.](https://doi.org/10.1029/2011JC007395) Journal of Geophysical Research. 117. C01011. 10.1029/2011JC007395.  
 
+Hu, C., Feng, L., Lee, Z., Franz, B. A., Bailey, S. W., Werdell, P. J., & Proctor, C. W. (2019). Improving satellite global chlorophyll a data products through algorithm refinement and data recovery. Journal of Geophysical Research: Oceans, 124, 1524– 1543. https://doi.org/10.1029/2019JC014941  
+
 **OCx:**  
 O'Reilly, John & Maritorena, S. & Mitchell, B.G. & Siegel, David & Carder, Kendall & Garver, S.A. & Kahru, Mati & Mcclain, Charles. (1998). [Ocean color chlorophyll algorithms for SeaWiFS.](https://doi.org/10.1029/98JC02160) Journal of Geophysical Research. 103. 937-953.  10.1029/98JC02160.
 

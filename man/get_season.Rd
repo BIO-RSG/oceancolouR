@@ -4,10 +4,12 @@
 \alias{get_season}
 \title{Get season name}
 \usage{
-get_season(date)
+get_season(date, version = 1)
 }
 \arguments{
 \item{date}{Date object}
+
+\item{version}{Number (1, 2, or 3) - system to use to separate seasons (see Details)}
 }
 \value{
 String (either Spring, Summer, Fall, or Winter)
@@ -16,8 +18,8 @@ String (either Spring, Summer, Fall, or Winter)
 Given a date object, get the name of the season.
 }
 \details{
-Feb-Apr = Spring,
-May-Jul = Summer,
-Aug-Oct = Fall,
-Nov-Feb = Winter
+There are 3 different options for separating seasons:
+Version 1: Astronomical system (e.g. Spring = March 20th - June 20th)
+Version 2: Each season is 3 months, Spring is March-May
+Version 3: Each season is 3 months, Spring is Feb-April
 }
