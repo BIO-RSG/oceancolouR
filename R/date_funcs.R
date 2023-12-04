@@ -145,22 +145,23 @@ days_vector <- function(year, month=NULL, week=NULL) {
 #'
 #' Given a date object, get the name of the season.
 #'
-#' There are 3 different options for separating seasons:
+#' There are 4 different options for separating seasons:
 #' Version 1: Astronomical system (e.g. Spring = March 20th - June 20th)
 #' Version 2: Each season is 3 months, Spring is March-May
 #' Version 3: Each season is 3 months, Spring is Feb-April
+#' Version 4: Each season is 3 months, Spring is April-Jun (this keeps all the "seasons" within the same year)
 #'
 #' @param date Date object
 #' @param version Number (1, 2, or 3) - system to use to separate seasons (see Details)
 #' @return String (either Spring, Summer, Fall, or Winter)
 #' @export
 get_season <- function(date, version=1) {
-    stopifnot(class(date)=="Date" & version %in% 1:3)
+    stopifnot(class(date)=="Date" & version %in% 1:4)
     month <- lubridate::month(date)
     season <- NA
     if (version==1) {
         year <- lubridate::year(date)
-        season <- ifelse(date < lubridate::as_date(paste0(year,"0320"),format="%Y%m%d"), "Winter",
+        season <- ifelse(date < lubridate::as_date(paste0(year,"0320"),format="%Y%m%d") | date >= lubridate::as_date(paste0(year,"1221"),format="%Y%m%d"), "Winter",
                          ifelse(date < lubridate::as_date(paste0(year,"0621"),format="%Y%m%d"), "Spring",
                                 ifelse(date < lubridate::as_date(paste0(year,"0922"),format="%Y%m%d"), "Summer", "Fall")))
     } else if (version==2) {
@@ -171,6 +172,10 @@ get_season <- function(date, version=1) {
         season <- ifelse(month %in% 2:4, "Spring",
                          ifelse(month %in% 5:7, "Summer",
                                 ifelse(month %in% 8:10, "Fall", "Winter")))
+    } else if (version==4) {
+        season <- ifelse(month %in% 4:6, "Spring",
+                         ifelse(month %in% 7:9, "Summer",
+                                ifelse(month %in% 10:12, "Fall", "Winter")))
     }
     return(season)
 }

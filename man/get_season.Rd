@@ -18,8 +18,9 @@ String (either Spring, Summer, Fall, or Winter)
 Given a date object, get the name of the season.
 }
 \details{
-There are 3 different options for separating seasons:
+There are 4 different options for separating seasons:
 Version 1: Astronomical system (e.g. Spring = March 20th - June 20th)
 Version 2: Each season is 3 months, Spring is March-May
 Version 3: Each season is 3 months, Spring is Feb-April
+Version 4: Each season is 3 months, Spring is April-Jun (this keeps all the "seasons" within the same year)
 }
