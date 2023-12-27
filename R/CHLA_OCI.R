@@ -52,9 +52,9 @@ oci <- function(rrs, sensor="seawifs", use_443nm=TRUE, ocx_bands=get_ocx_bands(s
 
     input_class <- class(rrs)[1]
 
-    stopifnot(input_class %in% c("matrix", "RasterStack", "RasterBrick"))
+    stopifnot(input_class %in% c("matrix", "RasterStack", "RasterBrick"."SpatRaster"))
 
-    if (input_class %in% c("RasterStack", "RasterBrick")) {
+    if (input_class %in% c("RasterStack", "RasterBrick","SpatRaster")) {
         if (input_class == "RasterBrick"){
             rrs <- raster::stack(rrs)
         }
@@ -96,6 +96,12 @@ oci <- function(rrs, sensor="seawifs", use_443nm=TRUE, ocx_bands=get_ocx_bands(s
         oci_chl <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=oci_chl)
         hu_ind <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=hu_ind)
         blend_ind <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=blend_ind)
+    }
+
+    if (input_class == "SpatRaster") {
+        oci_chl <- terra::rast(crs=terra::crs(rast), ext=terra::ext(rast), resolution=terra::res(rast), vals=oci_chl)
+        hu_ind <- terra::rast(crs=terra::crs(rast), ext=terra::ext(rast), resolution=terra::res(rast), vals=hu_ind)
+        blend_ind <- terra::rast(crs=terra::crs(rast), ext=terra::ext(rast), resolution=terra::res(rast), vals=blend_ind)
     }
 
     return(list(oci_chl=oci_chl, hu_ind=hu_ind, blend_ind=blend_ind))
