@@ -15,6 +15,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports:
     lubridate,
+	terra,
+	tidyterra,
     raster,
     hdf5r,
     latticeExtra,
@@ -30,7 +32,6 @@ Imports:
     patchwork,
     tidyr,
     geodist,
-    rasterVis,
     rgdal,
     ncdf4,
     rnaturalearth
