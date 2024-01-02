@@ -37,8 +37,8 @@ sinh_trans <- function() {
 #'
 #' @param rast Georeferenced RasterLayer or RasterStack
 #' @param title Optional title of the map
-#' @param xlim Longitude limits
-#' @param ylim Latitude limits
+#' @param xlim Longitude limits. Set to NULL to let the function decide.
+#' @param ylim Latitude limits. Set to NULL to let the function decide.
 #' @param xlabs x-axis (longitude) labels to use. Set to NULL to let the function decide.
 #' @param ylabs y-axis (latitude) labels to use. Set to NULL to let the function decide.
 #' @param col_limits Color scale limits
@@ -56,22 +56,23 @@ sinh_trans <- function() {
 #' @import ggplot2
 #' @importFrom(magrittr,"%>%")
 #' @examples
-library(terra)
+#' library(terra)
+#' library(ggplot2)
 #' # use SGLI L2 data and make a terra raster
-data("example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000")
-pts <- example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000
-rast <- rasterize(as.matrix(pts[,1:2]), rast(extent=terra::ext(c(range(pts$lon),range(pts$lat)))), pts$chl, fun=mean, na.rm=TRUE)
-# plot it on the map
-make_raster_map(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),trans="log10") +
-    theme(axis.title=element_blank(),
-          legend.title=element_blank(),
-          legend.margin=margin(0,0,0,0),
-          legend.box.margin=margin(-10,0,-10,-10)) +
-    guides(fill = guide_colourbar(title.hjust = 0,
-                                  ticks.colour = "black",
-                                  barwidth = unit(0.6, "cm"),
-                                  barheight = unit(8, "cm"),
-                                  frame.colour = "black"))
+#' data("example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000")
+#' pts <- example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000
+#' rast <- rasterize(as.matrix(pts[,1:2]), rast(extent=terra::ext(c(range(pts$lon),range(pts$lat)))), pts$chl, fun=mean, na.rm=TRUE)
+#' # plot it on the map
+#' make_raster_map(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),trans="log10") +
+#'     theme(axis.title=element_blank(),
+#'           legend.title=element_blank(),
+#'           legend.margin=margin(0,0,0,0),
+#'           legend.box.margin=margin(-10,0,-10,-10)) +
+#'     guides(fill = guide_colourbar(title.hjust = 0,
+#'                                   ticks.colour = "black",
+#'                                   barwidth = unit(0.6, "cm"),
+#'                                   barheight = unit(8, "cm"),
+#'                                   frame.colour = "black"))
 #' @export
 make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,...) {
     stopifnot(class(rast) %in% c("RasterBrick","RasterStack","RasterLayer","SpatRaster"))
