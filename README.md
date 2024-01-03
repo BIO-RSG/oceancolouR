@@ -6,7 +6,13 @@ This package is in continuing development, but the following list details some (
 
 **Chlorophyll-a algorithms:**
 
-Frequently used chlorophyll-a algorithms have been added on an as-needed basis. Currently the following are implemented in oceancolouR for some sensors. Sensors available and tested here are MODIS-Aqua :blue_square: , SNPP-VIIRS :yellow_square:, SeaWiFS :green_square:, Landsat-8 OLI :black_large_square: , Sentinel-2 MSI :purple_square: , or sensor-independent :orange_square:
+Frequently used chlorophyll-a algorithms have been added on an as-needed basis. Currently the following are implemented in oceancolouR for some sensors: `gsm()` `ocx()` `oci()` `qaa()` `eof-chl()` and `hu()`
+<details>
+<summary> 
+Click here to expand chl-a algorithm details
+</summary>
+
+Sensors available and tested here are MODIS-Aqua :blue_square: , SNPP-VIIRS :yellow_square:, SeaWiFS :green_square:, Landsat-8 OLI :black_large_square: , Sentinel-2 MSI :purple_square: , or sensor-independent :orange_square:
 
 * `gsm()`: :blue_square::yellow_square::green_square: R implementation of the GSM algorithm, with traditional coefficients or coefficients calculated with `get_gs()`
 * `ocx()` : :blue_square::yellow_square::green_square::black_large_square::purple_square: OCX algorithm. OCX coefficients can be optimized with `optimize_ocx_coefs()`
@@ -14,19 +20,28 @@ Frequently used chlorophyll-a algorithms have been added on an as-needed basis. 
 * `eof_chl()`: EOF (empirical orthogonal function) method to calculate chlorophyll-a (requires **sensor and region-dependent training set** as input)
 * `hu()` : :orange_square: Hu algorithm
 * `oci()` : :blue_square::yellow_square::green_square: OCI algorithm. R implementation of NASA [Ocean Biology Processing Group](https://oceancolor.gsfc.nasa.gov/)'s standard chlorophyll-a product in ocean colour satellite images. For information on standard equations for all sensors see the [`chlor_a`](https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/) data product page (and for Sentinel-3 OLCI see [here](https://forum.earthdata.nasa.gov/viewtopic.php?t=2370))
+</details>
 
-
-**Other functions:**  
-
-* `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell, 2006)
+**Binned data functions:** 
 * `read_pixEx()`: load output file of SNAP pixEx pixel extraction tool as data.frame
-* `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format
-* `haversine()`: calculate haversine distance between two points
-* `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
-* `week8()`, `week8_date()`: convert to/from standard 8-day week number and date
-* `days_vector()`: list julian days for a given year/month
+* `read_h5_L3b()` and `read_h5_L3b_names()`: read the contents of a NASA Level-3 binned file in h5 format
 * `binlatlon()`: calculate NASA L3bin numbers, latitudes and longitudes for various spatial resolutions (see `?gen_nrows` for list of accepted spatial resolution strings)  
-* `plot_swath()`: quickly plot the boundary of a satellite swath to see where it's located on the global map  
+
+**Date functions:**
+* `week8()`, `week8_date()`: convert to/from standard 8-day week number and date
+* `dategrp()`: Similar to `week8()` but for any number of days
+* `days_vector()`: list julian days for a given year/month
+* `get_season()`: get season from date, with 4 seasonal definitions available (see `?get_season`)
+
+**Statistics and plotting:**
+* `plot_swath()`: quickly plot the boundary of a satellite swath to see where it's located on the global map
+* `nc_image_stats()`: check the percent coverage for a variable within lat/lon boundaries
+* `filtered_mean()`: calculate the filtered mean (as in Bailey and Werdell, 2006)
+* `geoMean()`, `geoSD()`: calculate geometric mean and geometric standard deviation factor
+* `haversine()`: calculate haversine distance between two points
+* `rmse()`: Root mean square error
+* `sparkle_fill()`: fill small gaps (e.g. Moiré pattern) by defining a minimum number of neighbours
+* `dms_to_deg()` and `deg_to_dms()` or `deg_to_dm()`: Convert degrees-minutes or degrees-minutes-seconds to decimal degrees and vice-versa
 
 ## How to install
 
