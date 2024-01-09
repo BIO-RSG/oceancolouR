@@ -37,8 +37,8 @@ sinh_trans <- function() {
 #'
 #' @param rast Georeferenced RasterLayer or RasterStack
 #' @param title Optional title of the map
-#' @param xlim Longitude limits
-#' @param ylim Latitude limits
+#' @param xlim Longitude limits. Set to NULL to let the function decide.
+#' @param ylim Latitude limits. Set to NULL to let the function decide.
 #' @param xlabs x-axis (longitude) labels to use. Set to NULL to let the function decide.
 #' @param ylabs y-axis (latitude) labels to use. Set to NULL to let the function decide.
 #' @param col_limits Color scale limits
@@ -54,64 +54,60 @@ sinh_trans <- function() {
 #' @param ... Extra arguments to scale_fill_gradientn()
 #' @return Raster or grid of rasters on maps with coastlines.
 #' @import ggplot2
+#' @importFrom(magrittr,"%>%")
 #' @examples
-#' # use SGLI L2 data
-#' library(raster)
-#' library(sp)
-#' # create a raster
+#' library(terra)
+#' library(ggplot2)
+#' # use SGLI L2 data and make a terra raster
 #' data("example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000")
 #' pts <- example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000
-#' coordinates(pts) = ~lon+lat
-#' tr <- rasterize(pts, raster(ext=extent(pts)), pts$chl, fun = mean, na.rm = TRUE)
+#' rast <- rasterize(as.matrix(pts[,1:2]), rast(extent=terra::ext(c(range(pts$lon),range(pts$lat)))), pts$chl, fun=mean, na.rm=TRUE)
 #' # plot it on the map
-#' make_raster_map(log10(tr),title=NULL)
-#'
+#' make_raster_map(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),trans="log10") +
+#'     theme(axis.title=element_blank(),
+#'           legend.title=element_blank(),
+#'           legend.margin=margin(0,0,0,0),
+#'           legend.box.margin=margin(-10,0,-10,-10)) +
+#'     guides(fill = guide_colourbar(title.hjust = 0,
+#'                                   ticks.colour = "black",
+#'                                   barwidth = unit(0.6, "cm"),
+#'                                   barheight = unit(8, "cm"),
+#'                                   frame.colour = "black"))
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="white",map_colour="#7f7f7f",nrow=1,show_legend=TRUE,...) {
-    stopifnot(class(rast) %in% c("RasterStack","RasterLayer"))
+make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,...) {
+    stopifnot(class(rast) %in% c("RasterBrick","RasterStack","RasterLayer","SpatRaster"))
     worldmap <- ggplot2::map_data("world")
-    if (!is.null(col_limits)) {
-        if (set_extremes) {
-            if (raster::nlayers(rast) == 1) {
-                rast[rast < col_limits[1]] <- col_limits[1]
-                rast[rast > col_limits[2]] <- col_limits[2]
-            } else {
-                rast <- lapply(1:(raster::nlayers(rast)),
-                               function(lx)
-                                   {r <- rast[[lx]]; r[r<col_limits[1]] <- col_limits[1]; r[r>col_limits[2]] <- col_limits[2]; r})
-                rast <- raster::stack(rast)
-            }
-        }
-        colscale <- scale_fill_gradientn(colours = cm, limits=col_limits, na.value=na.value, ...)
-    } else {
-        colscale <- scale_fill_gradientn(colours = cm, na.value=na.value, ...)
+    if (is.null(xlabs)) {xlabs <- waiver()}
+    if (is.null(ylabs)) {ylabs <- waiver()}
+    if (class(rast) %in% c("RasterBrick","RasterStack","RasterLayer")) {rast <- terra::rast(rast)}
+    num_layers <- dim(rast)[3]
+    if (any(duplicated(names(rast)))) {
+        nr <- data.frame(value=names(rast)) %>%
+            dplyr::group_by(value) %>%
+            dplyr::mutate(serial_number=1:n()) %>%
+            dplyr::ungroup() %>%
+            tidyr::unite(col="name",value,serial_number,sep="") %>%
+            unlist()
+        names(rast) <- nr
     }
-    p <- rasterVis::gplot(rast,maxpixels=length(rast)) +
-        geom_tile(aes(fill = value), show.legend=show_legend, alpha=rast_alpha) +
-        geom_map(data = worldmap, map = worldmap,
-                 aes(x = long, y = lat, group = group, map_id=region),
-                 fill = map_fill, colour = map_colour, linewidth=0.5, alpha=map_alpha) +
+    if (!is.null(col_limits) & set_extremes) {
+        rast[rast < col_limits[1]] <- col_limits[1]
+        rast[rast > col_limits[2]] <- col_limits[2]
+    }
+    p <- ggplot() +
+        geom_spatraster(data=rast, show.legend=show_legend, alpha=rast_alpha) +
+        geom_map(data=worldmap, map=worldmap,
+                 aes(x=long, y=lat, group=group, map_id=region),
+                 fill=map_fill, colour=map_colour, linewidth=0.5, alpha=map_alpha) +
         theme_bw() +
         theme(axis.title=element_blank(),
-              legend.title=element_blank(),
-              legend.margin=margin(0,0,0,0),
-              legend.box.margin=margin(-10,0,-10,-10),
               plot.title=element_text(hjust=0.5)) +
-        guides(fill = guide_legend(ticks.colour = "black")) +
-        colscale +
+        scale_fill_gradientn(colours=cm, limits=col_limits, na.value=na.value, ...) +
+        scale_x_continuous(limits=xlim, breaks=xlabs, labels=xlabs, expand=c(0, 0)) +
+        scale_y_continuous(limits=ylim, breaks=ylabs, labels=ylabs, expand=c(0, 0)) +
         ggtitle(title)
-    if (is.null(xlabs)) {
-        p <- p + scale_x_continuous(limits = xlim, expand = c(0, 0))
-    } else {
-        p <- p + scale_x_continuous(limits = xlim, breaks = xlabs, labels = xlabs, expand = c(0, 0))
-    }
-    if (is.null(ylabs)) {
-        p <- p + scale_y_continuous(limits = ylim, expand = c(0, 0))
-    } else {
-        p <- p + scale_y_continuous(limits = ylim, breaks = ylabs, labels = ylabs, expand = c(0, 0))
-    }
-    if (class(rast)=="RasterStack") {
-        p <- p + facet_wrap(~ variable, nrow=nrow)
+    if (num_layers > 1) {
+        p <- p + facet_wrap(~lyr, nrow=nrow)
     }
     return(p)
 }
