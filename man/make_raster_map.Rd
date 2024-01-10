@@ -7,8 +7,8 @@
 make_raster_map(
   rast,
   title = NULL,
-  xlim = c(-95, -42),
-  ylim = c(39, 82),
+  xlim = NULL,
+  ylim = NULL,
   xlabs = NULL,
   ylabs = NULL,
   col_limits = NULL,
@@ -18,8 +18,8 @@ make_raster_map(
   na.value = "transparent",
   rast_alpha = 1,
   map_alpha = 0.8,
-  map_fill = "white",
-  map_colour = "#7f7f7f",
+  map_fill = "grey",
+  map_colour = "darkgrey",
   nrow = 1,
   show_legend = TRUE,
   ...
@@ -30,9 +30,9 @@ make_raster_map(
 
 \item{title}{Optional title of the map}
 
-\item{xlim}{Longitude limits}
+\item{xlim}{Longitude limits. Set to NULL to let the function decide.}
 
-\item{ylim}{Latitude limits}
+\item{ylim}{Latitude limits. Set to NULL to let the function decide.}
 
 \item{xlabs}{x-axis (longitude) labels to use. Set to NULL to let the function decide.}
 
@@ -67,15 +67,21 @@ Raster or grid of rasters on maps with coastlines.
 Plot a raster on a map. If a RasterStack is provided instead, facet_wrap will be used to plot the raster layers on separate maps, and nrow specifies the number of rows of maps (note: they will be plotted by row rather than by column). The names of the raster layers in the stack will be used as titles, and the maps will all use the same color scale.
 }
 \examples{
-# use SGLI L2 data
-library(raster)
-library(sp)
-# create a raster
+library(terra)
+library(ggplot2)
+# use SGLI L2 data and make a terra raster
 data("example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000")
 pts <- example02_GC1SG1_202109031518L33309_L2SG_IWPRK_2000
-coordinates(pts) = ~lon+lat
-tr <- rasterize(pts, raster(ext=extent(pts)), pts$chl, fun = mean, na.rm = TRUE)
+rast <- rasterize(as.matrix(pts[,1:2]), rast(extent=terra::ext(c(range(pts$lon),range(pts$lat)))), pts$chl, fun=mean, na.rm=TRUE)
 # plot it on the map
-make_raster_map(log10(tr),title=NULL)
-
+make_raster_map(rast,title=NULL,xlim=c(-95,-42),ylim=c(39,82),trans="log10") +
+    theme(axis.title=element_blank(),
+          legend.title=element_blank(),
+          legend.margin=margin(0,0,0,0),
+          legend.box.margin=margin(-10,0,-10,-10)) +
+    guides(fill = guide_colourbar(title.hjust = 0,
+                                  ticks.colour = "black",
+                                  barwidth = unit(0.6, "cm"),
+                                  barheight = unit(8, "cm"),
+                                  frame.colour = "black"))
 }
