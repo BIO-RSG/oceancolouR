@@ -54,7 +54,7 @@ sinh_trans <- function() {
 #' @param ... Extra arguments to scale_fill_gradientn()
 #' @return Raster or grid of rasters on maps with coastlines.
 #' @import ggplot2
-#' @importFrom(magrittr,"%>%")
+#' @importFrom magrittr "%>%"
 #' @examples
 #' library(terra)
 #' library(ggplot2)
