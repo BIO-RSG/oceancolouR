@@ -87,7 +87,7 @@ First you need to install the package dependencies:
 
 ```{r}
 #install.packages(c("lubridate", "raster", "hdf5r", "latticeExtra", "sp",
-#                   "maptools", "scales", "lmodel2", "stringr", "boot",
+#                   "scales", "lmodel2", "stringr", "boot",
 #                   "dplyr", "tidyr", "ggplot2", "patchwork", "geodist"))
 ```
 

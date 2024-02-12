@@ -21,7 +21,6 @@ Imports:
     hdf5r,
     latticeExtra,
     sp,
-    maptools,
     scales,
     lmodel2,
     stringr,
@@ -32,7 +31,6 @@ Imports:
     patchwork,
     tidyr,
     geodist,
-    rgdal,
     ncdf4,
     rnaturalearth
 Suggests: 
