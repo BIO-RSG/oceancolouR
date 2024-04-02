@@ -9,8 +9,12 @@ make_raster_map(
   title = NULL,
   xlim = NULL,
   ylim = NULL,
+  xbreaks = NULL,
+  ybreaks = NULL,
   xlabs = NULL,
   ylabs = NULL,
+  sec.axis.x = NULL,
+  sec.axis.y = NULL,
   col_limits = NULL,
   cm = colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow",
     "#FF7F00", "red", "#7F0000"))(100),
@@ -34,9 +38,17 @@ make_raster_map(
 
 \item{ylim}{Latitude limits. Set to NULL to let the function decide.}
 
+\item{xbreaks}{x-axis (longitude) breaks/tick positions. Set to NULL to let the function decide.}
+
+\item{ybreaks}{x-axis (latitude) breaks/tick positions. Set to NULL to let the function decide.}
+
 \item{xlabs}{x-axis (longitude) labels to use. Set to NULL to let the function decide.}
 
 \item{ylabs}{y-axis (latitude) labels to use. Set to NULL to let the function decide.}
+
+\item{sec.axis.x}{Function to define secondary axis on opposite side of plot from x axis.}
+
+\item{sec.axis.y}{Function to define secondary axis on opposite side of plot from y axis.}
 
 \item{col_limits}{Color scale limits}
 

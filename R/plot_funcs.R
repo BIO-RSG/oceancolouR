@@ -39,8 +39,12 @@ sinh_trans <- function() {
 #' @param title Optional title of the map
 #' @param xlim Longitude limits. Set to NULL to let the function decide.
 #' @param ylim Latitude limits. Set to NULL to let the function decide.
+#' @param xbreaks x-axis (longitude) breaks/tick positions. Set to NULL to let the function decide.
+#' @param ybreaks x-axis (latitude) breaks/tick positions. Set to NULL to let the function decide.
 #' @param xlabs x-axis (longitude) labels to use. Set to NULL to let the function decide.
 #' @param ylabs y-axis (latitude) labels to use. Set to NULL to let the function decide.
+#' @param sec.axis.x Function to define secondary axis on opposite side of plot from x axis.
+#' @param sec.axis.y Function to define secondary axis on opposite side of plot from y axis.
 #' @param col_limits Color scale limits
 #' @param cm Color scale
 #' @param set_extremes TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL
@@ -74,11 +78,15 @@ sinh_trans <- function() {
 #'                                   barheight = unit(8, "cm"),
 #'                                   frame.colour = "black"))
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xlabs=NULL,ylabs=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,...) {
+make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,...) {
     stopifnot(class(rast) %in% c("RasterBrick","RasterStack","RasterLayer","SpatRaster"))
     worldmap <- ggplot2::map_data("world")
     if (is.null(xlabs)) {xlabs <- waiver()}
     if (is.null(ylabs)) {ylabs <- waiver()}
+    if (is.null(xbreaks)) {xbreaks <- waiver()}
+    if (is.null(ybreaks)) {ybreaks <- waiver()}
+    if (is.null(sec.axis.x)) {sec.axis.x <- waiver()}
+    if (is.null(sec.axis.y)) {sec.axis.y <- waiver()}
     if (class(rast) %in% c("RasterBrick","RasterStack","RasterLayer")) {rast <- terra::rast(rast)}
     num_layers <- dim(rast)[3]
     if (any(duplicated(names(rast)))) {
@@ -103,8 +111,8 @@ make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xlabs=NULL,ylabs
         theme(axis.title=element_blank(),
               plot.title=element_text(hjust=0.5)) +
         scale_fill_gradientn(colours=cm, limits=col_limits, na.value=na.value, ...) +
-        scale_x_continuous(limits=xlim, breaks=xlabs, labels=xlabs, expand=c(0, 0)) +
-        scale_y_continuous(limits=ylim, breaks=ylabs, labels=ylabs, expand=c(0, 0)) +
+        scale_x_continuous(limits=xlim, breaks=xbreaks, labels=xlabs, expand=c(0, 0), sec.axis=sec.axis.x) +
+        scale_y_continuous(limits=ylim, breaks=ybreaks, labels=ylabs, expand=c(0, 0), sec.axis=sec.axis.y) +
         ggtitle(title)
     if (num_layers > 1) {
         p <- p + facet_wrap(~lyr, nrow=nrow)
