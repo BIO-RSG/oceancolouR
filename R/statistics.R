@@ -4,9 +4,16 @@
 #'
 #' @param x Numeric vector of data.
 #' @param y Numeric vector of data to compare to x, same length.
-#' @return RMSE, single numeric value.
+#' @param dolog10 TRUE/FALSE, should x and y be logged (base 10)? (i.e. calculate RMSLE?)
+#' @return Single numeric value.
 #' @export
-rmse <- function(x, y) {
+rmse <- function(x, y, dolog10=FALSE) {
+    if (dolog10) {
+        x <- log10(x)
+        x[!is.finite(x)] <- NA
+        y <- log10(y)
+        y[!is.finite(y)] <- NA
+    }
     return(sqrt(mean((x - y)^2, na.rm=TRUE)))
 }
 

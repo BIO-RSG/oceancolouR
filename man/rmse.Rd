@@ -4,15 +4,17 @@
 \alias{rmse}
 \title{Calculate RMSE}
 \usage{
-rmse(x, y)
+rmse(x, y, dolog10 = FALSE)
 }
 \arguments{
 \item{x}{Numeric vector of data.}
 
 \item{y}{Numeric vector of data to compare to x, same length.}
+
+\item{dolog10}{TRUE/FALSE, should x and y be logged (base 10)? (i.e. calculate RMSLE?)}
 }
 \value{
-RMSE, single numeric value.
+Single numeric value.
 }
 \description{
 Compute root mean square error (RMSE).
