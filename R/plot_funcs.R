@@ -103,7 +103,7 @@ make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybr
         rast[rast > col_limits[2]] <- col_limits[2]
     }
     p <- ggplot() +
-        tidyterra::geom_spatraster(data=rast, show.legend=show_legend, alpha=rast_alpha) +
+        tidyterra::geom_spatraster(data=rast, show.legend=show_legend, alpha=rast_alpha, maxcell=ncell(rast)) +
         geom_map(data=worldmap, map=worldmap,
                  aes(x=long, y=lat, group=group, map_id=region),
                  fill=map_fill, colour=map_colour, linewidth=0.5, alpha=map_alpha) +
