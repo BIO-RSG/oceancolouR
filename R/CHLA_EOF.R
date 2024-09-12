@@ -4,7 +4,7 @@
 #'
 #' The training set should be created using in situ chlorophyll-a values matched to satellite Rrs. Use caution if you try to predict chlorophyll-a from Rrs where the region / water type / time period is very different from those used in the training set. The training set should contain at least 50 matchups (i.e. 50 chla values paired with satellite Rrs, see figure 4 from Laliberté et al, 2018).
 #'
-#' @param rrs Either a dataframe containing numeric columns of Rrs data with the naming format "Rrs_XXX", where XXX is the wavelength in nanometres, or a RasterStack where each raster contains the Rrs data and follows the same naming format.
+#' @param rrs Either a dataframe containing numeric columns of Rrs data with the naming format "Rrs_XXX", where XXX is the wavelength in nanometres, or a RasterStack or SpatRaster where each raster contains the Rrs data and follows the same naming format.
 #' @param training_set Dataframe with numeric columns of Rrs data with the same naming format as in rrs, and a column named "chla" containing the corresponding in situ chlorophyll-a.
 #' @references
 #' Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018). Chlorophyll-a Concentration Retrieval in the Optically Complex Waters of the St. Lawrence Estuary and Gulf Using Principal Component Analysis. Remote Sensing. 10. 10.3390/rs10020265.
@@ -71,6 +71,11 @@
 #' names(rrs_stack) <- colnames(rrs)
 #' chl_raster <- eof_chl(rrs=rrs_stack, training_set=training)
 #' plot(chl_raster)
+#' # finally, test a SpatRaster if desired
+#' library(terra)
+#' rrs_terra = rast(rrs_stack)
+#' chl_terra <- eof_chl(rrs=rrs_terra, training_set=training)
+#' plot(chl_terra)
 #'
 #' @export
 eof_chl <- function(rrs, training_set) {
@@ -101,6 +106,14 @@ eof_chl <- function(rrs, training_set) {
         # reformat raster input
         rstack <- raster::subset(rrs, tset_rrsnames)
         rrs <- lapply(1:length(tset_rrsnames), function(i) raster::getValues(rstack[[i]]))
+        rrs <- as.data.frame(do.call(cbind, rrs))
+        colnames(rrs) <- tset_rrsnames
+
+    } else if (input_class == "SpatRaster") {
+
+        # reformat raster input
+        rstack <- terra::subset(rrs, tset_rrsnames)
+        rrs <- lapply(1:length(tset_rrsnames), function(i) terra::values(rstack[[i]]))
         rrs <- as.data.frame(do.call(cbind, rrs))
         colnames(rrs) <- tset_rrsnames
 
@@ -150,6 +163,8 @@ eof_chl <- function(rrs, training_set) {
     # reformat to raster if necessary
     if (input_class == "RasterStack") {
         full_eof_chl <- raster::raster(crs=raster::crs(rstack[[1]]), ext=raster::extent(rstack[[1]]), resolution=raster::res(rstack[[1]]), vals=full_eof_chl)
+    } else if (input_class == "SpatRaster") {
+        full_eof_chl <- terra::rast(crs=terra::crs(rstack[[1]]), ext=terra::ext(rstack[[1]]), resolution=terra::res(rstack[[1]]), vals=full_eof_chl)
     }
 
     # return predicted chlorophyll for the input rrs
