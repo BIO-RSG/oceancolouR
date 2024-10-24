@@ -18,7 +18,7 @@
 #' @export
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 
-    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2", "olci"),
+    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2", "olci", "occci"),
               ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4"))))
 
     # Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
@@ -56,7 +56,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                   "poly3" = c(0.44156,-3.05795,-0.65894,1.21248),
                                   "poly4" = c(0.44786,-3.11091,-0.77987,1.425,0.90445),
                                   "poly4v2" = c(0.41083,-3.7271,-0.85655,1.29441,0.89483)),
-                     "olci"=list("poly4"=c(0.38899,-3.34552,-0.82722,1.03436,1.86927)))
+                     "olci"=list("poly4"=c(0.38899,-3.34552,-0.82722,1.03436,1.86927)),
+                     "occci"=list("poly4"=c(0.59779,-3.15824,-0.80348,0.93129,0.78322)))
     # Coefficients parameterized for some sensors in the Northeast Pacific Ocean
     nep_coefs <- list("modisaqua"=list("poly1" = c(0.24947,-2.84152),
                                    "poly2" = c(0.28424,-2.66996,-1.09915),
