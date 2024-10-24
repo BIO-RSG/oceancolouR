@@ -135,14 +135,16 @@ get_ocx_bands <- function(sensor, use_443nm) {
                       "seawifs"=c("Rrs_443","Rrs_490","Rrs_510"),
                       "viirssnpp"=c("Rrs_443","Rrs_486"),
                       "landsat8"=c("Rrs_443","Rrs_482"),
-                      "olci"=c("Rrs_443","Rrs_490","Rrs_510"))
+                      "olci"=c("Rrs_443","Rrs_490","Rrs_510"),
+                      "occci"=c("Rrs_443","Rrs_490","Rrs_510"))
     # Green Rrs wavelengths used in band ratio algorithms
     # algorithm for viirssnpp uses 550, not 551
     all_greens <- list("modisaqua"="Rrs_547",
                        "seawifs"="Rrs_555",
                        "viirssnpp"="Rrs_551",
                        "landsat8"="Rrs_561",
-                       "olci"="Rrs_560")
+                       "olci"="Rrs_560",
+                       "occci"="Rrs_560")
 
     blues <- all_blues[[sensor]]
     green <- all_greens[[sensor]]
