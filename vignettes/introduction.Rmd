@@ -39,7 +39,7 @@ knitr::opts_chunk$set(
 * `gen_start_bin()`: given a spatial resolution, generate bin numbers at the start of the row on the global grid  
 * `binlatlon()`: given a spatial resolution and lat/lon boundaries, generate a dataframe containing bin number and corresponding latitude and longitude  
 * `gen_bin_grid()`: given a spatial resolution and lat/lon boundaries, generate a 2d regular map grid of bin numbers  
-* `var_to_rast()`: given a dataframe with column1=bin number and column2=variable, plot the variable on a raster map  
+* `bin_to_raster()`: given a dataframe with column1=bin number and column2=variable, plot the variable on a raster map  
 * `plot_pancan()`: given a vector of data from a panCanadian L3b data file, plot the variable on a raster map with coastlines  
 * `read_h5_L3b()`: read the contents of a NASA Level-3 binned file in h5 format  
 * `get_closest_bins()`: given a dataframe of latitudes and longitudes, find the closest bin numbers (used in L3b/insitu matchups)  
@@ -118,7 +118,7 @@ Functions described here are as follows:
 - `get_bins()`
 - `read_h5_L3b()`
 - `binlatlon()`
-- `var_to_rast()`
+- `bin_to_raster()`
 - `gen_bin_grid()`
 
 ### get_bins()
@@ -156,13 +156,13 @@ A couple of things to note:
 - `binlatlon()` generates ALL pixels over both land and water, which could leave you with a significant number of land bins that would increase object or file size. There are various land masks available that could be used to remove land or ocean bins, for instance the [land mask developed by Mikelsons et al (2021)]( https://data.mendeley.com/datasets/9r93m9s7cw/1).  
 - **This function assigns coordinates to the center of the bin.**  
 
-### var_to_rast() and gen_bin_grid()
+### bin_to_raster() and gen_bin_grid()
 
-As binned data are not on a regular grid, the functions `var_to_rast()` and `gen_bin_grid()` are provided to assign binned data to a regular grid **FOR VISUALIZATION ONLY**.  
+As binned data are not on a regular grid, the functions `bin_to_raster()` and `gen_bin_grid()` are provided to assign binned data to a regular grid **FOR VISUALIZATION ONLY**.  
 
 `gen_bin_grid()` generates a regular grid of bin numbers for a region by repeating each bin in a row *approximately* the same number of times in order to fill all the pixels of the global grid in that row (e.g. if a row has 3000 bins and the global grid has 9000 columns, then each bin will be repeated 3 times). A vector of longitudes across the whole grid (e.g. 9000 pixels in this example) is used to subset the grid to columns within the selected longitude bounds.  
 
-`var_to_rast()` takes a dataframe containing a column of bin numbers and data values, and assigns the values to the grid from `gen_bin_grid()` based on bin number.  
+`bin_to_raster()` takes a dataframe containing a column of bin numbers and data values, and assigns the values to the grid from `gen_bin_grid()` based on bin number.  
 
 **As with binlatlon(), gen_bin_grid() assign coordinates to the center of the bin.**  
 

@@ -164,11 +164,11 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
 #' @references See https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/ for more information on bin numbers.
 #' @examples
 #' # make a bathymetry raster for the Northwest Atlantic
-#' var_to_rast(df = get_bins(region="nwa",variables=c("bin","bathymetry")),
-#'             ext = c(lon_bounds$NWA, lat_bounds$NWA))
+#' bin_to_raster(df = get_bins(region="nwa",variables=c("bin","bathymetry")),
+#'               ext = c(lon_bounds$NWA, lat_bounds$NWA))
 #' @return Raster containing the variable data.
 #' @export
-var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE, max_bins=50000000) {
+bin_to_raster <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE, max_bins=50000000) {
     # create a bin grid for the selected latitudinal extent
     binGrid <- gen_bin_grid(resolution=resolution, ext=ext, rast=FALSE, max_bins=max_bins)
     binGrid_vec <- c(binGrid)
@@ -186,6 +186,14 @@ var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx
     }
     return(datGrid)
 }
+
+
+# For backwards compatibility
+#' @export
+var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE, max_bins=50000000) {
+    return(bin_to_raster(df=df, resolution=resolution, ext=c(xmn=xmn, xmx=xmx, ymn=ymn, ymx=ymx), rast=rast, max_bins=max_bins))
+}
+
 
 #' Get bin info at 4km and 9km resolution
 #'
@@ -243,7 +251,7 @@ get_bins <- function(region = "pancan", resolution = "4km", variables = "all") {
 plot_pancan <- function(vec, region="pancan", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), resolution="4km", limits=NULL) {
     stopifnot(resolution %in% c("4km", "9km"))
     bins <- (function(v) get(data(list=v, package="oceancolouR", envir = new.env())))(paste0(region,"_bins_",resolution))
-    rast <- var_to_rast(data.frame(bin=bins, var=vec), resolution=gsub("km","",resolution), ext=ext)
+    rast <- bin_to_raster(data.frame(bin=bins, var=vec), resolution=gsub("km","",resolution), ext=ext)
     p <- make_raster_map(rast,xlim=ext[1:2],ylim=ext[3:4],col_limits=limits)
     return(p)
 }
