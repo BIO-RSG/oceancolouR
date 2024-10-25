@@ -55,6 +55,7 @@ sinh_trans <- function() {
 #' @param map_colour Colour of the outline of the landmasses in the map
 #' @param nrow Number of rows of plots, for raster stacks
 #' @param show_legend Display the raster legend next to the map?
+#' @param hires_land TRUE/FALSE, use the high resolution "world2Hires" land map or lower resolution "world" map?
 #' @param ... Extra arguments to scale_fill_gradientn()
 #' @return Raster or grid of rasters on maps with coastlines.
 #' @import ggplot2
@@ -78,9 +79,17 @@ sinh_trans <- function() {
 #'                                   barheight = unit(8, "cm"),
 #'                                   frame.colour = "black"))
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,...) {
+make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,hires_land=FALSE,...) {
     stopifnot(class(rast) %in% c("RasterBrick","RasterStack","RasterLayer","SpatRaster"))
-    worldmap <- ggplot2::map_data("world")
+    if (hires_land) {
+        data(world2HiresMapEnv, package="mapdata")
+        worldmap <- ggplot2::map_data("world2Hires") %>% dplyr::mutate(long=-1*(360-long))
+        regs <- worldmap %>% dplyr::filter(between(long,xlim[1],xlim[2]) & between(lat,ylim[1],ylim[2])) %>% dplyr::distinct(region)
+        # France is broken in this map
+        worldmap <- worldmap %>% dplyr::filter(region %in% regs$region & region!="France")
+    } else {
+        worldmap <- ggplot2::map_data("world")
+    }
     if (is.null(xlabs)) {xlabs <- waiver()}
     if (is.null(ylabs)) {ylabs <- waiver()}
     if (is.null(xbreaks)) {xbreaks <- waiver()}

@@ -26,6 +26,7 @@ make_raster_map(
   map_colour = "darkgrey",
   nrow = 1,
   show_legend = TRUE,
+  hires_land = FALSE,
   ...
 )
 }
@@ -69,6 +70,8 @@ make_raster_map(
 \item{nrow}{Number of rows of plots, for raster stacks}
 
 \item{show_legend}{Display the raster legend next to the map?}
+
+\item{hires_land}{TRUE/FALSE, use the high resolution "world2Hires" land map or lower resolution "world" map?}
 
 \item{...}{Extra arguments to scale_fill_gradientn()}
 }

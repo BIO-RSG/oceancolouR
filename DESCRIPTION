@@ -32,7 +32,8 @@ Imports:
     tidyr,
     geodist,
     ncdf4,
-    rnaturalearth
+    rnaturalearth,
+    mapdata
 Suggests: 
     knitr,
     rmarkdown
