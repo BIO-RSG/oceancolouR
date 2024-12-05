@@ -101,7 +101,7 @@ Clay, S.; Pena, A.; DeTracey, B.; Devred, E. [Evaluation of Satellite-Based Algo
 Bailey, Sean & Werdell, Jeremy. (2006). [A multi-sensor approach for the on-orbit validation of ocean color satellite data products.](https://www.sciencedirect.com/science/article/pii/S0034425706000472) Remote Sensing of Environment. 102. 12-23. 10.1016/j.rse.2006.01.015.
 
 **Integerized Sinusoidal Binning Scheme:**  
-https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/  
+https://oceancolor.sci.gsfc.nasa.gov/resources/docs/format/l3bins/   
 
 
 

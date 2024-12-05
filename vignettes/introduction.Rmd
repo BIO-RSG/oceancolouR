@@ -111,7 +111,7 @@ library(patchwork)
 
 ## L3BIN Data
 
-At level 3, pixels are assigned to a static location on the earth surface ("bin"). Bins are approximately equal area and are based on a sinusoidal projection. More info [here](https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/).  
+At level 3, pixels are assigned to a static location on the earth surface ("bin"). Bins are approximately equal area and are based on a sinusoidal projection. More info [here](https://oceancolor.sci.gsfc.nasa.gov/resources/docs/format/l3bins/).  
 
 Functions described here are as follows:  
 
@@ -490,7 +490,7 @@ Laliberté, Julien & Larouche, Pierre & Devred, Emmanuel & Craig, Susanne. (2018
 Clay, S.; Pena, A.; DeTracey, B.; Devred, E. Evaluation of Satellite-Based Algorithms to Retrieve Chlorophyll-a Concentration in the Canadian Atlantic and Pacific Oceans. Remote Sens. 2019, 11, 2609.  
 
 **Integerized Sinusoidal Binning Scheme:**  
-https://oceancolor.gsfc.nasa.gov/docs/format/l3bins/  
+https://oceancolor.sci.gsfc.nasa.gov/resources/docs/format/l3bins/  
 
 
 <br><br>
