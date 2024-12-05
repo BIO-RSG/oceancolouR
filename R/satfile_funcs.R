@@ -163,7 +163,7 @@ download_oc = function(filenames, urls) {
 #' @param h5_file String, h5 filename
 #' @return List containing variable names, their dimensions, and datatypes
 #' @export
-read_h5_l3b_names <- function(h5_file) {
+read_h5_L3b_names <- function(h5_file) {
     h5 <- hdf5r::H5File$new(h5_file, mode="r")
     h5_ls <- h5$ls(recursive=TRUE) # view contents
     h5$close_all()

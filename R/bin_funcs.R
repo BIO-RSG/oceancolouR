@@ -188,13 +188,6 @@ bin_to_raster <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, y
 }
 
 
-# For backwards compatibility
-#' @export
-var_to_rast <- function(df, resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86), rast=TRUE, max_bins=50000000) {
-    return(bin_to_raster(df=df, resolution=resolution, ext=c(xmn=xmn, xmx=xmx, ymn=ymn, ymx=ymx), rast=rast, max_bins=max_bins))
-}
-
-
 #' Get bin info at 4km and 9km resolution
 #'
 #' Get corresponding bin number, latitude, longitude and depth for Pan-Canadian Grid or subregions. These are vectors of bin/lat/lon/bathymetry that have already been generated for easier access.
