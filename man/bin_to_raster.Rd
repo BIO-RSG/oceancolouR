@@ -27,7 +27,10 @@ bin_to_raster(
 Raster containing the variable data.
 }
 \description{
-Given a dataframe with 2 columns (bin number and variable), create a 2D matrix or raster FOR VISUALIZATION ONLY, NOT TO BE USED FOR STATS.
+Given a dataframe with 2 columns (bin number and variable), map the results to an equidistant cylindrical grid using a nearest-neighbour method.
+}
+\details{
+Originally coded by George White.
 }
 \examples{
 # make a bathymetry raster for the Northwest Atlantic

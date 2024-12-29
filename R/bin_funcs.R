@@ -100,6 +100,8 @@ gen_start_bin = function(nrows=gen_nrows("4")) {
 #'
 #' LATITUDE AND LONGITUDE ARE AT THE CENTER OF THE BIN.
 #'
+#' Originally coded by George White.
+#'
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
 #' @param ext Named vector containing the boundaries of the resulting grid (xmn, xmx, ymn, ymx).
 #' @param rast TRUE/FALSE, should the resulting bin matrix be converted to raster?
@@ -154,7 +156,9 @@ gen_bin_grid = function(resolution="4", ext=c(xmn=-147, xmx=-41, ymn=39, ymx=86)
 # From George White's primary production scripts.
 #' Generate 2D grid of L3b data for viewing
 #'
-#' Given a dataframe with 2 columns (bin number and variable), create a 2D matrix or raster FOR VISUALIZATION ONLY, NOT TO BE USED FOR STATS.
+#' Given a dataframe with 2 columns (bin number and variable), map the results to an equidistant cylindrical grid using a nearest-neighbour method.
+#'
+#' Originally coded by George White.
 #'
 #' @param df Dataframe with 2 columns: first column="bin" and second column is the variable name (note: the dataframe does not have to be sorted in order of bin number).
 #' @param resolution String indicating spatial resolution, see ?gen_nrows for list of accepted strings.
