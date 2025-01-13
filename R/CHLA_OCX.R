@@ -70,7 +70,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                       "viirssnpp"=list("poly1" = c(0.31886,-2.6501),
                                    "poly2" = c(0.33771,-2.56462,-0.5314),
                                    "poly3" = c(0.3303,-2.74252,-0.34545,1.35569),
-                                   "poly4" = c(0.33055,-2.76455,-0.39595,1.52198,0.46509)))
+                                   "poly4" = c(0.33055,-2.76455,-0.39595,1.52198,0.46509)),
+                      "occci"=list("poly4"=c(0.46743,-2.88694,-0.70127,1.49738,1.07817)))
     # Combine into master list:
     coefs <- list("global" = list("modisaqua" = c(nasa_coefs$modisaqua,
                                               standard_coefs$modisaqua),
@@ -109,7 +110,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                              nep_coefs$seawifs),
                                "landsat8" = c(nasa_coefs$landsat8,
                                               standard_coefs$landsat8),
-                               "sentinel2" = standard_coefs$sentinel2))
+                               "sentinel2" = standard_coefs$sentinel2,
+                               "occci" = c(nep_coefs$occci)))
     # Return coeffs, if available
     coef_vals = try({
         coefs[[region]][[sensor]][[alg]]
