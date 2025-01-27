@@ -19,7 +19,7 @@
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 
     stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2", "olci", "occci"),
-              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4"))))
+              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep", "gosl") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4"))))
 
     # Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
     # "ocx" refers to those that are
@@ -72,6 +72,7 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                    "poly3" = c(0.3303,-2.74252,-0.34545,1.35569),
                                    "poly4" = c(0.33055,-2.76455,-0.39595,1.52198,0.46509)),
                       "occci"=list("poly4"=c(0.46743,-2.88694,-0.70127,1.49738,1.07817)))
+    gosl_coefs <- list("occci"=list("poly4"=c(0.28271,-2.84730,-0.85693,1.06846,0.15699)))
     # Combine into master list:
     coefs <- list("global" = list("modisaqua" = c(nasa_coefs$modisaqua,
                                               standard_coefs$modisaqua),
@@ -111,7 +112,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                "landsat8" = c(nasa_coefs$landsat8,
                                               standard_coefs$landsat8),
                                "sentinel2" = standard_coefs$sentinel2,
-                               "occci" = c(nep_coefs$occci)))
+                               "occci" = c(nep_coefs$occci)),
+                  "gosl" = list("occci" = c(gosl_coefs$occci)))
     # Return coeffs, if available
     coef_vals = try({
         coefs[[region]][[sensor]][[alg]]
