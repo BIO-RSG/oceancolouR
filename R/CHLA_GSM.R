@@ -47,7 +47,7 @@ get_gs <- function(lambda) {
 #' @export
 get_gsm_IOPexps <- function(sensor, region, gtype) {
 
-    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "olci"),
+    stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "olci", "occci"),
               region %in% c("nwa", "nep"),
               gtype %in% c("gc", "gs", "gsv2"))
 
