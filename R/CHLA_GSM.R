@@ -60,7 +60,7 @@ get_gsm_IOPexps <- function(sensor, region, gtype) {
                             "viirssnpp"=list("gc"=c(0.6,0.026,1.4),
                                          "gs"=c(0.5,0.026,1.75),
                                          "gsv2"=c(0.483961381,0.023038133,1.821948237)),
-                            "olci"=list("gs"=c(0.711749398,0.026033124,0.744068039)),
+                            "olci"=list("gs"=c(0.501522234,0.038448797,-1.551545311)),
                             "occci"=list("gs"=c(0.535562032,0.031871075,0.490522336))),
                  "nep"=list("modisaqua"=list("gc"=c(0.6,0.038,0.9),
                                          "gs"=c(0.6,0.036,0.75)),
@@ -68,6 +68,7 @@ get_gsm_IOPexps <- function(sensor, region, gtype) {
                                            "gs"=c(0.65,0.026,0.65)),
                             "viirssnpp"=list("gc"=c(0.6,0.034,0.8),
                                          "gs"=c(0.6,0.03,0.75)),
+                            "olci"=list("gs"=c(1.037433752,0.053231291,0.277952919)),
                             "occci"=list("gs"=c(0.613261397,0.030572409,0.337738167))))
 
     return(as.numeric(exps[[region]][[sensor]][[gtype]]))
