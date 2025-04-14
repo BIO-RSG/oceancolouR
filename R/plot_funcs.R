@@ -80,7 +80,7 @@ sinh_trans <- function() {
 #'                                   barheight = unit(8, "cm"),
 #'                                   frame.colour = "black"))
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",nrow=1,show_legend=TRUE,hires_land=FALSE,...) {
+make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",map_linewidth=0.5,nrow=1,show_legend=TRUE,hires_land=FALSE,...) {
     stopifnot(class(rast) %in% c("RasterBrick","RasterStack","RasterLayer","SpatRaster"))
     if (hires_land) {
         data(world2HiresMapEnv, package="mapdata")
@@ -116,7 +116,7 @@ make_raster_map <- function(rast,title=NULL,xlim=NULL,ylim=NULL,xbreaks=NULL,ybr
         tidyterra::geom_spatraster(data=rast, show.legend=show_legend, alpha=rast_alpha, maxcell=terra::ncell(rast)) +
         geom_map(data=worldmap, map=worldmap,
                  aes(x=long, y=lat, group=group, map_id=region),
-                 fill=map_fill, colour=map_colour, linewidth=0.5, alpha=map_alpha) +
+                 fill=map_fill, colour=map_colour, linewidth=map_linewidth, alpha=map_alpha) +
         theme_bw() +
         theme(axis.title=element_blank(),
               plot.title=element_text(hjust=0.5)) +
