@@ -113,6 +113,9 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                "landsat8" = c(nasa_coefs$landsat8,
                                               standard_coefs$landsat8),
                                "sentinel2" = standard_coefs$sentinel2,
+                               "olci" = c(nasa_coefs$olci,
+                                          standard_coefs$olci,
+                                          nep_coefs$olci),
                                "occci" = c(nep_coefs$occci)),
                   "gosl" = list("occci" = c(gosl_coefs$occci)))
     # Return coeffs, if available
