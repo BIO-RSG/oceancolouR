@@ -94,3 +94,8 @@ nasa_universal_bluered <- function(n = 25) {
                    maxColorValue = 255)
     colorRampPalette(bluered)(n)
 }
+
+#' @export
+visible_spectrum <- function(n = 25) {
+    colorRampPalette(c("#4B0082","#3300cc","#0000ff","#00ccee","#00ff55","#00FF00","#FFFF00","#FFD700","#FF4500","#FF0000","#bb0000"))(n)
+}
