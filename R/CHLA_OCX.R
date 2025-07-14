@@ -56,7 +56,7 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                   "poly3" = c(0.44156,-3.05795,-0.65894,1.21248),
                                   "poly4" = c(0.44786,-3.11091,-0.77987,1.425,0.90445),
                                   "poly4v2" = c(0.41083,-3.7271,-0.85655,1.29441,0.89483)),
-                     "olci"=list("poly4"=c(0.38899,-3.34552,-0.82722,1.03436,1.86927)),
+                     "olci"=list("poly4"=c(0.45626,-3.461,-0.74022,1.10433,1.29928)),
                      "occci"=list("poly4"=c(0.59779,-3.15824,-0.80348,0.93129,0.78322)))
     # Coefficients parameterized for some sensors in the Northeast Pacific Ocean
     nep_coefs <- list("modisaqua"=list("poly1" = c(0.24947,-2.84152),
@@ -73,7 +73,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                    "poly4" = c(0.33055,-2.76455,-0.39595,1.52198,0.46509)),
                       "olci" = list("poly4" = c(0.21102,-2.50274,-2.15620,1.72846,1.71739)),
                       "occci"=list("poly4"=c(0.46743,-2.88694,-0.70127,1.49738,1.07817)))
-    gosl_coefs <- list("occci"=list("poly4"=c(0.28271,-2.84730,-0.85693,1.06846,0.15699)))
+    gosl_coefs <- list("olci"=list("poly4"=c(0.14211,-2.62659,0.38526,1.33859,-1.0363)),
+                       "occci"=list("poly4"=c(0.28271,-2.84730,-0.85693,1.06846,0.15699)))
     # Combine into master list:
     coefs <- list("global" = list("modisaqua" = c(nasa_coefs$modisaqua,
                                               standard_coefs$modisaqua),
@@ -117,7 +118,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                           standard_coefs$olci,
                                           nep_coefs$olci),
                                "occci" = c(nep_coefs$occci)),
-                  "gosl" = list("occci" = c(gosl_coefs$occci)))
+                  "gosl" = list("olci" = c(gosl_coefs$olci),
+                                "occci" = c(gosl_coefs$occci)))
     # Return coeffs, if available
     coef_vals = try({
         coefs[[region]][[sensor]][[alg]]

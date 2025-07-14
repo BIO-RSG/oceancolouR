@@ -7,8 +7,8 @@
 make_raster_map(
   rast,
   title = NULL,
-  xlim = NULL,
-  ylim = NULL,
+  xlim = c(-180, 180),
+  ylim = c(-90, 90),
   xbreaks = NULL,
   ybreaks = NULL,
   xlabs = NULL,
@@ -24,6 +24,7 @@ make_raster_map(
   map_alpha = 0.8,
   map_fill = "grey",
   map_colour = "darkgrey",
+  map_linewidth = 0.5,
   nrow = 1,
   show_legend = TRUE,
   hires_land = FALSE,
