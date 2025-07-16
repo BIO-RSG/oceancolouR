@@ -68,7 +68,7 @@ get_gsm_IOPexps <- function(sensor, region, gtype) {
                                            "gs"=c(0.65,0.026,0.65)),
                             "viirssnpp"=list("gc"=c(0.6,0.034,0.8),
                                          "gs"=c(0.6,0.03,0.75)),
-                            "olci"=list("gs"=c(1.037433752,0.053231291,0.277952919)),
+                            "olci"=list("gs"=c(0.87350177872647,0.0455569446509,0.681140722483303)),
                             "occci"=list("gs"=c(0.613261397,0.030572409,0.337738167))))
 
     return(as.numeric(exps[[region]][[sensor]][[gtype]]))
