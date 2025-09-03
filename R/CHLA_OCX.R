@@ -19,7 +19,7 @@
 get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
 
     stopifnot(sensor %in% c("modisaqua", "seawifs", "viirssnpp", "landsat8", "sentinel2", "olci", "occci"),
-              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep", "gosl") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4"))))
+              ((region=="global" & alg %in% c("ocx","oc2","oc3","oc4")) | (region %in% c("nwa", "nep", "gosl", "bof") & alg %in% c("poly1", "poly2", "poly3", "poly4", "poly4v2", "ocx","oc2","oc3","oc4","ocxspmcor"))))
 
     # Standard algorithms from NASA: https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
     # "ocx" refers to those that are
@@ -75,6 +75,7 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                       "occci"=list("poly4"=c(0.46743,-2.88694,-0.70127,1.49738,1.07817)))
     gosl_coefs <- list("olci"=list("poly4"=c(0.14211,-2.62659,0.38526,1.33859,-1.0363)),
                        "occci"=list("poly4"=c(0.28271,-2.84730,-0.85693,1.06846,0.15699)))
+    bof_coefs <- list("occci"=list("ocxspmcor"=c(-0.17617,-2.65457,-0.75323,1.91574,1.53627,-1.41368))) # a0-a4 and spm coef
     # Combine into master list:
     coefs <- list("global" = list("modisaqua" = c(nasa_coefs$modisaqua,
                                               standard_coefs$modisaqua),
@@ -119,7 +120,8 @@ get_ocx_coefs <- function(sensor, region="global", alg="ocx") {
                                           nep_coefs$olci),
                                "occci" = c(nep_coefs$occci)),
                   "gosl" = list("olci" = c(gosl_coefs$olci),
-                                "occci" = c(gosl_coefs$occci)))
+                                "occci" = c(gosl_coefs$occci)),
+                  "bof" = list("occci" = c(bof_coefs$occci)))
     # Return coeffs, if available
     coef_vals = try({
         coefs[[region]][[sensor]][[alg]]
@@ -255,7 +257,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' Given a set of Rrs and coefficients, calculate chlorophyll using a polynomial band ratio algorithm. See ?optimize_ocx_coefs for example.
 #'
-#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack or RasterBrick of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
+#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack or RasterBrick or SpatRaster of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
 #' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
 #' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
 #' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)
@@ -274,7 +276,7 @@ get_br <- function(rrs, blues, green, use_443nm=FALSE) {
 #'
 #' https://oceancolor.gsfc.nasa.gov/atbd/chlor_a/
 #'
-#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack/Brick rrs: equivalent raster with OCx chlorophyll-a.
+#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCX for the given Rrs, sensor, and coefficients. For RasterStack/Brick/SpatRaster rrs: equivalent raster with OCx chlorophyll-a.
 #' @examples
 #' # Some in situ chl / modisaqua Rrs data used in Clay et al (2019)
 #' input <- matrix(c(0.118, 0.0072, 0.0064, 0.0035, 0.122, 0.0048, 0.005, 0.0017, 0.128, 0.0076, 0.007, 0.0032, 0.198, 0.0072, 0.007, 0.0035, 0.199, 0.0137, 0.0099, 0.005, 0.206, 0.0049, 0.005, 0.0027, 0.208, 0.0083, 0.0074, 0.0035, 0.213, 0.0035, 0.0036, 0.0023, 0.215, 0.0053, 0.0057, 0.0032, 0.217, 0.0031, 0.0041, 0.0026, 0.22, 0.0067, 0.0066, 0.0034, 0.223, 0.0032, 0.0035, 0.0023, 0.223, 0.0042, 0.0045, 0.0024, 0.249, 0.0185, 0.0125, 0.0062, 0.249, 0.0027, 0.0056, 0.005, 0.254, 0.0048, 0.0055, 0.0035, 0.403, 0.0052, 0.0055, 0.0026, 0.404, 0.0054, 0.0054, 0.0043, 0.404, 0.0026, 0.003, 0.0023, 0.418, 0.004, 0.0042, 0.0028, 0.438, 0.0053, 0.0054, 0.0032, 0.438, 0.0047, 0.0048, 0.0034, 0.5, 0.0045, 0.0048, 0.0038, 0.501, 0.0047, 0.0074, 0.0069, 0.508, 0.0138, 0.0114, 0.0075, 0.511, 0.0047, 0.0053, 0.0037, 0.958, 0.0023, 0.0034, 0.003, 0.971, 0.0072, 0.0054, 0.0038, 1.253, 0.0019, 0.003, 0.0028, 1.253, 0.0108, 0.0058, 0.0034, 1.259, 0.0017, 0.0026, 0.0026, 1.261, 0.0057, 0.0073, 0.0074, 1.264, 0.0031, 0.0032, 0.0027, 1.269, 0.0033, 0.0044, 0.0044, 1.273, 0.0047, 0.0045, 0.0036, 1.311, 0.0043, 0.0046, 0.0031, 1.975, 0.0066, 0.0051, 0.0038, 1.975, 0.0067, 0.0065, 0.0043, 1.994, 0.0016, 0.0026, 0.0029, 1.999, 0.0022, 0.0037, 0.0033, 2.019, 0.0024, 0.0032, 0.0035, 2.551, 0.0059, 0.0043, 0.0024, 3.01, 0.0037, 0.0044, 0.0036, 3.035, 8e-04, 0.0026, 0.0031, 3.064, 0.0043, 0.0042, 0.0034, 3.086, 0.0077, 0.0081, 0.0072, 3.148, 0.0061, 0.0045, 0.0034, 3.216, 0.0027, 0.0034, 0.0035, 3.222, 0.0059, 0.0046, 0.0035, 4.47, 0.0033, 0.0042, 0.0033, 4.558, 0.0052, 0.0053, 0.0037, 4.575, 0.0051, 0.0042, 0.004, 4.613, 0.0031, 0.0034, 0.0034, 4.653, 0.0014, 0.0023, 0.0033, 4.749, 6e-04, 0.0019, 0.0034, 6.644, 0.0046, 0.0039, 0.0037, 6.825, 0.0015, 0.0023, 0.0026, 6.832, 0.0042, 0.0047, 0.0045, 6.954, 0.0053, 0.0045, 0.0034, 7.049, 0.0036, 0.0034, 0.0039, 7.099, 3e-04, 0.0013, 0.0026, 7.162, 0.0027, 0.0027, 0.003, 7.407, 0.0025, 0.003, 0.0035, 7.462, 0.0056, 0.0052, 0.0049, 7.79, 0.0012, 0.0019, 0.0028, 7.89, 0.0013, 0.0022, 0.0028, 8.142, 0.0044, 0.0044, 0.0047, 8.162, 5e-04, 0.0014, 0.0024, 8.869, 0.0011, 0.0022, 0.0029, 9.274, 0.0018, 0.0022, 0.0026, 9.533, 0.0015, 0.0022, 0.003), ncol=4, byrow=TRUE)
@@ -307,7 +309,7 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
 
     input_class <- class(rrs)[1]
 
-    stopifnot(input_class %in% c("matrix", "RasterStack", "RasterBrick"))
+    stopifnot(input_class %in% c("matrix", "RasterStack", "RasterBrick", "SpatRaster"))
 
     chl_min <- 0.001
     chl_max <- 1000
@@ -323,6 +325,9 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
         }
         rast <- rrs[[1]] # for reformatting later
         rrs <- raster_to_matrix(r = rrs, rnames = c(blues, green))
+    } else if (input_class=="SpatRaster") {
+        rastrrs <- rrs[[1]] # for reformatting later
+        rrs <- terra::as.matrix(rrs, wide=FALSE)
     } else if (input_class == "matrix") {
         if (nrow(rrs)==1) {
             rrs <- matrix(rrs[, sort(c(blues, green))], nrow=1)
@@ -341,6 +346,9 @@ ocx <- function(rrs, blues, green, coefs, use_443nm=FALSE) {
 
     if (input_class %in% c("RasterStack", "RasterBrick")) {
         chl_final <- raster::raster(crs=raster::crs(rast), ext=raster::extent(rast), resolution=raster::res(rast), vals=chl_final)
+    } else if (input_class=="SpatRaster") {
+        extr <- ext(rastrrs)
+        chl_final <- terra::rast(ncols=ncol(rastrrs), nrows=nrow(rastrrs), xmin=extr[1], xmax=extr[2], ymin=extr[3], ymax=extr[4], vals=chl_final)
     }
 
     return(chl_final)
@@ -477,4 +485,100 @@ optimize_ocx_coefs <- function(data, alg_degree, params_guessed=c(a0 = 0.3, a1 =
                            alg_degree=alg_degree,
                            reg_method=reg_method)
     return(as.numeric(params_fitted$par))
+}
+
+
+
+
+
+#' OCxSPM-Cor algorithm
+#'
+#' Modified version of ocx() for use in waters with high SPM, tested in the Bay of Fundy. Input is the same as ocx(), with the requirement of an extra vector (or raster) of spm values.
+#'
+#' @param rrs Either: Numeric matrix where rows = records, columns = Rrs wavebands, with named columns ("Rrs_XXX", where XXX is a wavelength in nanometres), OR: RasterStack or RasterBrick or SpatRaster of rrs layers with stack layers following the same naming convention. Names must match c(blues, green), i.e. same names, from shortest waveband to longest.
+#' @param spm Numeric vector of spm values, the same number of records as in rrs, OR: RasterLayer or SpatRaster of spm
+#' @param blues Character vector of Rrs wavebands in the blue range (e.g. c("Rrs_443", Rrs_488")), matching column name(s) in rrs, maximum 3 options, arranged from shortest waveband to longest. Note that if use_443nm=FALSE, the 443nm waveband will be removed and another must be used in its place.
+#' @param green String, Rrs waveband in the green range (e.g. "Rrs_547"), matching a column name in rrs
+#' @param coefs Numeric vector of coefficients corresponding to terms in the polynomial (lowest degree to highest)
+#' @param use_443nm Logical value, TRUE to make the 443nm band an option in the band ratio
+#' @references
+#' doi:10.1007/s12237-024-01334-x
+#' @return For matrix rrs: Numeric value (or vector) -- chlorophyll as computed by OCxSPM-Cor for the given Rrs and SPM, sensor, and coefficients. For RasterStack/Brick rrs: equivalent raster with OCxSPM-Cor chlorophyll-a.
+#' @examples
+#'
+#' # example using a spatraster
+#' library(terra)
+#' data("example04_OCCCI.20240703.L3b.DAY.RRS.PANCAN")
+#' # convert rrs to terra spatrasters
+#' rrs <- lapply(example04_OCCCI.20240703.L3b.DAY.RRS.PANCAN, FUN=terra::rast) %>% unname() %>% do.call(what=c)
+#' names(rrs) <- paste0("Rrs_",all_lambda$occci)
+#' # calculate spm
+#' spm_band <- get_spm_band(sensor="occci")
+#' spm <- get_spm_nechad(rrs[[names(rrs)==spm_band]], sensor="occci")
+#' # get the coefficients for ocxspmcor
+#' coefs <- get_ocx_coefs("occci", region="bof", alg="ocxspmcor")
+#' # get the wavebands used in the ocxspmcor algorithm for occci
+#' lambdas <- get_ocx_bands("occci", use_443nm = FALSE)
+#' # calculate ocxspmcor chl for each data point using those coefficients
+#' sat_ocxspmcor_chl <- ocxspmcor(rrs=rrs, spm=spm, blues=lambdas$blues, green=lambdas$green, coefs=coefs)
+#' plot(sat_ocxspmcor_chl)
+#'
+#' @export
+ocxspmcor <- function(rrs, spm, blues, green, coefs, use_443nm=FALSE) {
+
+    input_class_rrs <- class(rrs)[1]
+    input_class_spm <- class(spm)[1]
+
+    stopifnot(input_class_rrs %in% c("matrix", "RasterStack", "RasterBrick", "SpatRaster"))
+    stopifnot(input_class_spm %in% c("numeric", "RasterLayer", "SpatRaster"))
+    stopifnot((input_class_rrs=="matrix" & input_class_spm=="numeric") |
+                  (input_class_rrs %in% c("RasterStack","RasterBrick") & input_class_spm=="RasterLayer") |
+                  (input_class_rrs=="SpatRaster" & input_class_spm=="SpatRaster"))
+    stopifnot(length(coefs)==6)
+
+    input_class <- input_class_spm
+
+    chl_min <- 0.001
+    chl_max <- 1000
+
+    coefs <- as.numeric(coefs)
+
+    if (input_class=="RasterLayer") {
+        if (input_class_rrs == "RasterBrick"){
+            rrs <- raster::stack(rrs)
+        }
+        rastrrs <- rrs[[1]] # for reformatting later
+        rrs <- raster_to_matrix(r = rrs, rnames = c(blues, green))
+        spm <- raster_to_matrix(spm, rnames = names(spm))
+    } else if (input_class=="SpatRaster") {
+        rastrrs <- rrs[[1]] # for reformatting later
+        rrs <- terra::as.matrix(rrs, wide=FALSE)
+        spm <- terra::as.matrix(spm, wide=FALSE)
+    } else if (input_class == "matrix") {
+        if (nrow(rrs)==1) {
+            rrs <- matrix(rrs[, sort(c(blues, green))], nrow=1)
+            colnames(rrs) <- sort(c(blues, green))
+        } else {
+            rrs <- rrs[, sort(c(blues, green))]
+        }
+    }
+
+    if (nrow(rrs)!=nrow(spm)) stop("rrs and spm must have the same number of records/pixels")
+
+    # calculate band ratio and chlorophyll
+    br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
+    chl_final <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4 + coefs[6]*spm))
+
+    chl_final[chl_final < chl_min] <- chl_min
+    chl_final[chl_final > chl_max] <- chl_max
+
+    if (input_class=="RasterLayer") {
+        chl_final <- raster::raster(crs=raster::crs(rastrrs), ext=raster::extent(rastrrs), resolution=raster::res(rastrrs), vals=chl_final)
+    } else if (input_class=="SpatRaster") {
+        extr <- ext(rastrrs)
+        chl_final <- terra::rast(ncols=ncol(rastrrs), nrows=nrow(rastrrs), xmin=extr[1], xmax=extr[2], ymin=extr[3], ymax=extr[4], vals=chl_final)
+    }
+
+    return(chl_final)
+
 }
