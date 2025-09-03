@@ -2,7 +2,7 @@
 % Please edit documentation in R/SPM.R
 \name{get_spm_nechad}
 \alias{get_spm_nechad}
-\title{Get Nechad SPM}
+\title{Calculate Nechad SPM}
 \usage{
 get_spm_nechad(spm_rrs, sensor = "occci")
 }
@@ -15,7 +15,7 @@ get_spm_nechad(spm_rrs, sensor = "occci")
 Numeric vector (or RasterLayer or SpatRaster) of the spm values
 }
 \description{
-Given a sensor name, calculate SPM using Nechad's model (doi:10.1016/j.rse.2009.11.022)
+Given a sensor name, calculate SPM using Nechad's model. Note that the input to this function is Rrs, which is converted to rho within the function by multiplying by pi.
 }
 \examples{
 # example using a vector
@@ -30,4 +30,7 @@ spm_rrs <- terra::rast(example04_OCCCI.20240703.L3b.DAY.RRS.PANCAN$Rrs_665) # Da
 spm <- get_spm_nechad(spm_rrs, sensor="occci")
 plot(spm)
 
+}
+\references{
+doi:10.1016/j.rse.2009.11.022
 }
