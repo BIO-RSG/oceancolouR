@@ -42,17 +42,23 @@ select_groups <- function(data, groups, ...) {
 }
 
 
-#' Convert raster stack to matrix
+#' Convert raster stack/SpatRaster to matrix
 #'
-#' Given a raster stack with layer names, and a vector of names to extract from that raster stack, use the raster::getValues() function to extract the values from each layer and put each flattened layer in the column of a matrix.
+#' Given a raster stack or SpatRaster with layer names, and a vector of names to extract from that stack, use the raster::getValues()/terra::values() function to extract the values from each layer and put each flattened layer in the column of a matrix.
 #'
-#' @param r Raster stack with layer names
+#' @param r Raster stack or SpatRaster with layer names
 #' @param rnames Vector of names from the raster stack
 #' @return Numeric matrix with column names matching rnames
 #' @export
 raster_to_matrix <- function(r, rnames) {
-    rstack <- raster::subset(r, rnames)
-    mat <- lapply(1:length(rnames), function(i) raster::getValues(rstack[[i]]))
+    input_class <- class(r)[1]
+    if (input_class == "RasterStack") {
+        rstack <- raster::subset(r, rnames)
+        mat <- lapply(1:length(rnames), function(i) raster::getValues(rstack[[i]]))
+    } else if (input_class == "SpatRaster") {
+        rstack <- terra::subset(r, rnames)
+        mat <- lapply(1:length(rnames), function(i) terra::values(rstack[[i]]))
+    }
     mat <- do.call(cbind, mat)
     colnames(mat) <- rnames
     return(mat)
