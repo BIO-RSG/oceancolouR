@@ -569,7 +569,7 @@ ocxspmcor <- function(rrs, spm, blues, green, coefs, use_443nm=FALSE) {
     br <- log10(get_br(rrs = rrs, blues = blues, green = green, use_443nm = use_443nm)$rrs_ocx)
     spm <- log10(spm)
     spm[!is.finite(spm)] <- NA
-    chl_final <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4 + coefs[6]*spm))
+    chl_final <- 10^(coefs[1] + (coefs[2] * br) + (coefs[3] * br^2) + (coefs[4] * br^3) + (coefs[5] * br^4) + (coefs[6]*spm))
 
     chl_final[chl_final < chl_min] <- chl_min
     chl_final[chl_final > chl_max] <- chl_max
