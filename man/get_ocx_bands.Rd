@@ -7,7 +7,7 @@
 get_ocx_bands(sensor, use_443nm)
 }
 \arguments{
-\item{sensor}{String, either modisaqua, seawifs, viirssnpp, landsat8, or olci}
+\item{sensor}{String, either modisaqua, seawifs, viirssnpp, landsat8, olci, occci, globcolour, or paceoci}
 
 \item{use_443nm}{Logical value, TRUE to make the 443nm band an option in the band ratio}
 }
