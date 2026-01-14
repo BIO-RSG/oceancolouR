@@ -339,64 +339,6 @@ find_factors <- function(x) {
     return(factors)
 }
 
-#' Convert a latitude or longitude to decimal degrees
-#'
-#' @param deg degrees
-#' @param min minutes
-#' @param sec seconds
-#' @return Input the degrees, minutes and seconds to return the decimal degrees. Works for degrees-minutes notation as well (leave seconds blank)
-#' @examples
-#' dms_to_deg(deg = -52, min = 48, sec = 30)
-#' dms_to_deg(-52, 48.5)
-#'
-#' @export
-dms_to_deg <- function(deg, min, sec) {
-    if(missing(sec)) {sec = 0}
-    dir = ifelse(deg<0, -1, 1)
-    decdeg = (deg)*dir + ((min + (sec / 60))/60)
-    return(decdeg*dir)
-}
-
-#' Convert a latitude or longitude from decimal degrees to degrees, minutes, seconds
-#'
-#' @param decdeg number in decimal degrees
-#' @return Returns a data.frame() with columns indicating degrees, minutes, seconds. For degrees and decimal minutes use `deg_to_dm()`
-#' @examples
-#' deg_to_dms(-52.80833)
-#'
-#' @export
-deg_to_dms <- function(decdeg) {
-    dir = ifelse(decdeg<0, -1, 1)
-    decdeg = decdeg*dir
-    min = (decdeg - floor(decdeg))*60
-    sec = (min - floor(min)) * 60
-    decdeg = floor(decdeg)
-    min = floor(min)
-    dms = data.frame(degrees = decdeg*dir,
-                     minutes = min,
-                     seconds = sec)
-    # print(paste(decdeg,"degrees",min,"minutes",sec,"seconds"))
-    return(dms)
-}
-
-#' Convert a latitude or longitude from decimal degrees to degrees, decimal minutes
-#'
-#' @param decdeg number in decimal degrees
-#' @return Returns a data.frame() with columns indicating degrees and decimal minutes. For degrees, minutes, seconds use `deg_to_dms()`
-#' @examples
-#' deg_to_dm(-52.80833)
-#'
-#' @export
-deg_to_dm <- function(decdeg) {
-    dir = ifelse(decdeg<0, -1, 1)
-    decdeg = decdeg*dir
-    min = (decdeg - floor(decdeg))*60
-    decdeg = floor(decdeg)
-    dm = data.frame(degrees = decdeg,
-                    minutes = min)
-    return(dm*dir)
-}
-
 
 #' Calculate PAAW (Phytoplankton Apparent Absorption Wavelength)
 #'
