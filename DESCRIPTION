@@ -33,7 +33,8 @@ Imports:
     geodist,
     ncdf4,
     rnaturalearth,
-    mapdata
+    mapdata,
+    bit64
 Suggests: 
     knitr,
     rmarkdown
