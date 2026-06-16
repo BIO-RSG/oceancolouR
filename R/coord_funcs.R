@@ -84,7 +84,7 @@ deg_to_dm <- function(decdeg) {
 #' @param coords Vector of coordinates in the input format (either character or numeric, see details)
 #' @param input Character string indicating the input format (either ddm, dd, or dms)
 #' @param output Character string indicating the output format (either ddm, dd, or dms)
-#' @param decimals Numeric value, how many numbers to include after the decimal?
+#' @param decimals Numeric value, how many digits to include after the decimal?
 #' @return Returns a vector of coordinates in the selected output format (either a character vector for ddm and dms, or numeric vector for dd)
 #' @examples
 #'coords_ddm <- c("43 56.638", "42 13.645", "42 16.908")

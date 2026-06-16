@@ -13,7 +13,7 @@ convert_coords(coords, input, output, decimals = 3)
 
 \item{output}{Character string indicating the output format (either ddm, dd, or dms)}
 
-\item{decimals}{Numeric value, how many numbers to include after the decimal?}
+\item{decimals}{Numeric value, how many digits to include after the decimal?}
 }
 \value{
 Returns a vector of coordinates in the selected output format (either a character vector for ddm and dms, or numeric vector for dd)
