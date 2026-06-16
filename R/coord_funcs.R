@@ -94,7 +94,7 @@ deg_to_dm <- function(decdeg) {
 #' convert_coords(coords_ddm, input="ddm", output="dms")
 #'
 #' # dms to dd
-# convert_coords(coords_dms, input="dms", output="dd")
+#' convert_coords(coords_dms, input="dms", output="dd")
 #'
 #' @export
 #' @importFrom magrittr %>%
@@ -130,6 +130,6 @@ convert_coords <- function(coords, input, output) {
         }
     }
 
-    return(final)
+    return(unname(final))
 
 }

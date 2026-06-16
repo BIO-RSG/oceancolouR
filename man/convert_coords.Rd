@@ -34,5 +34,6 @@ coords_dms <- c("43° 56' 38.28","42° 13' 38.7","42° 16' 54.48")
 convert_coords(coords_ddm, input="ddm", output="dms")
 
 # dms to dd
+convert_coords(coords_dms, input="dms", output="dd")
 
 }
