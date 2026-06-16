@@ -4,7 +4,7 @@
 \alias{convert_coords}
 \title{Convert a coordinate between different systems.}
 \usage{
-convert_coords(coords, input, output)
+convert_coords(coords, input, output, decimals = 3)
 }
 \arguments{
 \item{coords}{Vector of coordinates in the input format (either character or numeric, see details)}
@@ -12,6 +12,8 @@ convert_coords(coords, input, output)
 \item{input}{Character string indicating the input format (either ddm, dd, or dms)}
 
 \item{output}{Character string indicating the output format (either ddm, dd, or dms)}
+
+\item{decimals}{Numeric value, how many numbers to include after the decimal?}
 }
 \value{
 Returns a vector of coordinates in the selected output format (either a character vector for ddm and dms, or numeric vector for dd)

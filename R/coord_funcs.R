@@ -84,21 +84,22 @@ deg_to_dm <- function(decdeg) {
 #' @param coords Vector of coordinates in the input format (either character or numeric, see details)
 #' @param input Character string indicating the input format (either ddm, dd, or dms)
 #' @param output Character string indicating the output format (either ddm, dd, or dms)
+#' @param decimals Numeric value, how many numbers to include after the decimal?
 #' @return Returns a vector of coordinates in the selected output format (either a character vector for ddm and dms, or numeric vector for dd)
 #' @examples
-#' coords_ddm <- c("43 56.638", "42 13.645", "42 16.908")
-#' coords_dd <- c(43.94397, 42.22742, 42.2818)
-#' coords_dms <- c("43° 56' 38.28","42° 13' 38.7","42° 16' 54.48")
+#'coords_ddm <- c("43 56.638", "42 13.645", "42 16.908")
+#'coords_dd <- c(43.94397, 42.22742, 42.2818)
+#'coords_dms <- c("43° 56' 38.28","42° 13' 38.7","42° 16' 54.48")
 #'
-#' # ddm to dms
-#' convert_coords(coords_ddm, input="ddm", output="dms")
+#'# ddm to dms
+#'convert_coords(coords_ddm, input="ddm", output="dms")
 #'
-#' # dms to dd
-#' convert_coords(coords_dms, input="dms", output="dd")
+#'# dms to dd
+#'convert_coords(coords_dms, input="dms", output="dd")
 #'
 #' @export
 #' @importFrom magrittr %>%
-convert_coords <- function(coords, input, output) {
+convert_coords <- function(coords, input, output, decimals=3) {
 
     stopifnot(input %in% c("ddm","dd","dms") & output %in% c("ddm","dd","dms"))
 
@@ -130,6 +131,18 @@ convert_coords <- function(coords, input, output) {
         }
     }
 
+    # fix the number of digits after the decimal
+    final_split <- strsplit(as.character(final), split="[.]")
+    # make sure it works in cases where there is no decimal value
+    fslen <- sapply(final_split, FUN=length)
+    first_value <- sapply(final_split, FUN="[", 1)
+    second_value <- rep(NA,length(first_value))
+    second_value[fslen==2] <- sapply(final_split[fslen==2], FUN="[", 2)
+    second_value <- round(as.numeric(paste0("0.",second_value)), decimals)
+    final <- paste0(first_value,gsub("0.",".",second_value))
+    if (output=="dd") {
+        final <- as.numeric(final)
+    }
     return(unname(final))
 
 }
