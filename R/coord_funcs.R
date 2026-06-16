@@ -67,3 +67,69 @@ deg_to_dm <- function(decdeg) {
                     minutes = min)
     return(dm*dir)
 }
+
+
+
+#' Convert a coordinate between different systems.
+#'
+#' Convert between the following systems: degree decimal minutes (ddm), decimal degrees (dd), and degree minutes seconds (dms).
+#'
+#' Required input formats:
+#' ddm: A character vector, e.g. "43 56.638"
+#' dd: A numeric vector, e.g. 43.94397
+#' dms: A character vector, e.g. 48° 51' 30.24"
+#'
+# Note: Degree decimals minutes are often used in marine and aviation navigation.
+#'
+#' @param coords Vector of coordinates in the input format (either character or numeric, see details)
+#' @param input Character string indicating the input format (either ddm, dd, or dms)
+#' @param output Character string indicating the output format (either ddm, dd, or dms)
+#' @return Returns a vector of coordinates in the selected output format (either a character vector for ddm and dms, or numeric vector for dd)
+#' @examples
+#' coords_ddm <- c("43 56.638", "42 13.645", "42 16.908")
+#' coords_dd <- c(43.94397, 42.22742, 42.2818)
+#' coords_dms <- c("43° 56' 38.28","42° 13' 38.7","42° 16' 54.48")
+#'
+#' # ddm to dms
+#' convert_coords(coords_ddm, input="ddm", output="dms")
+#'
+#' # dms to dd
+# convert_coords(coords_dms, input="dms", output="dd")
+#'
+#' @export
+#' @importFrom magrittr %>%
+convert_coords <- function(coords, input, output) {
+
+    stopifnot(input %in% c("ddm","dd","dms") & output %in% c("ddm","dd","dms"))
+
+    if (input=="ddm") {
+        deg = abs(as.numeric(unlist(strsplit(coords, " "))[seq(1, length(coords)*2,2)]))
+        dec = as.numeric(unlist(strsplit(coords, " "))[seq(2, length(coords)*2,2)])
+        if (output=="dd") {
+            final <- dms_to_deg(deg=deg, min=dec)
+        } else if (output=="dms") {
+            tmp_dd <- dms_to_deg(deg=deg, min=dec)
+            final <- deg_to_dms(tmp_dd) %>% tidyr::unite(col="output1",degrees,minutes,sep="° ") %>% tidyr::unite(col="output2",output1,seconds,sep="' ") %>% unlist()
+        }
+    } else if (input=="dd") {
+        coords <- as.numeric(coords)
+        if (output=="ddm") {
+            final <- deg_to_dm(coords) %>% tidyr::unite(col="output",degrees,minutes,sep=" ") %>% unlist()
+        } else if (output=="dms") {
+            final <- deg_to_dms(coords) %>% tidyr::unite(col="output1",degrees,minutes,sep="° ") %>% tidyr::unite(col="output2",output1,seconds,sep="' ") %>% unlist()
+        }
+    } else if (input=="dms") {
+        degr = strsplit(coords,split=" ") %>% sapply(FUN="[",1) %>% gsub(pattern="°",replacement="") %>% trimws() %>% as.numeric()
+        minu = strsplit(coords,split=" ") %>% sapply(FUN="[",2) %>% gsub(pattern="'",replacement="") %>% trimws() %>% as.numeric()
+        seco = strsplit(coords,split=" ") %>% sapply(FUN="[",3) %>% trimws() %>% as.numeric()
+        if (output=="ddm") {
+            tmp_dd <- dms_to_deg(deg = degr, min = minu, sec = seco)
+            final <- deg_to_dm(tmp_dd) %>% tidyr::unite(col="output",degrees,minutes,sep=" ") %>% unlist()
+        } else if (output=="dd") {
+            final <- dms_to_deg(deg = degr, min = minu, sec = seco)
+        }
+    }
+
+    return(final)
+
+}
