@@ -10,7 +10,7 @@
 #'
 #' @param df dataframe, must contain columns "longitude" and "latitude", in decimal degrees (negative for west/south)
 #' @param line_dist buffer size, in degrees, around AR7W line (everything within this zone is included)
-#' @return df, with rows subset to the AR7W
+#' @return Logical vector, same number of rows as df, indicating which rows are inside the AR7W
 #'
 #' @export
 subset_to_ar7w <- function(df, line_dist=0.1) {
@@ -43,8 +43,7 @@ subset_to_ar7w <- function(df, line_dist=0.1) {
     mask <- sp::point.in.polygon(df$longitude, df$latitude, polyx, polyy)
     mask <- as.logical(mask)
 
-    # return subsetted data around ar7w
-    return(df[mask,])
+    return(mask)
 
 }
 

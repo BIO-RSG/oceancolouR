@@ -12,7 +12,7 @@ subset_to_ar7w(df, line_dist = 0.1)
 \item{line_dist}{buffer size, in degrees, around AR7W line (everything within this zone is included)}
 }
 \value{
-df, with rows subset to the AR7W
+Logical vector, same number of rows as df, indicating which rows are inside the AR7W
 }
 \description{
 Given a dataset with coordinates, subset it to the Atlantic Repeat Hydrography West 7 line.
