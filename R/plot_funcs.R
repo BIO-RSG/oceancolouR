@@ -31,11 +31,8 @@ sinh_trans <- function() {
 }
 
 
-#' Plot a georeferenced raster on a map
+#' Make a map of your selected area in ggplot
 #'
-#' Plot a raster on a map. If a RasterStack is provided instead, facet_wrap will be used to plot the raster layers on separate maps, and nrow specifies the number of rows of maps (note: they will be plotted by row rather than by column). The names of the raster layers in the stack will be used as titles, and the maps will all use the same color scale.
-#'
-#' @param rast Georeferenced RasterLayer or RasterStack
 #' @param title Optional title of the map
 #' @param xlim Longitude limits. Set to NULL to let the function decide.
 #' @param ylim Latitude limits. Set to NULL to let the function decide.
@@ -45,21 +42,65 @@ sinh_trans <- function() {
 #' @param ylabs y-axis (latitude) labels to use. Set to NULL to let the function decide.
 #' @param sec.axis.x Function to define secondary axis on opposite side of plot from x axis.
 #' @param sec.axis.y Function to define secondary axis on opposite side of plot from y axis.
+#' @param map_alpha Transparency of landmasses on map, 0-1
+#' @param map_fill Colour of the landmasses in the map
+#' @param map_colour Colour of the outline of the landmasses in the map
+#' @param hires_land TRUE/FALSE, use the high resolution "world2Hires" land map or lower resolution "world" map?
+#' @return ggplot map of the selected area
+#' @import ggplot2
+#' @import mapdata
+#' @importFrom magrittr "%>%"
+#' @export
+make_map <- function(title=NULL,xlim=c(-180,180),ylim=c(-90,90),xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,map_alpha=0.8,map_fill="lightgrey",map_colour="black",map_linewidth=0.2,hires_land=FALSE,basemap=NULL) {
+    if (hires_land) {
+        data(world2HiresMapEnv, package="mapdata")
+        worldmap <- ggplot2::map_data("world2Hires") %>% dplyr::mutate(long=-1*(360-long))
+        regs <- worldmap %>% dplyr::filter(between(long,xlim[1],xlim[2]) & between(lat,ylim[1],ylim[2])) %>% dplyr::distinct(region)
+        # France is broken in this map
+        worldmap <- worldmap %>% dplyr::filter(region %in% regs$region & region!="France")
+    } else {
+        worldmap <- ggplot2::map_data("world")
+    }
+    if (is.null(xlabs)) {xlabs <- waiver()}
+    if (is.null(ylabs)) {ylabs <- waiver()}
+    if (is.null(xbreaks)) {xbreaks <- waiver()}
+    if (is.null(ybreaks)) {ybreaks <- waiver()}
+    if (is.null(sec.axis.x)) {sec.axis.x <- waiver()}
+    if (is.null(sec.axis.y)) {sec.axis.y <- waiver()}
+    if (is.null(basemap)) {
+        basemap <- ggplot()
+    }
+    p <- basemap +
+        geom_map(data=worldmap, map=worldmap,
+                 aes(x=long, y=lat, group=group, map_id=region),
+                 fill=map_fill, colour=map_colour, linewidth=map_linewidth, alpha=map_alpha) +
+        theme_bw() +
+        theme(axis.title=element_blank(),
+              plot.title=element_text(hjust=0.5)) +
+        scale_x_continuous(limits=xlim, breaks=xbreaks, labels=xlabs, expand=c(0, 0), sec.axis=sec.axis.x) +
+        scale_y_continuous(limits=ylim, breaks=ybreaks, labels=ylabs, expand=c(0, 0), sec.axis=sec.axis.y) +
+        ggtitle(title)
+    return(p)
+}
+
+
+
+#' Plot a georeferenced raster on a map
+#'
+#' Plot a raster on a map. If a RasterStack is provided instead, facet_wrap will be used to plot the raster layers on separate maps, and nrow specifies the number of rows of maps (note: they will be plotted by row rather than by column). The names of the raster layers in the stack will be used as titles, and the maps will all use the same color scale.
+#'
+#' @param rast Georeferenced RasterLayer or RasterStack
 #' @param col_limits Color scale limits
 #' @param cm Color scale
 #' @param set_extremes TRUE/FALSE, should values outside the range in col_limits be set to the min/max? If not, they will be transparent. Ignored if col_limits=NULL
 #' @param na.value Color to use for NA values in raster
 #' @param rast_alpha Transparency of the raster on the map, 0-1
-#' @param map_alpha Transparency of landmasses on map, 0-1
-#' @param map_fill Colour of the landmasses in the map
-#' @param map_colour Colour of the outline of the landmasses in the map
 #' @param nrow Number of rows of plots, for raster stacks
 #' @param show_legend Display the raster legend next to the map?
-#' @param hires_land TRUE/FALSE, use the high resolution "world2Hires" land map or lower resolution "world" map?
 #' @param ... Extra arguments to scale_fill_gradientn()
-#' @return Raster or grid of rasters on maps with coastlines.
+#' @param title,xlim,ylim,xbreaks,ybreaks,xlabs,ylabs,sec.axis.x,sec.axis.y,map_alpha,map_fill,map_colour,hires_land See ?make_map
+#' @return ggplot map of the selected area with overlaid raster, or grid of maps if raster is multilayer
 #' @import ggplot2
-#' @import mapdata
 #' @importFrom magrittr "%>%"
 #' @examples
 #' library(terra)
@@ -80,23 +121,8 @@ sinh_trans <- function() {
 #'                                   barheight = unit(8, "cm"),
 #'                                   frame.colour = "black"))
 #' @export
-make_raster_map <- function(rast,title=NULL,xlim=c(-180,180),ylim=c(-90,90),xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="grey",map_colour="darkgrey",map_linewidth=0.5,nrow=1,show_legend=TRUE,hires_land=FALSE,...) {
+make_raster_map <- function(rast,title=NULL,xlim=c(-180,180),ylim=c(-90,90),xbreaks=NULL,ybreaks=NULL,xlabs=NULL,ylabs=NULL,sec.axis.x=NULL,sec.axis.y=NULL,col_limits=NULL,cm=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(100),set_extremes=FALSE,na.value="transparent",rast_alpha=1,map_alpha=0.8,map_fill="lightgrey",map_colour="black",map_linewidth=0.2,nrow=1,show_legend=TRUE,hires_land=FALSE,...) {
     stopifnot(class(rast) %in% c("RasterBrick","RasterStack","RasterLayer","SpatRaster"))
-    if (hires_land) {
-        data(world2HiresMapEnv, package="mapdata")
-        worldmap <- ggplot2::map_data("world2Hires") %>% dplyr::mutate(long=-1*(360-long))
-        regs <- worldmap %>% dplyr::filter(between(long,xlim[1],xlim[2]) & between(lat,ylim[1],ylim[2])) %>% dplyr::distinct(region)
-        # France is broken in this map
-        worldmap <- worldmap %>% dplyr::filter(region %in% regs$region & region!="France")
-    } else {
-        worldmap <- ggplot2::map_data("world")
-    }
-    if (is.null(xlabs)) {xlabs <- waiver()}
-    if (is.null(ylabs)) {ylabs <- waiver()}
-    if (is.null(xbreaks)) {xbreaks <- waiver()}
-    if (is.null(ybreaks)) {ybreaks <- waiver()}
-    if (is.null(sec.axis.x)) {sec.axis.x <- waiver()}
-    if (is.null(sec.axis.y)) {sec.axis.y <- waiver()}
     if (class(rast) %in% c("RasterBrick","RasterStack","RasterLayer")) {rast <- terra::rast(rast)}
     num_layers <- dim(rast)[3]
     if (any(duplicated(names(rast)))) {
@@ -112,18 +138,9 @@ make_raster_map <- function(rast,title=NULL,xlim=c(-180,180),ylim=c(-90,90),xbre
         rast[rast < col_limits[1]] <- col_limits[1]
         rast[rast > col_limits[2]] <- col_limits[2]
     }
-    p <- ggplot() +
-        tidyterra::geom_spatraster(data=rast, show.legend=show_legend, alpha=rast_alpha, maxcell=terra::ncell(rast)) +
-        geom_map(data=worldmap, map=worldmap,
-                 aes(x=long, y=lat, group=group, map_id=region),
-                 fill=map_fill, colour=map_colour, linewidth=map_linewidth, alpha=map_alpha) +
-        theme_bw() +
-        theme(axis.title=element_blank(),
-              plot.title=element_text(hjust=0.5)) +
-        scale_fill_gradientn(colours=cm, limits=col_limits, na.value=na.value, ...) +
-        scale_x_continuous(limits=xlim, breaks=xbreaks, labels=xlabs, expand=c(0, 0), sec.axis=sec.axis.x) +
-        scale_y_continuous(limits=ylim, breaks=ybreaks, labels=ylabs, expand=c(0, 0), sec.axis=sec.axis.y) +
-        ggtitle(title)
+    p <- ggplot() + tidyterra::geom_spatraster(data=rast, show.legend=show_legend, alpha=rast_alpha, maxcell=terra::ncell(rast))
+    p <- make_map(title=title,xlim=xlim,ylim=ylim,xbreaks=xbreaks,ybreaks=ybreaks,xlabs=xlabs,ylabs=ylabs,sec.axis.x=sec.axis.x,sec.axis.y=sec.axis.y,map_alpha=map_alpha,map_fill=map_fill,map_colour=map_colour,map_linewidth=map_linewidth,hires_land=hires_land, basemap=p) +
+        scale_fill_gradientn(colours=cm, limits=col_limits, na.value=na.value, ...)
     if (num_layers > 1) {
         p <- p + facet_wrap(~lyr, nrow=nrow)
     }

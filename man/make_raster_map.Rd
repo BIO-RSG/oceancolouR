@@ -22,9 +22,9 @@ make_raster_map(
   na.value = "transparent",
   rast_alpha = 1,
   map_alpha = 0.8,
-  map_fill = "grey",
-  map_colour = "darkgrey",
-  map_linewidth = 0.5,
+  map_fill = "lightgrey",
+  map_colour = "black",
+  map_linewidth = 0.2,
   nrow = 1,
   show_legend = TRUE,
   hires_land = FALSE,
@@ -34,23 +34,7 @@ make_raster_map(
 \arguments{
 \item{rast}{Georeferenced RasterLayer or RasterStack}
 
-\item{title}{Optional title of the map}
-
-\item{xlim}{Longitude limits. Set to NULL to let the function decide.}
-
-\item{ylim}{Latitude limits. Set to NULL to let the function decide.}
-
-\item{xbreaks}{x-axis (longitude) breaks/tick positions. Set to NULL to let the function decide.}
-
-\item{ybreaks}{x-axis (latitude) breaks/tick positions. Set to NULL to let the function decide.}
-
-\item{xlabs}{x-axis (longitude) labels to use. Set to NULL to let the function decide.}
-
-\item{ylabs}{y-axis (latitude) labels to use. Set to NULL to let the function decide.}
-
-\item{sec.axis.x}{Function to define secondary axis on opposite side of plot from x axis.}
-
-\item{sec.axis.y}{Function to define secondary axis on opposite side of plot from y axis.}
+\item{title, xlim, ylim, xbreaks, ybreaks, xlabs, ylabs, sec.axis.x, sec.axis.y, map_alpha, map_fill, map_colour, hires_land}{See ?make_map}
 
 \item{col_limits}{Color scale limits}
 
@@ -62,22 +46,14 @@ make_raster_map(
 
 \item{rast_alpha}{Transparency of the raster on the map, 0-1}
 
-\item{map_alpha}{Transparency of landmasses on map, 0-1}
-
-\item{map_fill}{Colour of the landmasses in the map}
-
-\item{map_colour}{Colour of the outline of the landmasses in the map}
-
 \item{nrow}{Number of rows of plots, for raster stacks}
 
 \item{show_legend}{Display the raster legend next to the map?}
 
-\item{hires_land}{TRUE/FALSE, use the high resolution "world2Hires" land map or lower resolution "world" map?}
-
 \item{...}{Extra arguments to scale_fill_gradientn()}
 }
 \value{
-Raster or grid of rasters on maps with coastlines.
+ggplot map of the selected area with overlaid raster, or grid of maps if raster is multilayer
 }
 \description{
 Plot a raster on a map. If a RasterStack is provided instead, facet_wrap will be used to plot the raster layers on separate maps, and nrow specifies the number of rows of maps (note: they will be plotted by row rather than by column). The names of the raster layers in the stack will be used as titles, and the maps will all use the same color scale.
